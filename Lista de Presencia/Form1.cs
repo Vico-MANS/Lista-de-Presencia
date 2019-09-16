@@ -22,6 +22,8 @@ namespace Lista_de_Presencia
         {
             tabControl.SelectedIndexChanged += new EventHandler(tabControl_SelectedIndexChanged);
             GetPersonData();
+            dgvPresence.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+            dgvPresence.Columns["colPerson"].HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleLeft;
         }
 
         private void GetPersonData()
@@ -62,13 +64,13 @@ namespace Lista_de_Presencia
                         conn.Open();
 
                         SqlCommand command = new SqlCommand("SET DATEFIRST 1; " +
-                            "SELECT CONVERT(DATE, DATEADD(dd, (DATEPART(dw, getdate())), getdate()-1)), " +
-                            "CONVERT(DATE, DATEADD(dd, (DATEPART(dw, getdate())), getdate())), " +
-                            "CONVERT(DATE, DATEADD(dd, (DATEPART(dw, getdate())), getdate()+1)), " +
-                            "CONVERT(DATE, DATEADD(dd, (DATEPART(dw, getdate())), getdate()+2)), " +
-                            "CONVERT(DATE, DATEADD(dd, (DATEPART(dw, getdate())), getdate()+3)), " +
-                            "CONVERT(DATE, DATEADD(dd, (DATEPART(dw, getdate())), getdate()+4)), " +
-                            "CONVERT(DATE, DATEADD(dd, (DATEPART(dw, getdate())), getdate()+5)) " +
+                            "SELECT CONVERT(VARCHAR, DATEADD(dd, (DATEPART(dw, getdate())), getdate()-1), 103), " +
+                            "CONVERT(VARCHAR, DATEADD(dd, (DATEPART(dw, getdate())), getdate()), 103), " +
+                            "CONVERT(VARCHAR, DATEADD(dd, (DATEPART(dw, getdate())), getdate()+1), 103), " +
+                            "CONVERT(VARCHAR, DATEADD(dd, (DATEPART(dw, getdate())), getdate()+2), 103), " +
+                            "CONVERT(VARCHAR, DATEADD(dd, (DATEPART(dw, getdate())), getdate()+3), 103), " +
+                            "CONVERT(VARCHAR, DATEADD(dd, (DATEPART(dw, getdate())), getdate()+4), 103), " +
+                            "CONVERT(VARCHAR, DATEADD(dd, (DATEPART(dw, getdate())), getdate()+5), 103) " +
                             "FROM Human", conn);
 
                         using (SqlDataReader reader = command.ExecuteReader())
@@ -83,13 +85,13 @@ namespace Lista_de_Presencia
                                 Console.WriteLine("Saturday: " + reader[5]);
                                 Console.WriteLine("Sunday: " + reader[6]);
 
-                                dgvPresence.Columns["colMonday"].HeaderText = reader[0].ToString();
-                                dgvPresence.Columns["colTuesday"].HeaderText = reader[1].ToString();
-                                dgvPresence.Columns["colWednesday"].HeaderText = reader[2].ToString();
-                                dgvPresence.Columns["colThursday"].HeaderText = reader[3].ToString();
-                                dgvPresence.Columns["colFriday"].HeaderText = reader[4].ToString();
-                                dgvPresence.Columns["colSaturday"].HeaderText = reader[5].ToString();
-                                dgvPresence.Columns["colSunday"].HeaderText = reader[6].ToString();
+                                dgvPresence.Columns["colMonday"].HeaderText = "Mon\n" + reader[0].ToString();
+                                dgvPresence.Columns["colTuesday"].HeaderText = "Tue\n" + reader[1].ToString();
+                                dgvPresence.Columns["colWednesday"].HeaderText = "Wed\n" + reader[2].ToString();
+                                dgvPresence.Columns["colThursday"].HeaderText = "Thu\n" + reader[3].ToString();
+                                dgvPresence.Columns["colFriday"].HeaderText = "Fri\n" + reader[4].ToString();
+                                dgvPresence.Columns["colSaturday"].HeaderText = "Sat\n" + reader[5].ToString();
+                                dgvPresence.Columns["colSunday"].HeaderText = "Sun\n" + reader[6].ToString();
                             }
                         }
 

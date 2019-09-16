@@ -47,6 +47,7 @@
             this.label1 = new System.Windows.Forms.Label();
             this.tabPresence = new System.Windows.Forms.TabPage();
             this.dgvPresence = new System.Windows.Forms.DataGridView();
+            this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
             this.colPerson = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colMonday = new System.Windows.Forms.DataGridViewCheckBoxColumn();
             this.colTuesday = new System.Windows.Forms.DataGridViewCheckBoxColumn();
@@ -55,7 +56,6 @@
             this.colFriday = new System.Windows.Forms.DataGridViewCheckBoxColumn();
             this.colSaturday = new System.Windows.Forms.DataGridViewCheckBoxColumn();
             this.colSunday = new System.Windows.Forms.DataGridViewCheckBoxColumn();
-            this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
             ((System.ComponentModel.ISupportInitialize)(this.dgvOverview)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.SuspendLayout();
@@ -252,12 +252,12 @@
             // 
             // colMonday
             // 
+            this.colMonday.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
             this.colMonday.HeaderText = "Monday";
             this.colMonday.Name = "colMonday";
             this.colMonday.ReadOnly = true;
             this.colMonday.Resizable = System.Windows.Forms.DataGridViewTriState.True;
             this.colMonday.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic;
-            this.colMonday.Width = 75;
             // 
             // colTuesday
             // 
