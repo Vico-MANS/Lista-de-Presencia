@@ -20,12 +20,13 @@ namespace Lista_de_Presencia
 
         private void Form1_Load(object sender, EventArgs e)
         {
+            tabControl.SelectedIndexChanged += new EventHandler(tabControl_SelectedIndexChanged);
             GetPersonData();
         }
 
         private void GetPersonData()
         {
-            dataGridView1.Rows.Clear();
+            dgvOverview.Rows.Clear();
 
             using (SqlConnection conn = new SqlConnection())
             {
@@ -41,9 +42,68 @@ namespace Lista_de_Presencia
                     {
                         Console.WriteLine(String.Format("{0} \t | {1} \t | {2}", reader["FIRSTNAME"], reader["LASTNAME"], reader["BIRTHDAY"]));
 
-                        dataGridView1.Rows.Add(reader["FIRSTNAME"], reader["LASTNAME"], reader["BIRTHDAY"]);
+                        dgvOverview.Rows.Add(reader["FIRSTNAME"], reader["LASTNAME"], reader["BIRTHDAY"]);
                     }
                 }
+            }
+        }
+
+        private void tabControl_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            switch((sender as TabControl).SelectedIndex){
+                // Overview tab
+                case 0:
+                    break;
+                // Presence tab
+                case 1:
+                    using (SqlConnection conn = new SqlConnection())
+                    {
+                        conn.ConnectionString = "Server=USUARIO-PC\\SQLEXPRESS;Database=MALM;Trusted_Connection=true";
+                        conn.Open();
+
+                        SqlCommand command = new SqlCommand("SET DATEFIRST 1; " +
+                            "SELECT CONVERT(DATE, DATEADD(dd, (DATEPART(dw, getdate())), getdate()-1)), " +
+                            "CONVERT(DATE, DATEADD(dd, (DATEPART(dw, getdate())), getdate())), " +
+                            "CONVERT(DATE, DATEADD(dd, (DATEPART(dw, getdate())), getdate()+1)), " +
+                            "CONVERT(DATE, DATEADD(dd, (DATEPART(dw, getdate())), getdate()+2)), " +
+                            "CONVERT(DATE, DATEADD(dd, (DATEPART(dw, getdate())), getdate()+3)), " +
+                            "CONVERT(DATE, DATEADD(dd, (DATEPART(dw, getdate())), getdate()+4)), " +
+                            "CONVERT(DATE, DATEADD(dd, (DATEPART(dw, getdate())), getdate()+5)) " +
+                            "FROM Human", conn);
+
+                        using (SqlDataReader reader = command.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                Console.WriteLine("Monday: " + reader[0]);
+                                Console.WriteLine("Tuesday: " + reader[1]);
+                                Console.WriteLine("Wednesday: " + reader[2]);
+                                Console.WriteLine("Thursday: " + reader[3]);
+                                Console.WriteLine("Friday: " + reader[4]);
+                                Console.WriteLine("Saturday: " + reader[5]);
+                                Console.WriteLine("Sunday: " + reader[6]);
+
+                                dgvPresence.Columns["colMonday"].HeaderText = reader[0].ToString();
+                                dgvPresence.Columns["colTuesday"].HeaderText = reader[1].ToString();
+                                dgvPresence.Columns["colWednesday"].HeaderText = reader[2].ToString();
+                                dgvPresence.Columns["colThursday"].HeaderText = reader[3].ToString();
+                                dgvPresence.Columns["colFriday"].HeaderText = reader[4].ToString();
+                                dgvPresence.Columns["colSaturday"].HeaderText = reader[5].ToString();
+                                dgvPresence.Columns["colSunday"].HeaderText = reader[6].ToString();
+                            }
+                        }
+
+                            command = new SqlCommand("SELECT (FIRSTNAME + ' ' + LASTNAME) AS NAME FROM Human", conn);
+
+                        using (SqlDataReader reader = command.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                dgvPresence.Rows.Add(reader["NAME"]);
+                            }
+                        }
+                    }
+                    break;
             }
         }
 
@@ -74,7 +134,7 @@ namespace Lista_de_Presencia
                 conn.Open();
 
                 int deletionCounter = 0;
-                foreach (DataGridViewRow row in dataGridView1.SelectedRows)
+                foreach (DataGridViewRow row in dgvOverview.SelectedRows)
                 {
                     SqlCommand command = new SqlCommand("DELETE FROM Human WHERE FIRSTNAME = @firstname AND LASTNAME = @lastname", conn);
                     command.Parameters.Add(new SqlParameter("firstname", row.Cells["colFirstName"].Value.ToString()));
@@ -88,32 +148,7 @@ namespace Lista_de_Presencia
             }
         }
 
-        private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
-        {
-
-        }
-
-        private void tabPage1_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void textBox2_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void textBox1_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void label1_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void label3_Click(object sender, EventArgs e)
+        private void dgvPresence_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
 
         }
