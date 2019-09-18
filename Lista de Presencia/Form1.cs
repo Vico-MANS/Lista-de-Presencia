@@ -24,6 +24,8 @@ namespace Lista_de_Presencia
             GetPersonData();
             dgvPresence.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
             dgvPresence.Columns["colPerson"].HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleLeft;
+            dgvPresence.CellValueChanged += dgvPresence_OnCellValueChanged;
+            dgvPresence.CellMouseUp += dgvPresence_OnCellMouseUp;
         }
 
         private void GetPersonData()
@@ -58,20 +60,23 @@ namespace Lista_de_Presencia
                     break;
                 // Presence tab
                 case 1:
+                    dgvPresence.Rows.Clear();
                     using (SqlConnection conn = new SqlConnection())
                     {
                         conn.ConnectionString = "Server=USUARIO-PC\\SQLEXPRESS;Database=MALM;Trusted_Connection=true";
                         conn.Open();
 
-                        SqlCommand command = new SqlCommand("SET DATEFIRST 1; " +
-                            "SELECT CONVERT(VARCHAR, DATEADD(dd, (DATEPART(dw, getdate())), getdate()-1), 103), " +
-                            "CONVERT(VARCHAR, DATEADD(dd, (DATEPART(dw, getdate())), getdate()), 103), " +
-                            "CONVERT(VARCHAR, DATEADD(dd, (DATEPART(dw, getdate())), getdate()+1), 103), " +
-                            "CONVERT(VARCHAR, DATEADD(dd, (DATEPART(dw, getdate())), getdate()+2), 103), " +
-                            "CONVERT(VARCHAR, DATEADD(dd, (DATEPART(dw, getdate())), getdate()+3), 103), " +
-                            "CONVERT(VARCHAR, DATEADD(dd, (DATEPART(dw, getdate())), getdate()+4), 103), " +
-                            "CONVERT(VARCHAR, DATEADD(dd, (DATEPART(dw, getdate())), getdate()+5), 103) " +
-                            "FROM Human", conn);
+                        // should be 1- for monday and 7- for sunday, for some reason it's one off today (18/09)
+                        SqlCommand command = new SqlCommand(
+                            "SET DATEFIRST 1;" +
+                            "SELECT CONVERT(VARCHAR, DATEADD(dd, 1-(DATEPART(dw, getdate())), getdate()), 103), " +
+                                    "CONVERT(VARCHAR, DATEADD(dd, 2-(DATEPART(dw, getdate())), getdate()), 103), " +
+                                    "CONVERT(VARCHAR, DATEADD(dd, 3-(DATEPART(dw, getdate())), getdate()), 103), " +
+                                    "CONVERT(VARCHAR, DATEADD(dd, 4-(DATEPART(dw, getdate())), getdate()), 103), " +
+                                    "CONVERT(VARCHAR, DATEADD(dd, 5-(DATEPART(dw, getdate())), getdate()), 103), " +
+                                    "CONVERT(VARCHAR, DATEADD(dd, 6-(DATEPART(dw, getdate())), getdate()), 103), " +
+                                    "CONVERT(VARCHAR, DATEADD(dd, 7-(DATEPART(dw, getdate())), getdate()), 103) "
+                            , conn);
 
                         using (SqlDataReader reader = command.ExecuteReader())
                         {
@@ -95,13 +100,14 @@ namespace Lista_de_Presencia
                             }
                         }
 
-                            command = new SqlCommand("SELECT (FIRSTNAME + ' ' + LASTNAME) AS NAME FROM Human", conn);
+                            command = new SqlCommand("SELECT HUMAN_ID AS ID, (FIRSTNAME + ' ' + LASTNAME) AS NAME FROM Human", conn);
 
                         using (SqlDataReader reader = command.ExecuteReader())
                         {
                             while (reader.Read())
                             {
-                                dgvPresence.Rows.Add(reader["NAME"]);
+                                // colPersonID, colPerson
+                                dgvPresence.Rows.Add(reader["ID"], reader["NAME"]);
                             }
                         }
                     }
@@ -153,6 +159,45 @@ namespace Lista_de_Presencia
         private void dgvPresence_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
 
+        }
+
+        // Manually saving the cells were changes were made (to be later saved in the database)
+        private List<String> m_PresenceChanges = new List<String>();
+        
+        private void dgvPresence_OnCellValueChanged(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.RowIndex != -1)
+            {
+                if(!m_PresenceChanges.Contains(e.RowIndex + " " + e.ColumnIndex))
+                    m_PresenceChanges.Add(e.RowIndex + " " + e.ColumnIndex);
+                Console.WriteLine("Person ID clicked: " + dgvPresence.Rows[e.RowIndex].Cells["colPersonID"].Value.ToString());
+            }
+        }
+
+        // Ends the edition of the cell/checkbox when the user clicks instead of when the cell loses focus
+        private void dgvPresence_OnCellMouseUp(object sender, DataGridViewCellMouseEventArgs e)
+        {
+            if (e.RowIndex != -1)
+            {
+                dgvPresence.EndEdit();
+            }
+        }
+
+        private void btnSavePresenceChanges_Click(object sender, EventArgs e)
+        {
+            foreach(String change in m_PresenceChanges)
+            {
+                String[] data = change.Split(' ');
+                Console.WriteLine("Changed made in row " + data[0] + " and column " + data[1]);
+                
+                /*
+                 * TODO: 
+                 * We know the cells  that were changed
+                 * We still have to keep only the real changes (if the user undos his change we don't wanna update the database)
+                 * We have to get a reference to the given date of the cell somehow
+                 * Then we can update the database with the given changes
+                 * */
+            }
         }
     }
 }

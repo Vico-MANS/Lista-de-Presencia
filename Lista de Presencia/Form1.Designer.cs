@@ -48,6 +48,8 @@
             this.tabPresence = new System.Windows.Forms.TabPage();
             this.dgvPresence = new System.Windows.Forms.DataGridView();
             this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
+            this.btnSavePresenceChanges = new System.Windows.Forms.Button();
+            this.colPersonID = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colPerson = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colMonday = new System.Windows.Forms.DataGridViewCheckBoxColumn();
             this.colTuesday = new System.Windows.Forms.DataGridViewCheckBoxColumn();
@@ -213,6 +215,7 @@
             // 
             // tabPresence
             // 
+            this.tabPresence.Controls.Add(this.btnSavePresenceChanges);
             this.tabPresence.Controls.Add(this.dgvPresence);
             this.tabPresence.Location = new System.Drawing.Point(4, 22);
             this.tabPresence.Name = "tabPresence";
@@ -228,6 +231,7 @@
             this.dgvPresence.AllowUserToDeleteRows = false;
             this.dgvPresence.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dgvPresence.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.colPersonID,
             this.colPerson,
             this.colMonday,
             this.colTuesday,
@@ -238,16 +242,30 @@
             this.colSunday});
             this.dgvPresence.Location = new System.Drawing.Point(7, 6);
             this.dgvPresence.Name = "dgvPresence";
-            this.dgvPresence.ReadOnly = true;
             this.dgvPresence.Size = new System.Drawing.Size(766, 304);
             this.dgvPresence.TabIndex = 0;
             this.dgvPresence.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvPresence_CellContentClick);
+            // 
+            // btnSavePresenceChanges
+            // 
+            this.btnSavePresenceChanges.Location = new System.Drawing.Point(674, 316);
+            this.btnSavePresenceChanges.Name = "btnSavePresenceChanges";
+            this.btnSavePresenceChanges.Size = new System.Drawing.Size(99, 23);
+            this.btnSavePresenceChanges.TabIndex = 1;
+            this.btnSavePresenceChanges.Text = "Save changes";
+            this.btnSavePresenceChanges.UseVisualStyleBackColor = true;
+            this.btnSavePresenceChanges.Click += new System.EventHandler(this.btnSavePresenceChanges_Click);
+            // 
+            // colPersonID
+            // 
+            this.colPersonID.HeaderText = "PersonID";
+            this.colPersonID.Name = "colPersonID";
+            this.colPersonID.Visible = false;
             // 
             // colPerson
             // 
             this.colPerson.HeaderText = "Person";
             this.colPerson.Name = "colPerson";
-            this.colPerson.ReadOnly = true;
             this.colPerson.Width = 200;
             // 
             // colMonday
@@ -255,7 +273,6 @@
             this.colMonday.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
             this.colMonday.HeaderText = "Monday";
             this.colMonday.Name = "colMonday";
-            this.colMonday.ReadOnly = true;
             this.colMonday.Resizable = System.Windows.Forms.DataGridViewTriState.True;
             this.colMonday.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic;
             // 
@@ -263,42 +280,36 @@
             // 
             this.colTuesday.HeaderText = "Tuesday";
             this.colTuesday.Name = "colTuesday";
-            this.colTuesday.ReadOnly = true;
             this.colTuesday.Width = 75;
             // 
             // colWednesday
             // 
             this.colWednesday.HeaderText = "Wednesday";
             this.colWednesday.Name = "colWednesday";
-            this.colWednesday.ReadOnly = true;
             this.colWednesday.Width = 75;
             // 
             // colThursday
             // 
             this.colThursday.HeaderText = "Thursday";
             this.colThursday.Name = "colThursday";
-            this.colThursday.ReadOnly = true;
             this.colThursday.Width = 75;
             // 
             // colFriday
             // 
             this.colFriday.HeaderText = "Friday";
             this.colFriday.Name = "colFriday";
-            this.colFriday.ReadOnly = true;
             this.colFriday.Width = 75;
             // 
             // colSaturday
             // 
             this.colSaturday.HeaderText = "Saturday";
             this.colSaturday.Name = "colSaturday";
-            this.colSaturday.ReadOnly = true;
             this.colSaturday.Width = 75;
             // 
             // colSunday
             // 
             this.colSunday.HeaderText = "Sunday";
             this.colSunday.Name = "colSunday";
-            this.colSunday.ReadOnly = true;
             this.colSunday.Width = 75;
             // 
             // Form1
@@ -344,6 +355,8 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn colBirthday;
         private System.ComponentModel.BackgroundWorker backgroundWorker1;
         private System.Windows.Forms.DataGridView dgvPresence;
+        private System.Windows.Forms.Button btnSavePresenceChanges;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colPersonID;
         private System.Windows.Forms.DataGridViewTextBoxColumn colPerson;
         private System.Windows.Forms.DataGridViewCheckBoxColumn colMonday;
         private System.Windows.Forms.DataGridViewCheckBoxColumn colTuesday;
