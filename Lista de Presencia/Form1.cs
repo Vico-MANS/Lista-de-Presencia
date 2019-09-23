@@ -15,6 +15,8 @@ namespace Lista_de_Presencia
     {
         // Dates of the current week
         private string[] m_Dates;
+        // Keeps track of the cellIDs that were checked in the beginning
+        private List<int> m_CheckedCells = new List<int>();
         // Manually saving the cells were changes were made (to be later saved in the database)
         private List<String> m_PresenceChanges = new List<String>();
         // To keep track of which week we are currently seeing (0 is the current one, -1 is last week and +1 next week)
@@ -135,8 +137,12 @@ namespace Lista_de_Presencia
                     {
                         while (reader.Read())
                         {
+                            int rowIndex = personIDs.IndexOf(id);
+                            int colIndex = (int)reader["WEEKDAY"] + 2;
                             // We can do this since the index in the id table corresponds to the datagridview row indexes
                             dgvPresence.Rows[personIDs.IndexOf(id)].Cells[(int)reader["WEEKDAY"] + 2].Value = true;
+                            // We also add that cell id to the list so we can later only keep the changes
+                            m_CheckedCells.Add(rowIndex * colIndex + colIndex);
                         }
                     }
                 }
@@ -215,9 +221,21 @@ namespace Lista_de_Presencia
         {
             if (e.RowIndex != -1)
             {
-                if(!m_PresenceChanges.Contains(e.RowIndex + " " + e.ColumnIndex))
+                // We only want to keep track of the real changes (not the check then uncheck or vice-versa once)
+                if (((bool)dgvPresence.Rows[e.RowIndex].Cells[e.ColumnIndex].Value
+                     && !m_CheckedCells.Contains(e.RowIndex * e.ColumnIndex + e.ColumnIndex))
+                   ||
+                    (!(bool)dgvPresence.Rows[e.RowIndex].Cells[e.ColumnIndex].Value
+                     && m_CheckedCells.Contains(e.RowIndex * e.ColumnIndex + e.ColumnIndex)))
+                {
+                    Console.WriteLine("True change");
                     m_PresenceChanges.Add(e.RowIndex + " " + e.ColumnIndex);
-                //Console.WriteLine("Person ID clicked: " + dgvPresence.Rows[e.RowIndex].Cells["colPersonID"].Value.ToString());
+                }
+                else
+                {
+                    Console.WriteLine("Not a true change");
+                    m_PresenceChanges.Remove(e.RowIndex + " " + e.ColumnIndex);
+                }
             }
         }
 
@@ -268,7 +286,10 @@ namespace Lista_de_Presencia
                                                             "    INSERT INTO PRESENCE(DIA, ID_HUMAN) VALUES(convert(varchar(30),cast(@day as datetime),102), @id)", conn);
                         command.Parameters.Add(new SqlParameter("day", m_Dates[changedCells[1] - 2]));
                         command.Parameters.Add(new SqlParameter("id", (int) (dgvPresence.Rows[changedCells[0]].Cells["colPersonID"]).Value));
-                        
+
+                        // We add the cell to the checked cells
+                        m_CheckedCells.Add(changedCells[0] * changedCells[1] + changedCells[1]);
+
                         Console.WriteLine("Insert affected " + command.ExecuteNonQuery() + " rows.");                        
                     }
                 }
@@ -288,6 +309,9 @@ namespace Lista_de_Presencia
                         SqlCommand command = new SqlCommand("DELETE FROM PRESENCE WHERE DIA = CONVERT(VARCHAR(30), CAST(@day AS DATETIME), 102) AND ID_HUMAN = @id", conn);
                         command.Parameters.Add(new SqlParameter("day", m_Dates[changedCells[1] - 2]));
                         command.Parameters.Add(new SqlParameter("id", (int)(dgvPresence.Rows[changedCells[0]].Cells["colPersonID"]).Value));
+
+                        // We remove the cell from the checked cells
+                        m_CheckedCells.Remove(changedCells[0] * changedCells[1] + changedCells[1]);
 
                         Console.WriteLine("Deletion affected " + command.ExecuteNonQuery() + " rows.");
                     }
