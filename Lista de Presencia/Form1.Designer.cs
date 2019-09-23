@@ -31,6 +31,10 @@
             this.components = new System.ComponentModel.Container();
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.dgvOverview = new System.Windows.Forms.DataGridView();
+            this.colHumanID = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colFirstName = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colLastName = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colBirthday = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.btnAddPerson = new System.Windows.Forms.Button();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.tabControl = new System.Windows.Forms.TabControl();
@@ -43,6 +47,8 @@
             this.txtFirstname = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
             this.tabPresence = new System.Windows.Forms.TabPage();
+            this.btnPreviousWeek = new System.Windows.Forms.Button();
+            this.btnNextWeek = new System.Windows.Forms.Button();
             this.btnSavePresenceChanges = new System.Windows.Forms.Button();
             this.dgvPresence = new System.Windows.Forms.DataGridView();
             this.colPersonID = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -55,10 +61,6 @@
             this.colSaturday = new System.Windows.Forms.DataGridViewCheckBoxColumn();
             this.colSunday = new System.Windows.Forms.DataGridViewCheckBoxColumn();
             this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
-            this.colHumanID = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.colFirstName = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.colLastName = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.colBirthday = new System.Windows.Forms.DataGridViewTextBoxColumn();
             ((System.ComponentModel.ISupportInitialize)(this.dgvOverview)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.SuspendLayout();
@@ -88,6 +90,34 @@
             this.dgvOverview.ReadOnly = true;
             this.dgvOverview.Size = new System.Drawing.Size(722, 301);
             this.dgvOverview.TabIndex = 1;
+            // 
+            // colHumanID
+            // 
+            this.colHumanID.HeaderText = "ID";
+            this.colHumanID.Name = "colHumanID";
+            this.colHumanID.ReadOnly = true;
+            this.colHumanID.Visible = false;
+            // 
+            // colFirstName
+            // 
+            this.colFirstName.HeaderText = "FIRSTNAME";
+            this.colFirstName.Name = "colFirstName";
+            this.colFirstName.ReadOnly = true;
+            this.colFirstName.Width = 225;
+            // 
+            // colLastName
+            // 
+            this.colLastName.HeaderText = "LASTNAME";
+            this.colLastName.Name = "colLastName";
+            this.colLastName.ReadOnly = true;
+            this.colLastName.Width = 225;
+            // 
+            // colBirthday
+            // 
+            this.colBirthday.HeaderText = "BIRTHDAY";
+            this.colBirthday.Name = "colBirthday";
+            this.colBirthday.ReadOnly = true;
+            this.colBirthday.Width = 225;
             // 
             // btnAddPerson
             // 
@@ -196,6 +226,8 @@
             // 
             // tabPresence
             // 
+            this.tabPresence.Controls.Add(this.btnPreviousWeek);
+            this.tabPresence.Controls.Add(this.btnNextWeek);
             this.tabPresence.Controls.Add(this.btnSavePresenceChanges);
             this.tabPresence.Controls.Add(this.dgvPresence);
             this.tabPresence.Location = new System.Drawing.Point(4, 22);
@@ -206,9 +238,29 @@
             this.tabPresence.Text = "Presence";
             this.tabPresence.UseVisualStyleBackColor = true;
             // 
+            // btnPreviousWeek
+            // 
+            this.btnPreviousWeek.Location = new System.Drawing.Point(575, 8);
+            this.btnPreviousWeek.Name = "btnPreviousWeek";
+            this.btnPreviousWeek.Size = new System.Drawing.Size(93, 23);
+            this.btnPreviousWeek.TabIndex = 3;
+            this.btnPreviousWeek.Text = "Previous week";
+            this.btnPreviousWeek.UseVisualStyleBackColor = true;
+            this.btnPreviousWeek.Click += new System.EventHandler(this.btnPreviousWeek_Click);
+            // 
+            // btnNextWeek
+            // 
+            this.btnNextWeek.Location = new System.Drawing.Point(674, 8);
+            this.btnNextWeek.Name = "btnNextWeek";
+            this.btnNextWeek.Size = new System.Drawing.Size(93, 23);
+            this.btnNextWeek.TabIndex = 2;
+            this.btnNextWeek.Text = "Next week";
+            this.btnNextWeek.UseVisualStyleBackColor = true;
+            this.btnNextWeek.Click += new System.EventHandler(this.btnNextWeek_Click);
+            // 
             // btnSavePresenceChanges
             // 
-            this.btnSavePresenceChanges.Location = new System.Drawing.Point(674, 316);
+            this.btnSavePresenceChanges.Location = new System.Drawing.Point(674, 347);
             this.btnSavePresenceChanges.Name = "btnSavePresenceChanges";
             this.btnSavePresenceChanges.Size = new System.Drawing.Size(99, 23);
             this.btnSavePresenceChanges.TabIndex = 1;
@@ -231,7 +283,7 @@
             this.colFriday,
             this.colSaturday,
             this.colSunday});
-            this.dgvPresence.Location = new System.Drawing.Point(7, 6);
+            this.dgvPresence.Location = new System.Drawing.Point(7, 37);
             this.dgvPresence.Name = "dgvPresence";
             this.dgvPresence.Size = new System.Drawing.Size(766, 304);
             this.dgvPresence.TabIndex = 0;
@@ -292,34 +344,6 @@
             this.colSunday.Name = "colSunday";
             this.colSunday.Width = 75;
             // 
-            // colHumanID
-            // 
-            this.colHumanID.HeaderText = "ID";
-            this.colHumanID.Name = "colHumanID";
-            this.colHumanID.ReadOnly = true;
-            this.colHumanID.Visible = false;
-            // 
-            // colFirstName
-            // 
-            this.colFirstName.HeaderText = "FIRSTNAME";
-            this.colFirstName.Name = "colFirstName";
-            this.colFirstName.ReadOnly = true;
-            this.colFirstName.Width = 225;
-            // 
-            // colLastName
-            // 
-            this.colLastName.HeaderText = "LASTNAME";
-            this.colLastName.Name = "colLastName";
-            this.colLastName.ReadOnly = true;
-            this.colLastName.Width = 225;
-            // 
-            // colBirthday
-            // 
-            this.colBirthday.HeaderText = "BIRTHDAY";
-            this.colBirthday.Name = "colBirthday";
-            this.colBirthday.ReadOnly = true;
-            this.colBirthday.Width = 225;
-            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -374,6 +398,8 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn colFirstName;
         private System.Windows.Forms.DataGridViewTextBoxColumn colLastName;
         private System.Windows.Forms.DataGridViewTextBoxColumn colBirthday;
+        private System.Windows.Forms.Button btnPreviousWeek;
+        private System.Windows.Forms.Button btnNextWeek;
     }
 }
 

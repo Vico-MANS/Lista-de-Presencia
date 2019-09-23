@@ -17,6 +17,8 @@ namespace Lista_de_Presencia
         private string[] m_Dates;
         // Manually saving the cells were changes were made (to be later saved in the database)
         private List<String> m_PresenceChanges = new List<String>();
+        // To keep track of which week we are currently seeing (0 is the current one, -1 is last week and +1 next week)
+        private int m_WeekDifference = 0;
 
         public Form1()
         {
@@ -60,6 +62,90 @@ namespace Lista_de_Presencia
             }
         }
 
+        private void UpdatePresenceGridInformation()
+        {
+            dgvPresence.Rows.Clear();
+            using (SqlConnection conn = new SqlConnection())
+            {
+                conn.ConnectionString = "Server=USUARIO-PC\\SQLEXPRESS;Database=MALM;Trusted_Connection=true";
+                conn.Open();
+
+                // should be 1- for monday and 7- for sunday, for some reason it's one off today (18/09)
+                SqlCommand command = new SqlCommand(
+                    "SET DATEFIRST 1;" +
+                    "SELECT CONVERT(VARCHAR, DATEADD(dd, 1-(DATEPART(dw, getdate()+@week_diff)), getdate()+@week_diff), 103), " +
+                            "CONVERT(VARCHAR, DATEADD(dd, 2-(DATEPART(dw, getdate()+@week_diff)), getdate()+@week_diff), 103), " +
+                            "CONVERT(VARCHAR, DATEADD(dd, 3-(DATEPART(dw, getdate()+@week_diff)), getdate()+@week_diff), 103), " +
+                            "CONVERT(VARCHAR, DATEADD(dd, 4-(DATEPART(dw, getdate()+@week_diff)), getdate()+@week_diff), 103), " +
+                            "CONVERT(VARCHAR, DATEADD(dd, 5-(DATEPART(dw, getdate()+@week_diff)), getdate()+@week_diff), 103), " +
+                            "CONVERT(VARCHAR, DATEADD(dd, 6-(DATEPART(dw, getdate()+@week_diff)), getdate()+@week_diff), 103), " +
+                            "CONVERT(VARCHAR, DATEADD(dd, 7-(DATEPART(dw, getdate()+@week_diff)), getdate()+@week_diff), 103) "
+                    , conn);
+                command.Parameters.Add(new SqlParameter("week_diff", m_WeekDifference * 7));
+
+                using (SqlDataReader reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        dgvPresence.Columns["colMonday"].HeaderText = "Mon\n" + reader[0].ToString();
+                        dgvPresence.Columns["colTuesday"].HeaderText = "Tue\n" + reader[1].ToString();
+                        dgvPresence.Columns["colWednesday"].HeaderText = "Wed\n" + reader[2].ToString();
+                        dgvPresence.Columns["colThursday"].HeaderText = "Thu\n" + reader[3].ToString();
+                        dgvPresence.Columns["colFriday"].HeaderText = "Fri\n" + reader[4].ToString();
+                        dgvPresence.Columns["colSaturday"].HeaderText = "Sat\n" + reader[5].ToString();
+                        dgvPresence.Columns["colSunday"].HeaderText = "Sun\n" + reader[6].ToString();
+
+                        // Store the dates into the array to know which cell corresponds to which date
+                        for (int i = 0; i < 7; i++)
+                        {
+                            // Convert it to the database format MM/DD/YYYY
+                            string[] day = reader[i].ToString().Split('/');
+                            m_Dates[i] = day[1] + '/' + day[0] + '/' + day[2];
+                        }
+                    }
+                }
+
+                command = new SqlCommand("SELECT HUMAN_ID AS ID, (FIRSTNAME + ' ' + LASTNAME) AS NAME FROM Human", conn);
+
+                List<int> personIDs = new List<int>();
+
+                using (SqlDataReader reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        // colPersonID, colPerson
+                        dgvPresence.Rows.Add(reader["ID"], reader["NAME"]);
+                        personIDs.Add((int)reader["ID"]);
+                    }
+                }
+
+                foreach (int id in personIDs)
+                {
+                    command = new SqlCommand("SELECT CONVERT(VARCHAR, DIA, 103) AS DIA, DATEDIFF(DAY, @week_start, DIA) AS WEEKDAY FROM (" +
+                                                    "SELECT DIA FROM PRESENCE " +
+                                                    "WHERE ID_HUMAN = @id " +
+                                                    "AND DIA BETWEEN CONVERT(VARCHAR(30), CAST(@week_start AS DATETIME), 102)" +
+                                                    "AND CONVERT(VARCHAR(30), CAST(@week_end AS DATETIME), 102))" +
+                                             "AS SUB_QUERY", conn);
+                    command.Parameters.Add(new SqlParameter("id", id));
+                    command.Parameters.Add(new SqlParameter("week_start", m_Dates[0]));
+                    command.Parameters.Add(new SqlParameter("week_end", m_Dates[6]));
+
+                    using (SqlDataReader reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            // We can do this since the index in the id table corresponds to the datagridview row indexes
+                            dgvPresence.Rows[personIDs.IndexOf(id)].Cells[(int)reader["WEEKDAY"] + 2].Value = true;
+                        }
+                    }
+                }
+
+                // We clear the table of changes now so we don't keep track of the initialisation changes
+                m_PresenceChanges.Clear();
+            }
+        }
+
         private void tabControl_SelectedIndexChanged(object sender, EventArgs e)
         {
             switch((sender as TabControl).SelectedIndex){
@@ -68,94 +154,7 @@ namespace Lista_de_Presencia
                     break;
                 // Presence tab
                 case 1:
-                    dgvPresence.Rows.Clear();
-                    using (SqlConnection conn = new SqlConnection())
-                    {
-                        conn.ConnectionString = "Server=USUARIO-PC\\SQLEXPRESS;Database=MALM;Trusted_Connection=true";
-                        conn.Open();
-
-                        // should be 1- for monday and 7- for sunday, for some reason it's one off today (18/09)
-                        SqlCommand command = new SqlCommand(
-                            "SET DATEFIRST 1;" +
-                            "SELECT CONVERT(VARCHAR, DATEADD(dd, 1-(DATEPART(dw, getdate())), getdate()), 103), " +
-                                    "CONVERT(VARCHAR, DATEADD(dd, 2-(DATEPART(dw, getdate())), getdate()), 103), " +
-                                    "CONVERT(VARCHAR, DATEADD(dd, 3-(DATEPART(dw, getdate())), getdate()), 103), " +
-                                    "CONVERT(VARCHAR, DATEADD(dd, 4-(DATEPART(dw, getdate())), getdate()), 103), " +
-                                    "CONVERT(VARCHAR, DATEADD(dd, 5-(DATEPART(dw, getdate())), getdate()), 103), " +
-                                    "CONVERT(VARCHAR, DATEADD(dd, 6-(DATEPART(dw, getdate())), getdate()), 103), " +
-                                    "CONVERT(VARCHAR, DATEADD(dd, 7-(DATEPART(dw, getdate())), getdate()), 103) "
-                            , conn);
-
-                        using (SqlDataReader reader = command.ExecuteReader())
-                        {
-                            while (reader.Read())
-                            {
-                                Console.WriteLine("Monday: " + reader[0]);
-                                Console.WriteLine("Tuesday: " + reader[1]);
-                                Console.WriteLine("Wednesday: " + reader[2]);
-                                Console.WriteLine("Thursday: " + reader[3]);
-                                Console.WriteLine("Friday: " + reader[4]);
-                                Console.WriteLine("Saturday: " + reader[5]);
-                                Console.WriteLine("Sunday: " + reader[6]);
-
-                                dgvPresence.Columns["colMonday"].HeaderText = "Mon\n" + reader[0].ToString();
-                                dgvPresence.Columns["colTuesday"].HeaderText = "Tue\n" + reader[1].ToString();
-                                dgvPresence.Columns["colWednesday"].HeaderText = "Wed\n" + reader[2].ToString();
-                                dgvPresence.Columns["colThursday"].HeaderText = "Thu\n" + reader[3].ToString();
-                                dgvPresence.Columns["colFriday"].HeaderText = "Fri\n" + reader[4].ToString();
-                                dgvPresence.Columns["colSaturday"].HeaderText = "Sat\n" + reader[5].ToString();
-                                dgvPresence.Columns["colSunday"].HeaderText = "Sun\n" + reader[6].ToString();
-
-                                // Store the dates into the array to know which cell corresponds to which date
-                                for (int i = 0; i < 7; i++)
-                                {
-                                    // Convert it to the database format MM/DD/YYYY
-                                    string[] day = reader[i].ToString().Split('/');
-                                    m_Dates[i] = day[1] + '/' + day[0] + '/' + day[2];
-                                }
-                            }
-                        }
-
-                        command = new SqlCommand("SELECT HUMAN_ID AS ID, (FIRSTNAME + ' ' + LASTNAME) AS NAME FROM Human", conn);
-
-                        List<int> personIDs = new List<int>();
-
-                        using (SqlDataReader reader = command.ExecuteReader())
-                        {
-                            while (reader.Read())
-                            {
-                                // colPersonID, colPerson
-                                dgvPresence.Rows.Add(reader["ID"], reader["NAME"]);
-                                personIDs.Add((int)reader["ID"]);
-                            }
-                        }
-
-                        foreach (int id in personIDs)
-                        {
-                            command = new SqlCommand("SELECT CONVERT(VARCHAR, DIA, 103) AS DIA, DATEDIFF(DAY, @week_start, DIA) AS WEEKDAY FROM (" +
-                                                            "SELECT DIA FROM PRESENCE " +
-                                                            "WHERE ID_HUMAN = @id " +
-                                                            "AND DIA BETWEEN CONVERT(VARCHAR(30), CAST(@week_start AS DATETIME), 102)" +
-                                                            "AND CONVERT(VARCHAR(30), CAST(@week_end AS DATETIME), 102))" +
-                                                     "AS SUB_QUERY", conn);
-                            command.Parameters.Add(new SqlParameter("id", id));
-                            command.Parameters.Add(new SqlParameter("week_start", m_Dates[0]));
-                            command.Parameters.Add(new SqlParameter("week_end", m_Dates[6]));
-
-                            using (SqlDataReader reader = command.ExecuteReader())
-                            {
-                                while (reader.Read())
-                                {
-                                    Console.WriteLine("Person: " + id + " day: " + reader["DIA"].ToString());
-                                    // We can do this since the index in the id table corresponds to the datagridview row indexes
-                                    dgvPresence.Rows[personIDs.IndexOf(id)].Cells[(int)reader["WEEKDAY"] + 2].Value = true;
-                                }
-                            }
-                        }
-                        
-                        // We clear the table of changes now so we don't keep track of the initialisation changes
-                        m_PresenceChanges.Clear();
-                    }
+                        UpdatePresenceGridInformation();                    
                     break;
             }
         }
@@ -297,6 +296,18 @@ namespace Lista_de_Presencia
 
             MessageBox.Show(m_PresenceChanges.Count + " changes were registered into the database.", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
             m_PresenceChanges.Clear();
+        }
+
+        private void btnNextWeek_Click(object sender, EventArgs e)
+        {
+            m_WeekDifference++;
+            UpdatePresenceGridInformation();
+        }
+
+        private void btnPreviousWeek_Click(object sender, EventArgs e)
+        {
+            m_WeekDifference--;
+            UpdatePresenceGridInformation();
         }
     }
 }
