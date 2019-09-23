@@ -13,13 +13,17 @@ namespace Lista_de_Presencia
 {
     public partial class Form1 : Form
     {
+        // Dates of the current week
         private string[] m_Dates;
+        // Manually saving the cells were changes were made (to be later saved in the database)
+        private List<String> m_PresenceChanges = new List<String>();
 
         public Form1()
         {
             InitializeComponent();
 
             m_Dates = new string[7];
+            this.CenterToScreen();
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -42,7 +46,7 @@ namespace Lista_de_Presencia
                 conn.Open();
                 Console.WriteLine("Connection opened...\n");
 
-                SqlCommand command = new SqlCommand("SELECT FIRSTNAME, LASTNAME, (SELECT CONVERT(varchar(10), BIRTHDAY, 103) AS [DD/MM/YYYY]) AS BIRTHDAY FROM Human", conn);
+                SqlCommand command = new SqlCommand("SELECT HUMAN_ID, FIRSTNAME, LASTNAME, (SELECT CONVERT(varchar(10), BIRTHDAY, 103) AS [DD/MM/YYYY]) AS BIRTHDAY FROM Human", conn);
 
                 using (SqlDataReader reader = command.ExecuteReader())
                 {
@@ -50,7 +54,7 @@ namespace Lista_de_Presencia
                     {
                         Console.WriteLine(String.Format("{0} \t | {1} \t | {2}", reader["FIRSTNAME"], reader["LASTNAME"], reader["BIRTHDAY"]));
 
-                        dgvOverview.Rows.Add(reader["FIRSTNAME"], reader["LASTNAME"], reader["BIRTHDAY"]);
+                        dgvOverview.Rows.Add(reader["HUMAN_ID"], reader["FIRSTNAME"], reader["LASTNAME"], reader["BIRTHDAY"]);
                     }
                 }
             }
@@ -112,7 +116,9 @@ namespace Lista_de_Presencia
                             }
                         }
 
-                            command = new SqlCommand("SELECT HUMAN_ID AS ID, (FIRSTNAME + ' ' + LASTNAME) AS NAME FROM Human", conn);
+                        command = new SqlCommand("SELECT HUMAN_ID AS ID, (FIRSTNAME + ' ' + LASTNAME) AS NAME FROM Human", conn);
+
+                        List<int> personIDs = new List<int>();
 
                         using (SqlDataReader reader = command.ExecuteReader())
                         {
@@ -120,8 +126,35 @@ namespace Lista_de_Presencia
                             {
                                 // colPersonID, colPerson
                                 dgvPresence.Rows.Add(reader["ID"], reader["NAME"]);
+                                personIDs.Add((int)reader["ID"]);
                             }
                         }
+
+                        foreach (int id in personIDs)
+                        {
+                            command = new SqlCommand("SELECT CONVERT(VARCHAR, DIA, 103) AS DIA, DATEDIFF(DAY, @week_start, DIA) AS WEEKDAY FROM (" +
+                                                            "SELECT DIA FROM PRESENCE " +
+                                                            "WHERE ID_HUMAN = @id " +
+                                                            "AND DIA BETWEEN CONVERT(VARCHAR(30), CAST(@week_start AS DATETIME), 102)" +
+                                                            "AND CONVERT(VARCHAR(30), CAST(@week_end AS DATETIME), 102))" +
+                                                     "AS SUB_QUERY", conn);
+                            command.Parameters.Add(new SqlParameter("id", id));
+                            command.Parameters.Add(new SqlParameter("week_start", m_Dates[0]));
+                            command.Parameters.Add(new SqlParameter("week_end", m_Dates[6]));
+
+                            using (SqlDataReader reader = command.ExecuteReader())
+                            {
+                                while (reader.Read())
+                                {
+                                    Console.WriteLine("Person: " + id + " day: " + reader["DIA"].ToString());
+                                    // We can do this since the index in the id table corresponds to the datagridview row indexes
+                                    dgvPresence.Rows[personIDs.IndexOf(id)].Cells[(int)reader["WEEKDAY"] + 2].Value = true;
+                                }
+                            }
+                        }
+                        
+                        // We clear the table of changes now so we don't keep track of the initialisation changes
+                        m_PresenceChanges.Clear();
                     }
                     break;
             }
@@ -148,33 +181,36 @@ namespace Lista_de_Presencia
 
         private void btn_DeleteSelected(object sender, EventArgs e)
         {
-            using (SqlConnection conn = new SqlConnection())
+            DialogResult res = MessageBox.Show("Are you sure that you want to delete these human beings?", "Seguro?", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+
+            if(res == DialogResult.Yes)
             {
-                conn.ConnectionString = "Server=USUARIO-PC\\SQLEXPRESS;Database=MALM;Trusted_Connection=true";
-                conn.Open();
-
-                int deletionCounter = 0;
-                foreach (DataGridViewRow row in dgvOverview.SelectedRows)
+                using (SqlConnection conn = new SqlConnection())
                 {
-                    SqlCommand command = new SqlCommand("DELETE FROM Human WHERE FIRSTNAME = @firstname AND LASTNAME = @lastname", conn);
-                    command.Parameters.Add(new SqlParameter("firstname", row.Cells["colFirstName"].Value.ToString()));
-                    command.Parameters.Add(new SqlParameter("lastname", row.Cells["colLastName"].Value.ToString()));
+                    conn.ConnectionString = "Server=USUARIO-PC\\SQLEXPRESS;Database=MALM;Trusted_Connection=true";
+                    conn.Open();
 
-                    deletionCounter += command.ExecuteNonQuery();
+                    int deletionCounter = 0;
+                    foreach (DataGridViewRow row in dgvOverview.SelectedRows)
+                    {
+                        // We first have to delete all the content related to that individual in the Presence table
+                        SqlCommand command = new SqlCommand("DELETE FROM PRESENCE WHERE ID_HUMAN = @id", conn);
+                        command.Parameters.Add(new SqlParameter("id", row.Cells["colHumanID"].Value.ToString()));
+
+                        command.ExecuteNonQuery();
+
+                        // Then we can safely delete the individual from the Human table
+                        command = new SqlCommand("DELETE FROM HUMAN WHERE HUMAN_ID = @id", conn);
+                        command.Parameters.Add(new SqlParameter("id", row.Cells["colHumanID"].Value.ToString()));
+
+                        deletionCounter += command.ExecuteNonQuery();
+                    }
+
+                    Console.WriteLine(deletionCounter + " rows where deleted.");
+                    GetPersonData();
                 }
-
-                Console.WriteLine(deletionCounter + " rows where deleted.");
-                GetPersonData();
             }
         }
-
-        private void dgvPresence_CellContentClick(object sender, DataGridViewCellEventArgs e)
-        {
-
-        }
-
-        // Manually saving the cells were changes were made (to be later saved in the database)
-        private List<String> m_PresenceChanges = new List<String>();
         
         private void dgvPresence_OnCellValueChanged(object sender, DataGridViewCellEventArgs e)
         {
@@ -182,7 +218,7 @@ namespace Lista_de_Presencia
             {
                 if(!m_PresenceChanges.Contains(e.RowIndex + " " + e.ColumnIndex))
                     m_PresenceChanges.Add(e.RowIndex + " " + e.ColumnIndex);
-                Console.WriteLine("Person ID clicked: " + dgvPresence.Rows[e.RowIndex].Cells["colPersonID"].Value.ToString());
+                //Console.WriteLine("Person ID clicked: " + dgvPresence.Rows[e.RowIndex].Cells["colPersonID"].Value.ToString());
             }
         }
 
@@ -201,7 +237,7 @@ namespace Lista_de_Presencia
             {
                 String[] data = change.Split(' ');
                 int[] changedCells = Array.ConvertAll<string, int>(data, int.Parse);
-                Console.WriteLine("Changed made in row " + data[0] + " and column " + data[1] + ", date: " + m_Dates[changedCells[1]-2]);
+                //Console.WriteLine("Changed made in row " + data[0] + " and column " + data[1] + ", date: " + m_Dates[changedCells[1]-2]);
 
                 /*
                  * TODO: 
@@ -219,8 +255,8 @@ namespace Lista_de_Presencia
                 {
                     /*
                      * The checkbox is checked, which means that the person was present on that day.
-                     * We now have to first check if the row already exists in the table. (in the case that the user unchecked and rechecked the checkbox)
-                     * And if the row doesn't exist we insert it into the table.
+                     * We now have to check if the row already exists in the table. (in the case that the user unchecked and rechecked the checkbox)
+                     * If the row doesn't exist we insert it into the table.
                      * */
 
                     using (SqlConnection conn = new SqlConnection())
@@ -239,9 +275,28 @@ namespace Lista_de_Presencia
                 }
                 else
                 {
-                    Console.WriteLine("NOPE...");
+                    /*
+                     * The checkbox is not checked, which means that the person wasn't present on that day.
+                     * We now have to check if the row exists in the table. (in the case that the user checked and unchecked the checkbox)
+                     * If the row exists we delete it.
+                     * */
+
+                    using (SqlConnection conn = new SqlConnection())
+                    {
+                        conn.ConnectionString = "Server=USUARIO-PC\\SQLEXPRESS;Database=MALM;Trusted_Connection=true";
+                        conn.Open();
+
+                        SqlCommand command = new SqlCommand("DELETE FROM PRESENCE WHERE DIA = CONVERT(VARCHAR(30), CAST(@day AS DATETIME), 102) AND ID_HUMAN = @id", conn);
+                        command.Parameters.Add(new SqlParameter("day", m_Dates[changedCells[1] - 2]));
+                        command.Parameters.Add(new SqlParameter("id", (int)(dgvPresence.Rows[changedCells[0]].Cells["colPersonID"]).Value));
+
+                        Console.WriteLine("Deletion affected " + command.ExecuteNonQuery() + " rows.");
+                    }
                 }
             }
+
+            MessageBox.Show(m_PresenceChanges.Count + " changes were registered into the database.", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            m_PresenceChanges.Clear();
         }
     }
 }
