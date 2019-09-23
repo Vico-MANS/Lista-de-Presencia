@@ -13,9 +13,13 @@ namespace Lista_de_Presencia
 {
     public partial class Form1 : Form
     {
+        private string[] m_Dates;
+
         public Form1()
         {
             InitializeComponent();
+
+            m_Dates = new string[7];
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -97,6 +101,14 @@ namespace Lista_de_Presencia
                                 dgvPresence.Columns["colFriday"].HeaderText = "Fri\n" + reader[4].ToString();
                                 dgvPresence.Columns["colSaturday"].HeaderText = "Sat\n" + reader[5].ToString();
                                 dgvPresence.Columns["colSunday"].HeaderText = "Sun\n" + reader[6].ToString();
+
+                                // Store the dates into the array to know which cell corresponds to which date
+                                for (int i = 0; i < 7; i++)
+                                {
+                                    // Convert it to the database format MM/DD/YYYY
+                                    string[] day = reader[i].ToString().Split('/');
+                                    m_Dates[i] = day[1] + '/' + day[0] + '/' + day[2];
+                                }
                             }
                         }
 
@@ -188,15 +200,47 @@ namespace Lista_de_Presencia
             foreach(String change in m_PresenceChanges)
             {
                 String[] data = change.Split(' ');
-                Console.WriteLine("Changed made in row " + data[0] + " and column " + data[1]);
-                
+                int[] changedCells = Array.ConvertAll<string, int>(data, int.Parse);
+                Console.WriteLine("Changed made in row " + data[0] + " and column " + data[1] + ", date: " + m_Dates[changedCells[1]-2]);
+
                 /*
                  * TODO: 
-                 * We know the cells  that were changed
                  * We still have to keep only the real changes (if the user undos his change we don't wanna update the database)
-                 * We have to get a reference to the given date of the cell somehow
                  * Then we can update the database with the given changes
                  * */
+
+                /*
+                 * If a row in the table corresponds to the person and the date then the person was present.
+                 * If the person wasn't present on the given date, then no row corresponds to it.
+                 * Therefore we only insert and delete rows, no updates.
+                **/
+                
+                if ((bool) dgvPresence.Rows[changedCells[0]].Cells[changedCells[1]].Value)
+                {
+                    /*
+                     * The checkbox is checked, which means that the person was present on that day.
+                     * We now have to first check if the row already exists in the table. (in the case that the user unchecked and rechecked the checkbox)
+                     * And if the row doesn't exist we insert it into the table.
+                     * */
+
+                    using (SqlConnection conn = new SqlConnection())
+                    {
+                        conn.ConnectionString = "Server=USUARIO-PC\\SQLEXPRESS;Database=MALM;Trusted_Connection=true";
+                        conn.Open();
+
+                        SqlCommand command = new SqlCommand("SELECT * FROM PRESENCE WHERE DIA = convert(varchar(30),cast(@day as datetime),102) AND ID_HUMAN = @id " +
+                                                            "IF @@ROWCOUNT = 0" +
+                                                            "    INSERT INTO PRESENCE(DIA, ID_HUMAN) VALUES(convert(varchar(30),cast(@day as datetime),102), @id)", conn);
+                        command.Parameters.Add(new SqlParameter("day", m_Dates[changedCells[1] - 2]));
+                        command.Parameters.Add(new SqlParameter("id", (int) (dgvPresence.Rows[changedCells[0]].Cells["colPersonID"]).Value));
+                        
+                        Console.WriteLine("Insert affected " + command.ExecuteNonQuery() + " rows.");                        
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("NOPE...");
+                }
             }
         }
     }
