@@ -40,7 +40,6 @@ namespace Lista_de_Presencia
         private void Form1_Load(object sender, EventArgs e)
         {
             tabControl.SelectedIndexChanged += new EventHandler(tabControl_SelectedIndexChanged);
-            GetPersonData();
 
             dgvPresence.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
             dgvPresence.Columns["colPerson"].HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleLeft;
@@ -177,7 +176,7 @@ namespace Lista_de_Presencia
             switch((sender as TabControl).SelectedIndex){
                 // Overview tab
                 case 0:
-                    ClearOverviewTab();
+                    InitOverviewTab();
                     break;
                 // Presence tab
                 case 1:
@@ -186,37 +185,21 @@ namespace Lista_de_Presencia
             }
         }
 
-        private void ClearOverviewTab()
+        private void InitOverviewTab()
         {
+            GetPersonData();
             gbWeeklyPresence.Visible = false;
-            ClearPersonAdditionFields();
         }
-
-        private void ClearPersonAdditionFields()
-        {
-            txtFirstname.Clear();
-            txtLastname.Clear();
-            dtpBirthday.Value = DateTime.Now;
-        }
-
+        
         private void btnAddPerson_Click(object sender, EventArgs e)
         {
-            Console.WriteLine("Add Person");
+            Form2 form = Form2.GetInstance();
+            if (!form.Visible)
+                form.Show();
+            else
+                form.BringToFront();
             
-            using (SqlConnection conn = new SqlConnection())
-            {
-                conn.ConnectionString = "Server=USUARIO-PC\\SQLEXPRESS;Database=MALM;Trusted_Connection=true";
-                conn.Open();
-                SqlCommand command = new SqlCommand("INSERT INTO PERSON (FIRSTNAME, LASTNAME, BIRTHDAY) VALUES (@firstname, @lastname, @birthday)", conn);
-                command.Parameters.Add(new SqlParameter("firstname", txtFirstname.Text));
-                command.Parameters.Add(new SqlParameter("lastname", txtLastname.Text));
-                command.Parameters.Add(new SqlParameter("birthday", dtpBirthday.Value));
-
-                Console.WriteLine("Insert affected " + command.ExecuteNonQuery() + " rows.");
-
-                GetPersonData();
-                ClearPersonAdditionFields();
-            }
+            // TODO: On form close refresh the datagridview containing the persons
         }
 
         private void btn_DeleteSelected(object sender, EventArgs e)

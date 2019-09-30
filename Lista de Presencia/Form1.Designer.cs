@@ -52,12 +52,6 @@
             this.colWeekSunday = new System.Windows.Forms.DataGridViewCheckBoxColumn();
             this.btnSaveWeeklyChanges = new System.Windows.Forms.Button();
             this.btnDeleteSelected = new System.Windows.Forms.Button();
-            this.label3 = new System.Windows.Forms.Label();
-            this.dtpBirthday = new System.Windows.Forms.DateTimePicker();
-            this.txtLastname = new System.Windows.Forms.TextBox();
-            this.label2 = new System.Windows.Forms.Label();
-            this.txtFirstname = new System.Windows.Forms.TextBox();
-            this.label1 = new System.Windows.Forms.Label();
             this.tabPresence = new System.Windows.Forms.TabPage();
             this.btnPreviousWeek = new System.Windows.Forms.Button();
             this.btnNextWeek = new System.Windows.Forms.Button();
@@ -73,6 +67,7 @@
             this.colSaturday = new System.Windows.Forms.DataGridViewCheckBoxColumn();
             this.colSunday = new System.Windows.Forms.DataGridViewCheckBoxColumn();
             this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
+            this.notifyIcon1 = new System.Windows.Forms.NotifyIcon(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.dgvOverview)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.SuspendLayout();
@@ -136,7 +131,7 @@
             // 
             // btnAddPerson
             // 
-            this.btnAddPerson.Location = new System.Drawing.Point(567, 373);
+            this.btnAddPerson.Location = new System.Drawing.Point(7, 375);
             this.btnAddPerson.Name = "btnAddPerson";
             this.btnAddPerson.Size = new System.Drawing.Size(86, 29);
             this.btnAddPerson.TabIndex = 2;
@@ -166,12 +161,6 @@
             // 
             this.tabOverview.Controls.Add(this.gbWeeklyPresence);
             this.tabOverview.Controls.Add(this.btnDeleteSelected);
-            this.tabOverview.Controls.Add(this.label3);
-            this.tabOverview.Controls.Add(this.dtpBirthday);
-            this.tabOverview.Controls.Add(this.txtLastname);
-            this.tabOverview.Controls.Add(this.label2);
-            this.tabOverview.Controls.Add(this.txtFirstname);
-            this.tabOverview.Controls.Add(this.label1);
             this.tabOverview.Controls.Add(this.dgvOverview);
             this.tabOverview.Controls.Add(this.btnAddPerson);
             this.tabOverview.Location = new System.Drawing.Point(4, 22);
@@ -304,55 +293,6 @@
             this.btnDeleteSelected.UseVisualStyleBackColor = true;
             this.btnDeleteSelected.Click += new System.EventHandler(this.btn_DeleteSelected);
             // 
-            // label3
-            // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(391, 381);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(45, 13);
-            this.label3.TabIndex = 8;
-            this.label3.Text = "Birthday";
-            // 
-            // dtpBirthday
-            // 
-            this.dtpBirthday.Format = System.Windows.Forms.DateTimePickerFormat.Short;
-            this.dtpBirthday.Location = new System.Drawing.Point(442, 378);
-            this.dtpBirthday.Name = "dtpBirthday";
-            this.dtpBirthday.Size = new System.Drawing.Size(99, 20);
-            this.dtpBirthday.TabIndex = 7;
-            // 
-            // txtLastname
-            // 
-            this.txtLastname.Location = new System.Drawing.Point(269, 378);
-            this.txtLastname.Name = "txtLastname";
-            this.txtLastname.Size = new System.Drawing.Size(99, 20);
-            this.txtLastname.TabIndex = 6;
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(207, 381);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(56, 13);
-            this.label2.TabIndex = 5;
-            this.label2.Text = "Last name";
-            // 
-            // txtFirstname
-            // 
-            this.txtFirstname.Location = new System.Drawing.Point(106, 378);
-            this.txtFirstname.Name = "txtFirstname";
-            this.txtFirstname.Size = new System.Drawing.Size(77, 20);
-            this.txtFirstname.TabIndex = 4;
-            // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(45, 381);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(55, 13);
-            this.label1.TabIndex = 3;
-            this.label1.Text = "First name";
-            // 
             // tabPresence
             // 
             this.tabPresence.Controls.Add(this.btnPreviousWeek);
@@ -473,6 +413,11 @@
             this.colSunday.Name = "colSunday";
             this.colSunday.Width = 75;
             // 
+            // notifyIcon1
+            // 
+            this.notifyIcon1.Text = "notifyIcon1";
+            this.notifyIcon1.Visible = true;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -488,7 +433,6 @@
             this.splitContainer1.ResumeLayout(false);
             this.tabControl.ResumeLayout(false);
             this.tabOverview.ResumeLayout(false);
-            this.tabOverview.PerformLayout();
             this.gbWeeklyPresence.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dgvWeeklyDetail)).EndInit();
             this.tabPresence.ResumeLayout(false);
@@ -506,12 +450,6 @@
         private System.Windows.Forms.TabControl tabControl;
         private System.Windows.Forms.TabPage tabOverview;
         private System.Windows.Forms.TabPage tabPresence;
-        private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.TextBox txtFirstname;
-        private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.TextBox txtLastname;
-        private System.Windows.Forms.DateTimePicker dtpBirthday;
-        private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Button btnDeleteSelected;
         private System.ComponentModel.BackgroundWorker backgroundWorker1;
         private System.Windows.Forms.DataGridView dgvPresence;
@@ -543,6 +481,7 @@
         private System.Windows.Forms.DataGridViewCheckBoxColumn colWeekFriday;
         private System.Windows.Forms.DataGridViewCheckBoxColumn colWeekSaturday;
         private System.Windows.Forms.DataGridViewCheckBoxColumn colWeekSunday;
+        private System.Windows.Forms.NotifyIcon notifyIcon1;
     }
 }
 
