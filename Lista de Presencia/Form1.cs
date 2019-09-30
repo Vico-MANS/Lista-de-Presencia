@@ -22,6 +22,9 @@ namespace Lista_de_Presencia
         // To keep track of which week we are currently seeing (0 is the current one, -1 is last week and +1 next week)
         private int m_WeekDifference = 0;
 
+        // If this is false the changes are from the user himself and not from the initialisation
+        private bool m_Initialisation;
+
         public Form1()
         {
             InitializeComponent();
@@ -48,9 +51,8 @@ namespace Lista_de_Presencia
             {
                 conn.ConnectionString = "Server=USUARIO-PC\\SQLEXPRESS;Database=MALM;Trusted_Connection=true";
                 conn.Open();
-                Console.WriteLine("Connection opened...\n");
 
-                SqlCommand command = new SqlCommand("SELECT HUMAN_ID, FIRSTNAME, LASTNAME, (SELECT CONVERT(varchar(10), BIRTHDAY, 103) AS [DD/MM/YYYY]) AS BIRTHDAY FROM Human", conn);
+                SqlCommand command = new SqlCommand("SELECT PERSON_ID, FIRSTNAME, LASTNAME, (SELECT CONVERT(varchar(10), BIRTHDAY, 103) AS [DD/MM/YYYY]) AS BIRTHDAY FROM PERSON", conn);
 
                 using (SqlDataReader reader = command.ExecuteReader())
                 {
@@ -58,7 +60,7 @@ namespace Lista_de_Presencia
                     {
                         Console.WriteLine(String.Format("{0} \t | {1} \t | {2}", reader["FIRSTNAME"], reader["LASTNAME"], reader["BIRTHDAY"]));
 
-                        dgvOverview.Rows.Add(reader["HUMAN_ID"], reader["FIRSTNAME"], reader["LASTNAME"], reader["BIRTHDAY"]);
+                        dgvOverview.Rows.Add(reader["PERSON_ID"], reader["FIRSTNAME"], reader["LASTNAME"], reader["BIRTHDAY"]);
                     }
                 }
             }
@@ -66,7 +68,9 @@ namespace Lista_de_Presencia
 
         private void UpdatePresenceGridInformation()
         {
+            m_Initialisation = true;
             dgvPresence.Rows.Clear();
+            m_CheckedCells.Clear();
             using (SqlConnection conn = new SqlConnection())
             {
                 conn.ConnectionString = "Server=USUARIO-PC\\SQLEXPRESS;Database=MALM;Trusted_Connection=true";
@@ -107,7 +111,7 @@ namespace Lista_de_Presencia
                     }
                 }
 
-                command = new SqlCommand("SELECT HUMAN_ID AS ID, (FIRSTNAME + ' ' + LASTNAME) AS NAME FROM Human", conn);
+                command = new SqlCommand("SELECT PERSON_ID AS ID, (FIRSTNAME + ' ' + LASTNAME) AS NAME FROM PERSON", conn);
 
                 List<int> personIDs = new List<int>();
 
@@ -115,7 +119,7 @@ namespace Lista_de_Presencia
                 {
                     while (reader.Read())
                     {
-                        // colPersonID, colPerson
+                        // colPresPersonID, colPerson
                         dgvPresence.Rows.Add(reader["ID"], reader["NAME"]);
                         personIDs.Add((int)reader["ID"]);
                     }
@@ -125,7 +129,7 @@ namespace Lista_de_Presencia
                 {
                     command = new SqlCommand("SELECT CONVERT(VARCHAR, DIA, 103) AS DIA, DATEDIFF(DAY, @week_start, DIA) AS WEEKDAY FROM (" +
                                                     "SELECT DIA FROM PRESENCE " +
-                                                    "WHERE ID_HUMAN = @id " +
+                                                    "WHERE ID_PERSON = @id " +
                                                     "AND DIA BETWEEN CONVERT(VARCHAR(30), CAST(@week_start AS DATETIME), 102)" +
                                                     "AND CONVERT(VARCHAR(30), CAST(@week_end AS DATETIME), 102))" +
                                              "AS SUB_QUERY", conn);
@@ -140,15 +144,21 @@ namespace Lista_de_Presencia
                             int rowIndex = personIDs.IndexOf(id);
                             int colIndex = (int)reader["WEEKDAY"] + 2;
                             // We can do this since the index in the id table corresponds to the datagridview row indexes
-                            dgvPresence.Rows[personIDs.IndexOf(id)].Cells[(int)reader["WEEKDAY"] + 2].Value = true;
+                            dgvPresence.Rows[rowIndex].Cells[colIndex].Value = true;
                             // We also add that cell id to the list so we can later only keep the changes
-                            m_CheckedCells.Add(rowIndex * colIndex + colIndex);
+                            m_CheckedCells.Add(rowIndex * dgvPresence.ColumnCount + colIndex);
+
+                            //Console.WriteLine("Adding to checked cells row " + rowIndex + " and column " + colIndex +" cellIndex: "+(rowIndex * dgvPresence.ColumnCount + colIndex));
                         }
                     }
                 }
 
                 // We clear the table of changes now so we don't keep track of the initialisation changes
                 m_PresenceChanges.Clear();
+
+                //Console.WriteLine("Amount of initial checked cells: " + m_CheckedCells.Count);
+
+                m_Initialisation = false;
             }
         }
 
@@ -157,12 +167,20 @@ namespace Lista_de_Presencia
             switch((sender as TabControl).SelectedIndex){
                 // Overview tab
                 case 0:
+                    ClearOverviewTab();
                     break;
                 // Presence tab
                 case 1:
-                        UpdatePresenceGridInformation();                    
+                    UpdatePresenceGridInformation();                    
                     break;
             }
+        }
+
+        private void ClearOverviewTab()
+        {
+            txtFirstname.Clear();
+            txtLastname.Clear();
+            dtpBirthday.Value = DateTime.Now;
         }
 
         private void btnAddPerson_Click(object sender, EventArgs e)
@@ -173,7 +191,7 @@ namespace Lista_de_Presencia
             {
                 conn.ConnectionString = "Server=USUARIO-PC\\SQLEXPRESS;Database=MALM;Trusted_Connection=true";
                 conn.Open();
-                SqlCommand command = new SqlCommand("INSERT INTO Human (FIRSTNAME, LASTNAME, BIRTHDAY) VALUES (@firstname, @lastname, @birthday)", conn);
+                SqlCommand command = new SqlCommand("INSERT INTO PERSON (FIRSTNAME, LASTNAME, BIRTHDAY) VALUES (@firstname, @lastname, @birthday)", conn);
                 command.Parameters.Add(new SqlParameter("firstname", txtFirstname.Text));
                 command.Parameters.Add(new SqlParameter("lastname", txtLastname.Text));
                 command.Parameters.Add(new SqlParameter("birthday", dtpBirthday.Value));
@@ -199,14 +217,14 @@ namespace Lista_de_Presencia
                     foreach (DataGridViewRow row in dgvOverview.SelectedRows)
                     {
                         // We first have to delete all the content related to that individual in the Presence table
-                        SqlCommand command = new SqlCommand("DELETE FROM PRESENCE WHERE ID_HUMAN = @id", conn);
-                        command.Parameters.Add(new SqlParameter("id", row.Cells["colHumanID"].Value.ToString()));
+                        SqlCommand command = new SqlCommand("DELETE FROM PRESENCE WHERE ID_PERSON = @id", conn);
+                        command.Parameters.Add(new SqlParameter("id", row.Cells["colOverPersonID"].Value.ToString()));
 
                         command.ExecuteNonQuery();
 
-                        // Then we can safely delete the individual from the Human table
-                        command = new SqlCommand("DELETE FROM HUMAN WHERE HUMAN_ID = @id", conn);
-                        command.Parameters.Add(new SqlParameter("id", row.Cells["colHumanID"].Value.ToString()));
+                        // Then we can safely delete the individual from the Person table
+                        command = new SqlCommand("DELETE FROM PERSON WHERE PERSON_ID = @id", conn);
+                        command.Parameters.Add(new SqlParameter("id", row.Cells["colOverPersonID"].Value.ToString()));
 
                         deletionCounter += command.ExecuteNonQuery();
                     }
@@ -219,23 +237,27 @@ namespace Lista_de_Presencia
         
         private void dgvPresence_OnCellValueChanged(object sender, DataGridViewCellEventArgs e)
         {
+            // We only want to do something if we aren't in the initialisation step, only if the user is making changes
+            if (m_Initialisation)
+                return;
+            
             if (e.RowIndex != -1)
             {
                 // We only want to keep track of the real changes (not the check then uncheck or vice-versa once)
                 if (((bool)dgvPresence.Rows[e.RowIndex].Cells[e.ColumnIndex].Value
-                     && !m_CheckedCells.Contains(e.RowIndex * e.ColumnIndex + e.ColumnIndex))
+                     && !m_CheckedCells.Contains(e.RowIndex * dgvPresence.ColumnCount + e.ColumnIndex))
                    ||
                     (!(bool)dgvPresence.Rows[e.RowIndex].Cells[e.ColumnIndex].Value
-                     && m_CheckedCells.Contains(e.RowIndex * e.ColumnIndex + e.ColumnIndex)))
+                     && m_CheckedCells.Contains(e.RowIndex * dgvPresence.ColumnCount + e.ColumnIndex)))
                 {
-                    Console.WriteLine("True change");
+                    //Console.WriteLine("True change");
                     m_PresenceChanges.Add(e.RowIndex + " " + e.ColumnIndex);
                 }
                 else
                 {
-                    Console.WriteLine("Not a true change");
+                    //Console.WriteLine("Not a true change");
                     m_PresenceChanges.Remove(e.RowIndex + " " + e.ColumnIndex);
-                }
+                }                
             }
         }
 
@@ -254,14 +276,7 @@ namespace Lista_de_Presencia
             {
                 String[] data = change.Split(' ');
                 int[] changedCells = Array.ConvertAll<string, int>(data, int.Parse);
-                //Console.WriteLine("Changed made in row " + data[0] + " and column " + data[1] + ", date: " + m_Dates[changedCells[1]-2]);
-
-                /*
-                 * TODO: 
-                 * We still have to keep only the real changes (if the user undos his change we don't wanna update the database)
-                 * Then we can update the database with the given changes
-                 * */
-
+                
                 /*
                  * If a row in the table corresponds to the person and the date then the person was present.
                  * If the person wasn't present on the given date, then no row corresponds to it.
@@ -281,11 +296,11 @@ namespace Lista_de_Presencia
                         conn.ConnectionString = "Server=USUARIO-PC\\SQLEXPRESS;Database=MALM;Trusted_Connection=true";
                         conn.Open();
 
-                        SqlCommand command = new SqlCommand("SELECT * FROM PRESENCE WHERE DIA = convert(varchar(30),cast(@day as datetime),102) AND ID_HUMAN = @id " +
+                        SqlCommand command = new SqlCommand("SELECT * FROM PRESENCE WHERE DIA = convert(varchar(30),cast(@day as datetime),102) AND ID_PERSON = @id " +
                                                             "IF @@ROWCOUNT = 0" +
-                                                            "    INSERT INTO PRESENCE(DIA, ID_HUMAN) VALUES(convert(varchar(30),cast(@day as datetime),102), @id)", conn);
+                                                            "    INSERT INTO PRESENCE(DIA, ID_PERSON) VALUES(convert(varchar(30),cast(@day as datetime),102), @id)", conn);
                         command.Parameters.Add(new SqlParameter("day", m_Dates[changedCells[1] - 2]));
-                        command.Parameters.Add(new SqlParameter("id", (int) (dgvPresence.Rows[changedCells[0]].Cells["colPersonID"]).Value));
+                        command.Parameters.Add(new SqlParameter("id", (int) (dgvPresence.Rows[changedCells[0]].Cells["colPresPersonID"]).Value));
 
                         // We add the cell to the checked cells
                         m_CheckedCells.Add(changedCells[0] * changedCells[1] + changedCells[1]);
@@ -306,9 +321,9 @@ namespace Lista_de_Presencia
                         conn.ConnectionString = "Server=USUARIO-PC\\SQLEXPRESS;Database=MALM;Trusted_Connection=true";
                         conn.Open();
 
-                        SqlCommand command = new SqlCommand("DELETE FROM PRESENCE WHERE DIA = CONVERT(VARCHAR(30), CAST(@day AS DATETIME), 102) AND ID_HUMAN = @id", conn);
+                        SqlCommand command = new SqlCommand("DELETE FROM PRESENCE WHERE DIA = CONVERT(VARCHAR(30), CAST(@day AS DATETIME), 102) AND ID_PERSON = @id", conn);
                         command.Parameters.Add(new SqlParameter("day", m_Dates[changedCells[1] - 2]));
-                        command.Parameters.Add(new SqlParameter("id", (int)(dgvPresence.Rows[changedCells[0]].Cells["colPersonID"]).Value));
+                        command.Parameters.Add(new SqlParameter("id", (int)(dgvPresence.Rows[changedCells[0]].Cells["colPresPersonID"]).Value));
 
                         // We remove the cell from the checked cells
                         m_CheckedCells.Remove(changedCells[0] * changedCells[1] + changedCells[1]);
@@ -320,18 +335,38 @@ namespace Lista_de_Presencia
 
             MessageBox.Show(m_PresenceChanges.Count + " changes were registered into the database.", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
             m_PresenceChanges.Clear();
+
+            // Don't know if we keep that, makes an additional request to the database, but at least we see the state of the database right away
+            UpdatePresenceGridInformation();
         }
 
         private void btnNextWeek_Click(object sender, EventArgs e)
         {
+            if (!AllChangesSaved())
+                return;
             m_WeekDifference++;
             UpdatePresenceGridInformation();
         }
 
         private void btnPreviousWeek_Click(object sender, EventArgs e)
         {
+            if (!AllChangesSaved())
+                return;
             m_WeekDifference--;
             UpdatePresenceGridInformation();
+        }
+
+        // If the user made changes without saving them we need to tell him so he can decide what to do
+        private bool AllChangesSaved()
+        {
+            if (m_PresenceChanges.Count != 0)
+            {
+                DialogResult res = MessageBox.Show("You have made "+m_PresenceChanges.Count+" changes that won't be saved.\nDo you want to continue?", "Seguro?", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+
+                if (res == DialogResult.No)
+                    return false;
+            }
+            return true;
         }
     }
 }

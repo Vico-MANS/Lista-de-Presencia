@@ -31,10 +31,6 @@
             this.components = new System.ComponentModel.Container();
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.dgvOverview = new System.Windows.Forms.DataGridView();
-            this.colHumanID = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.colFirstName = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.colLastName = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.colBirthday = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.btnAddPerson = new System.Windows.Forms.Button();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.tabControl = new System.Windows.Forms.TabControl();
@@ -51,7 +47,8 @@
             this.btnNextWeek = new System.Windows.Forms.Button();
             this.btnSavePresenceChanges = new System.Windows.Forms.Button();
             this.dgvPresence = new System.Windows.Forms.DataGridView();
-            this.colPersonID = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
+            this.colPresPersonID = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colPerson = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colMonday = new System.Windows.Forms.DataGridViewCheckBoxColumn();
             this.colTuesday = new System.Windows.Forms.DataGridViewCheckBoxColumn();
@@ -60,7 +57,10 @@
             this.colFriday = new System.Windows.Forms.DataGridViewCheckBoxColumn();
             this.colSaturday = new System.Windows.Forms.DataGridViewCheckBoxColumn();
             this.colSunday = new System.Windows.Forms.DataGridViewCheckBoxColumn();
-            this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
+            this.colOverPersonID = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colFirstName = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colLastName = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colBirthday = new System.Windows.Forms.DataGridViewTextBoxColumn();
             ((System.ComponentModel.ISupportInitialize)(this.dgvOverview)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.SuspendLayout();
@@ -81,7 +81,7 @@
             this.dgvOverview.AllowUserToDeleteRows = false;
             this.dgvOverview.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dgvOverview.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
-            this.colHumanID,
+            this.colOverPersonID,
             this.colFirstName,
             this.colLastName,
             this.colBirthday});
@@ -90,34 +90,6 @@
             this.dgvOverview.ReadOnly = true;
             this.dgvOverview.Size = new System.Drawing.Size(722, 301);
             this.dgvOverview.TabIndex = 1;
-            // 
-            // colHumanID
-            // 
-            this.colHumanID.HeaderText = "ID";
-            this.colHumanID.Name = "colHumanID";
-            this.colHumanID.ReadOnly = true;
-            this.colHumanID.Visible = false;
-            // 
-            // colFirstName
-            // 
-            this.colFirstName.HeaderText = "FIRSTNAME";
-            this.colFirstName.Name = "colFirstName";
-            this.colFirstName.ReadOnly = true;
-            this.colFirstName.Width = 225;
-            // 
-            // colLastName
-            // 
-            this.colLastName.HeaderText = "LASTNAME";
-            this.colLastName.Name = "colLastName";
-            this.colLastName.ReadOnly = true;
-            this.colLastName.Width = 225;
-            // 
-            // colBirthday
-            // 
-            this.colBirthday.HeaderText = "BIRTHDAY";
-            this.colBirthday.Name = "colBirthday";
-            this.colBirthday.ReadOnly = true;
-            this.colBirthday.Width = 225;
             // 
             // btnAddPerson
             // 
@@ -187,6 +159,7 @@
             // 
             // dtpBirthday
             // 
+            this.dtpBirthday.Format = System.Windows.Forms.DateTimePickerFormat.Short;
             this.dtpBirthday.Location = new System.Drawing.Point(442, 378);
             this.dtpBirthday.Name = "dtpBirthday";
             this.dtpBirthday.Size = new System.Drawing.Size(99, 20);
@@ -274,7 +247,7 @@
             this.dgvPresence.AllowUserToDeleteRows = false;
             this.dgvPresence.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dgvPresence.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
-            this.colPersonID,
+            this.colPresPersonID,
             this.colPerson,
             this.colMonday,
             this.colTuesday,
@@ -288,11 +261,11 @@
             this.dgvPresence.Size = new System.Drawing.Size(766, 304);
             this.dgvPresence.TabIndex = 0;
             // 
-            // colPersonID
+            // colPresPersonID
             // 
-            this.colPersonID.HeaderText = "PersonID";
-            this.colPersonID.Name = "colPersonID";
-            this.colPersonID.Visible = false;
+            this.colPresPersonID.HeaderText = "PersonID";
+            this.colPresPersonID.Name = "colPresPersonID";
+            this.colPresPersonID.Visible = false;
             // 
             // colPerson
             // 
@@ -344,6 +317,34 @@
             this.colSunday.Name = "colSunday";
             this.colSunday.Width = 75;
             // 
+            // colOverPersonID
+            // 
+            this.colOverPersonID.HeaderText = "ID";
+            this.colOverPersonID.Name = "colOverPersonID";
+            this.colOverPersonID.ReadOnly = true;
+            this.colOverPersonID.Visible = false;
+            // 
+            // colFirstName
+            // 
+            this.colFirstName.HeaderText = "FIRSTNAME";
+            this.colFirstName.Name = "colFirstName";
+            this.colFirstName.ReadOnly = true;
+            this.colFirstName.Width = 225;
+            // 
+            // colLastName
+            // 
+            this.colLastName.HeaderText = "LASTNAME";
+            this.colLastName.Name = "colLastName";
+            this.colLastName.ReadOnly = true;
+            this.colLastName.Width = 225;
+            // 
+            // colBirthday
+            // 
+            this.colBirthday.HeaderText = "BIRTHDAY";
+            this.colBirthday.Name = "colBirthday";
+            this.colBirthday.ReadOnly = true;
+            this.colBirthday.Width = 225;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -385,7 +386,13 @@
         private System.ComponentModel.BackgroundWorker backgroundWorker1;
         private System.Windows.Forms.DataGridView dgvPresence;
         private System.Windows.Forms.Button btnSavePresenceChanges;
-        private System.Windows.Forms.DataGridViewTextBoxColumn colPersonID;
+        private System.Windows.Forms.Button btnPreviousWeek;
+        private System.Windows.Forms.Button btnNextWeek;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colOverPersonID;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colFirstName;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colLastName;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colBirthday;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colPresPersonID;
         private System.Windows.Forms.DataGridViewTextBoxColumn colPerson;
         private System.Windows.Forms.DataGridViewCheckBoxColumn colMonday;
         private System.Windows.Forms.DataGridViewCheckBoxColumn colTuesday;
@@ -394,12 +401,6 @@
         private System.Windows.Forms.DataGridViewCheckBoxColumn colFriday;
         private System.Windows.Forms.DataGridViewCheckBoxColumn colSaturday;
         private System.Windows.Forms.DataGridViewCheckBoxColumn colSunday;
-        private System.Windows.Forms.DataGridViewTextBoxColumn colHumanID;
-        private System.Windows.Forms.DataGridViewTextBoxColumn colFirstName;
-        private System.Windows.Forms.DataGridViewTextBoxColumn colLastName;
-        private System.Windows.Forms.DataGridViewTextBoxColumn colBirthday;
-        private System.Windows.Forms.Button btnPreviousWeek;
-        private System.Windows.Forms.Button btnNextWeek;
     }
 }
 
