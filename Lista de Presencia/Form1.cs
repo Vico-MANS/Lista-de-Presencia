@@ -15,12 +15,16 @@ namespace Lista_de_Presencia
     {
         // Dates of the current week
         private string[] m_Dates;
-        // Keeps track of the cellIDs that were checked in the beginning
-        private List<int> m_CheckedCells = new List<int>();
-        // Manually saving the cells were changes were made (to be later saved in the database)
-        private List<String> m_PresenceChanges = new List<String>();
         // To keep track of which week we are currently seeing (0 is the current one, -1 is last week and +1 next week)
         private int m_WeekDifference = 0;
+
+        // Keeps track of the cellIDs that were checked in the beginning
+        private List<int> m_PresenceCheckedCells = new List<int>();
+        // Manually saving the cells were changes were made (to be later saved in the database)
+        private List<String> m_PresenceChanges = new List<String>();
+
+        private List<int> m_WeeklyPresenceCheckedCells = new List<int>();
+        private List<int> m_WeeklyPresenceChanges = new List<int>();
 
         // If this is false the changes are from the user himself and not from the initialisation
         private bool m_Initialisation;
@@ -37,10 +41,15 @@ namespace Lista_de_Presencia
         {
             tabControl.SelectedIndexChanged += new EventHandler(tabControl_SelectedIndexChanged);
             GetPersonData();
+
             dgvPresence.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
             dgvPresence.Columns["colPerson"].HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleLeft;
             dgvPresence.CellValueChanged += dgvPresence_OnCellValueChanged;
             dgvPresence.CellMouseUp += dgvPresence_OnCellMouseUp;
+
+            // Workaround so that the tab control index changed event gets called even on initialisation
+            tabControl.SelectedIndex = 1;
+            tabControl.SelectedIndex = 0;
         }
 
         private void GetPersonData()
@@ -68,13 +77,14 @@ namespace Lista_de_Presencia
 
         private void UpdatePresenceGridInformation()
         {
-            m_Initialisation = true;
-            dgvPresence.Rows.Clear();
-            m_CheckedCells.Clear();
             using (SqlConnection conn = new SqlConnection())
             {
                 conn.ConnectionString = "Server=USUARIO-PC\\SQLEXPRESS;Database=MALM;Trusted_Connection=true";
                 conn.Open();
+
+                m_Initialisation = true;
+                dgvPresence.Rows.Clear();
+                m_PresenceCheckedCells.Clear();
 
                 // should be 1- for monday and 7- for sunday, for some reason it's one off today (18/09)
                 SqlCommand command = new SqlCommand(
@@ -146,7 +156,7 @@ namespace Lista_de_Presencia
                             // We can do this since the index in the id table corresponds to the datagridview row indexes
                             dgvPresence.Rows[rowIndex].Cells[colIndex].Value = true;
                             // We also add that cell id to the list so we can later only keep the changes
-                            m_CheckedCells.Add(rowIndex * dgvPresence.ColumnCount + colIndex);
+                            m_PresenceCheckedCells.Add(rowIndex * dgvPresence.ColumnCount + colIndex);
 
                             //Console.WriteLine("Adding to checked cells row " + rowIndex + " and column " + colIndex +" cellIndex: "+(rowIndex * dgvPresence.ColumnCount + colIndex));
                         }
@@ -178,6 +188,12 @@ namespace Lista_de_Presencia
 
         private void ClearOverviewTab()
         {
+            gbWeeklyPresence.Visible = false;
+            ClearPersonAdditionFields();
+        }
+
+        private void ClearPersonAdditionFields()
+        {
             txtFirstname.Clear();
             txtLastname.Clear();
             dtpBirthday.Value = DateTime.Now;
@@ -199,11 +215,18 @@ namespace Lista_de_Presencia
                 Console.WriteLine("Insert affected " + command.ExecuteNonQuery() + " rows.");
 
                 GetPersonData();
+                ClearPersonAdditionFields();
             }
         }
 
         private void btn_DeleteSelected(object sender, EventArgs e)
         {
+            if (dgvOverview.SelectedRows.Count == 0)
+            {
+                MessageBox.Show("No rows are selected!");
+                return;
+            }
+
             DialogResult res = MessageBox.Show("Are you sure that you want to delete these human beings?", "Seguro?", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
 
             if(res == DialogResult.Yes)
@@ -245,10 +268,10 @@ namespace Lista_de_Presencia
             {
                 // We only want to keep track of the real changes (not the check then uncheck or vice-versa once)
                 if (((bool)dgvPresence.Rows[e.RowIndex].Cells[e.ColumnIndex].Value
-                     && !m_CheckedCells.Contains(e.RowIndex * dgvPresence.ColumnCount + e.ColumnIndex))
+                     && !m_PresenceCheckedCells.Contains(e.RowIndex * dgvPresence.ColumnCount + e.ColumnIndex))
                    ||
                     (!(bool)dgvPresence.Rows[e.RowIndex].Cells[e.ColumnIndex].Value
-                     && m_CheckedCells.Contains(e.RowIndex * dgvPresence.ColumnCount + e.ColumnIndex)))
+                     && m_PresenceCheckedCells.Contains(e.RowIndex * dgvPresence.ColumnCount + e.ColumnIndex)))
                 {
                     //Console.WriteLine("True change");
                     m_PresenceChanges.Add(e.RowIndex + " " + e.ColumnIndex);
@@ -303,7 +326,7 @@ namespace Lista_de_Presencia
                         command.Parameters.Add(new SqlParameter("id", (int) (dgvPresence.Rows[changedCells[0]].Cells["colPresPersonID"]).Value));
 
                         // We add the cell to the checked cells
-                        m_CheckedCells.Add(changedCells[0] * changedCells[1] + changedCells[1]);
+                        m_PresenceCheckedCells.Add(changedCells[0] * changedCells[1] + changedCells[1]);
 
                         Console.WriteLine("Insert affected " + command.ExecuteNonQuery() + " rows.");                        
                     }
@@ -326,7 +349,7 @@ namespace Lista_de_Presencia
                         command.Parameters.Add(new SqlParameter("id", (int)(dgvPresence.Rows[changedCells[0]].Cells["colPresPersonID"]).Value));
 
                         // We remove the cell from the checked cells
-                        m_CheckedCells.Remove(changedCells[0] * changedCells[1] + changedCells[1]);
+                        m_PresenceCheckedCells.Remove(changedCells[0] * changedCells[1] + changedCells[1]);
 
                         Console.WriteLine("Deletion affected " + command.ExecuteNonQuery() + " rows.");
                     }
@@ -367,6 +390,85 @@ namespace Lista_de_Presencia
                     return false;
             }
             return true;
+        }
+
+        private void RetrieveWeeklyPresenceInformation()
+        {
+            using (SqlConnection conn = new SqlConnection())
+            {
+                conn.ConnectionString = "Server=USUARIO-PC\\SQLEXPRESS;Database=MALM;Trusted_Connection=true";
+                conn.Open();
+
+                m_Initialisation = true;
+                m_WeeklyPresenceCheckedCells.Clear();
+                m_WeeklyPresenceChanges.Clear();
+
+                SqlCommand command = new SqlCommand("SELECT WEEK_DAY FROM WEEKLY_PRESENCE WHERE ID_PERSON = @id", conn);
+                command.Parameters.Add(new SqlParameter("id", (int)dgvWeeklyDetail.Rows[0].Cells["colWeekPresPersonID"].Value));
+
+                using (SqlDataReader reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        // +2 'cause we have personID and personName in the first two columns of the dgv
+                        dgvWeeklyDetail.Rows[0].Cells[(int)reader["WEEK_DAY"] + 2].Value = true;
+                        m_WeeklyPresenceCheckedCells.Add((int)reader["WEEK_DAY"]);
+                    }
+                }
+
+                m_Initialisation = false;
+            }
+        }
+
+        private void dgvOverview_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
+        {
+            gbWeeklyPresence.Visible = true;
+            dgvWeeklyDetail.Rows.Clear();
+            dgvWeeklyDetail.Rows.Add(dgvOverview.Rows[e.RowIndex].Cells["colOverPersonID"].Value, dgvOverview.Rows[e.RowIndex].Cells["colFirstName"].Value + " " + dgvOverview.Rows[e.RowIndex].Cells["colLastName"].Value);
+            RetrieveWeeklyPresenceInformation();
+        }
+
+        private void dgvWeeklyDetail_CellValueChanged(object sender, DataGridViewCellEventArgs e)
+        {
+            if (m_Initialisation)
+                return;
+
+            if(e.RowIndex != -1)
+            {
+                if (((bool)dgvWeeklyDetail.Rows[e.RowIndex].Cells[e.ColumnIndex].Value && !m_WeeklyPresenceCheckedCells.Contains(e.ColumnIndex - 1))
+                    || (!(bool)dgvWeeklyDetail.Rows[e.RowIndex].Cells[e.ColumnIndex].Value && m_WeeklyPresenceCheckedCells.Contains(e.ColumnIndex - 1)))
+                    m_WeeklyPresenceChanges.Add(e.ColumnIndex - 1);
+                else
+                    m_WeeklyPresenceChanges.Remove(e.ColumnIndex - 1);
+            }
+        }
+
+        private void dgvWeeklyDetail_CellMouseUp(object sender, DataGridViewCellMouseEventArgs e)
+        {
+            if (e.RowIndex != -1)
+            {
+                dgvWeeklyDetail.EndEdit();
+            }
+        }
+
+        private void btnSaveWeeklyChanges_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show("Not working for now because I don't know if it's really necessary...");
+
+            //using (SqlConnection conn = new SqlConnection())
+            //{
+            //    conn.ConnectionString = "Server=USUARIO-PC\\SQLEXPRESS;Database=MALM;Trusted_Connection=true";
+            //    conn.Open();
+
+            //    foreach(int weekday in m_WeeklyPresenceChanges)
+            //    {
+            //        SqlCommand command = new SqlCommand("INSERT INTO WEEKLY_PRESENCE VALUES (@id, @weekday)", conn);
+            //        command.Parameters.Add(new SqlParameter("id", (int)dgvWeeklyDetail.Rows[0].Cells["colWeekPresPersonID"].Value));
+            //        command.Parameters.Add(new SqlParameter("weekday", weekday));
+
+            //        Console.WriteLine("Deletion affected " + command.ExecuteNonQuery() + " rows.");
+            //    }
+            //}
         }
     }
 }
