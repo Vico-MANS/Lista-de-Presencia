@@ -69,6 +69,9 @@
             this.colSunday = new System.Windows.Forms.DataGridViewCheckBoxColumn();
             this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
             this.notifyIcon1 = new System.Windows.Forms.NotifyIcon(this.components);
+            this.gbPresence = new System.Windows.Forms.GroupBox();
+            this.cbbPrograms = new System.Windows.Forms.ComboBox();
+            this.label1 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.dgvOverview)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.SuspendLayout();
@@ -78,6 +81,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.dgvWeeklyDetail)).BeginInit();
             this.tabPresence.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvPresence)).BeginInit();
+            this.gbPresence.SuspendLayout();
             this.SuspendLayout();
             // 
             // contextMenuStrip1
@@ -307,10 +311,9 @@
             // 
             // tabPresence
             // 
-            this.tabPresence.Controls.Add(this.btnPreviousWeek);
-            this.tabPresence.Controls.Add(this.btnNextWeek);
-            this.tabPresence.Controls.Add(this.btnSavePresenceChanges);
-            this.tabPresence.Controls.Add(this.dgvPresence);
+            this.tabPresence.Controls.Add(this.label1);
+            this.tabPresence.Controls.Add(this.cbbPrograms);
+            this.tabPresence.Controls.Add(this.gbPresence);
             this.tabPresence.Location = new System.Drawing.Point(4, 22);
             this.tabPresence.Name = "tabPresence";
             this.tabPresence.Padding = new System.Windows.Forms.Padding(3);
@@ -321,7 +324,7 @@
             // 
             // btnPreviousWeek
             // 
-            this.btnPreviousWeek.Location = new System.Drawing.Point(575, 8);
+            this.btnPreviousWeek.Location = new System.Drawing.Point(571, 12);
             this.btnPreviousWeek.Name = "btnPreviousWeek";
             this.btnPreviousWeek.Size = new System.Drawing.Size(93, 23);
             this.btnPreviousWeek.TabIndex = 3;
@@ -331,7 +334,7 @@
             // 
             // btnNextWeek
             // 
-            this.btnNextWeek.Location = new System.Drawing.Point(674, 8);
+            this.btnNextWeek.Location = new System.Drawing.Point(670, 12);
             this.btnNextWeek.Name = "btnNextWeek";
             this.btnNextWeek.Size = new System.Drawing.Size(93, 23);
             this.btnNextWeek.TabIndex = 2;
@@ -341,7 +344,7 @@
             // 
             // btnSavePresenceChanges
             // 
-            this.btnSavePresenceChanges.Location = new System.Drawing.Point(674, 347);
+            this.btnSavePresenceChanges.Location = new System.Drawing.Point(664, 332);
             this.btnSavePresenceChanges.Name = "btnSavePresenceChanges";
             this.btnSavePresenceChanges.Size = new System.Drawing.Size(99, 23);
             this.btnSavePresenceChanges.TabIndex = 1;
@@ -364,9 +367,9 @@
             this.colFriday,
             this.colSaturday,
             this.colSunday});
-            this.dgvPresence.Location = new System.Drawing.Point(7, 37);
+            this.dgvPresence.Location = new System.Drawing.Point(3, 41);
             this.dgvPresence.Name = "dgvPresence";
-            this.dgvPresence.Size = new System.Drawing.Size(766, 304);
+            this.dgvPresence.Size = new System.Drawing.Size(766, 287);
             this.dgvPresence.TabIndex = 0;
             // 
             // colPresPersonID
@@ -430,6 +433,38 @@
             this.notifyIcon1.Text = "notifyIcon1";
             this.notifyIcon1.Visible = true;
             // 
+            // gbPresence
+            // 
+            this.gbPresence.Controls.Add(this.dgvPresence);
+            this.gbPresence.Controls.Add(this.btnPreviousWeek);
+            this.gbPresence.Controls.Add(this.btnSavePresenceChanges);
+            this.gbPresence.Controls.Add(this.btnNextWeek);
+            this.gbPresence.Location = new System.Drawing.Point(7, 43);
+            this.gbPresence.Name = "gbPresence";
+            this.gbPresence.Size = new System.Drawing.Size(769, 361);
+            this.gbPresence.TabIndex = 4;
+            this.gbPresence.TabStop = false;
+            this.gbPresence.Text = "TBD";
+            // 
+            // cbbPrograms
+            // 
+            this.cbbPrograms.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cbbPrograms.FormattingEnabled = true;
+            this.cbbPrograms.Location = new System.Drawing.Point(106, 16);
+            this.cbbPrograms.Name = "cbbPrograms";
+            this.cbbPrograms.Size = new System.Drawing.Size(121, 21);
+            this.cbbPrograms.TabIndex = 5;
+            this.cbbPrograms.SelectedValueChanged += new System.EventHandler(this.cbbPrograms_SelectedValueChanged);
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(7, 19);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(93, 13);
+            this.label1.TabIndex = 6;
+            this.label1.Text = "Choose a program";
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -448,7 +483,9 @@
             this.gbWeeklyPresence.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dgvWeeklyDetail)).EndInit();
             this.tabPresence.ResumeLayout(false);
+            this.tabPresence.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvPresence)).EndInit();
+            this.gbPresence.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -495,6 +532,9 @@
         private System.Windows.Forms.DataGridViewCheckBoxColumn colWeekSunday;
         private System.Windows.Forms.NotifyIcon notifyIcon1;
         private System.Windows.Forms.Button btnAddProgram;
+        private System.Windows.Forms.GroupBox gbPresence;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.ComboBox cbbPrograms;
     }
 }
 

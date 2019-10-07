@@ -29,6 +29,9 @@ namespace Lista_de_Presencia
         // If this is false the changes are from the user himself and not from the initialisation
         private bool m_Initialisation;
 
+        // Program ID for the presence tab
+        private int m_ProgramID = -1;
+
         public MainForm()
         {
             InitializeComponent();
@@ -72,6 +75,34 @@ namespace Lista_de_Presencia
                     }
                 }
             }
+        }
+
+        private void tabControl_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            switch((sender as TabControl).SelectedIndex){
+                // Overview tab
+                case 0:
+                    InitOverviewTab();
+                    break;
+                // Presence tab
+                case 1:
+                    InitPresenceTab();
+                    break;
+            }
+        }
+
+        private void InitPresenceTab()
+        {
+            m_Initialisation = true;
+            GetPrograms();
+            gbPresence.Visible = false;
+            m_Initialisation = false;
+        }
+
+        private void InitOverviewTab()
+        {
+            GetPersonData();
+            gbWeeklyPresence.Visible = false;
         }
 
         private void UpdatePresenceGridInformation()
@@ -120,7 +151,8 @@ namespace Lista_de_Presencia
                     }
                 }
 
-                command = new SqlCommand("SELECT PERSON_ID AS ID, (FIRSTNAME + ' ' + LASTNAME) AS NAME FROM PERSON", conn);
+                command = new SqlCommand("SELECT PERSON_ID AS ID, (FIRSTNAME + ' ' + LASTNAME) AS NAME FROM PERSON WHERE PERSON_ID IN (SELECT ID_PERSON FROM PERSON_PROGRAM WHERE ID_PROGRAM = @programID)", conn);
+                command.Parameters.AddWithValue("programID", m_ProgramID);
 
                 List<int> personIDs = new List<int>();
 
@@ -164,31 +196,10 @@ namespace Lista_de_Presencia
 
                 // We clear the table of changes now so we don't keep track of the initialisation changes
                 m_PresenceChanges.Clear();
-
-                //Console.WriteLine("Amount of initial checked cells: " + m_CheckedCells.Count);
-
+                
                 m_Initialisation = false;
+                gbPresence.Visible = true;
             }
-        }
-
-        private void tabControl_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            switch((sender as TabControl).SelectedIndex){
-                // Overview tab
-                case 0:
-                    InitOverviewTab();
-                    break;
-                // Presence tab
-                case 1:
-                    UpdatePresenceGridInformation();                    
-                    break;
-            }
-        }
-
-        private void InitOverviewTab()
-        {
-            GetPersonData();
-            gbWeeklyPresence.Visible = false;
         }
 
         private void btn_DeleteSelected(object sender, EventArgs e)
@@ -475,6 +486,45 @@ namespace Lista_de_Presencia
                 form.Show();
             else
                 form.BringToFront();
+        }
+
+        private void GetPrograms()
+        {
+            using (SqlConnection conn = new SqlConnection())
+            {
+                conn.ConnectionString = "Server=USUARIO-PC\\SQLEXPRESS;Database=MALM;Trusted_Connection=true";
+                conn.Open();
+
+                SqlCommand command = new SqlCommand("SELECT PROGRAM_ID AS ID, NAME FROM PROGRAM", conn);
+
+                cbbPrograms.DisplayMember = "Text";
+                cbbPrograms.ValueMember = "Value";
+
+                Dictionary<Object, Object> comboSource = new Dictionary<Object, Object>();
+
+                using (SqlDataReader reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        comboSource.Add(reader["ID"], reader["NAME"]);
+                    }
+                }
+
+                cbbPrograms.DataSource = new BindingSource(comboSource, null);
+                cbbPrograms.DisplayMember = "Value";
+                cbbPrograms.ValueMember = "Key";
+                cbbPrograms.SelectedItem = null;
+            }
+        }
+
+        private void cbbPrograms_SelectedValueChanged(object sender, EventArgs e)
+        {
+            if (m_Initialisation)
+                return;
+
+            m_ProgramID = (int)((KeyValuePair<Object, Object>)cbbPrograms.SelectedItem).Key;
+            UpdatePresenceGridInformation();
+            gbPresence.Text = (String)((KeyValuePair<Object, Object>)cbbPrograms.SelectedItem).Value;
         }
     }
 }
