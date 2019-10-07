@@ -225,7 +225,11 @@ namespace Lista_de_Presencia
                         // We first have to delete all the content related to that individual in the Presence table
                         SqlCommand command = new SqlCommand("DELETE FROM PRESENCE WHERE ID_PERSON = @id", conn);
                         command.Parameters.Add(new SqlParameter("id", row.Cells["colOverPersonID"].Value.ToString()));
+                        command.ExecuteNonQuery();
 
+                        // And all the content in the Person_Program table
+                        command = new SqlCommand("DELETE FROM PERSON_PROGRAM WHERE ID_PERSON = @id", conn);
+                        command.Parameters.Add(new SqlParameter("id", row.Cells["colOverPersonID"].Value.ToString()));
                         command.ExecuteNonQuery();
 
                         // Then we can safely delete the individual from the Person table

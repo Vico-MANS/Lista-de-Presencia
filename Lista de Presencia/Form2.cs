@@ -83,6 +83,11 @@ namespace Lista_de_Presencia
             txtFirstname.Clear();
             txtLastname.Clear();
             dtpBirthday.Value = DateTime.Now;
+
+            foreach(CheckBox cb in gbPrograms.Controls.OfType<CheckBox>())
+            {
+                cb.Checked = false;
+            }
         }
         
         private void btnAddPerson_Click(object sender, EventArgs e)
@@ -96,19 +101,40 @@ namespace Lista_de_Presencia
                     conn.ConnectionString = "Server=USUARIO-PC\\SQLEXPRESS;Database=MALM;Trusted_Connection=true";
                     conn.Open();
 
-                    SqlCommand command1 = new SqlCommand("INSERT INTO PERSON (FIRSTNAME, LASTNAME, BIRTHDAY) VALUES (@firstname, @lastname, @birthday)", conn);
-                    command1.Parameters.Add(new SqlParameter("firstname", txtFirstname.Text));
-                    command1.Parameters.Add(new SqlParameter("lastname", txtLastname.Text));
-                    command1.Parameters.Add(new SqlParameter("birthday", dtpBirthday.Value));
+                    SqlCommand commandInsertPerson = new SqlCommand("INSERT INTO PERSON (FIRSTNAME, LASTNAME, BIRTHDAY) VALUES (@firstname, @lastname, @birthday)", conn);
+                    commandInsertPerson.Parameters.Add(new SqlParameter("firstname", txtFirstname.Text));
+                    commandInsertPerson.Parameters.Add(new SqlParameter("lastname", txtLastname.Text));
+                    commandInsertPerson.Parameters.Add(new SqlParameter("birthday", dtpBirthday.Value));
 
-                    Console.WriteLine("Insert affected " + command1.ExecuteNonQuery() + " rows.");
+                    Console.WriteLine("Insert affected " + commandInsertPerson.ExecuteNonQuery() + " rows.");
+                    
+                    // TODO: We need to find the ID of the person we just inserted. Use SCOPE_IDENTITY?
+                    SqlCommand commandGetPersonID = new SqlCommand("SELECT MAX(PERSON_ID) AS LAST_ID FROM PERSON WHERE FIRSTNAME = @firstname AND LASTNAME = @lastname", conn);
+                    commandGetPersonID.Parameters.Add(new SqlParameter("firstname", txtFirstname.Text));
+                    commandGetPersonID.Parameters.Add(new SqlParameter("lastname", txtLastname.Text));
+
+                    int personID;
+                    using (SqlDataReader reader = commandGetPersonID.ExecuteReader())
+                    {
+                        reader.Read();
+                        personID = (int) reader["LAST_ID"];
+                        Console.WriteLine("Last inserted ID is: " + personID);
+                    }
+
+                    foreach (CheckBox cb in gbPrograms.Controls.OfType<CheckBox>())
+                    {
+                        if (cb.Checked)
+                        {
+                            //MessageBox.Show("Checkbox " + cb.Text + " (" + cb.Tag + "): " + cb.Checked);
+                            SqlCommand commandAddProgramToPerson = new SqlCommand("INSERT INTO PERSON_PROGRAM VALUES (@personID, @programID)", conn);
+                            commandAddProgramToPerson.Parameters.AddWithValue("personID", personID);
+                            commandAddProgramToPerson.Parameters.AddWithValue("programID", cb.Tag);
+
+                            commandAddProgramToPerson.ExecuteNonQuery();
+                        }
+                    }
 
                     ClearPersonAdditionFields();
-
-                    // TODO: We need to find the ID of the person we just inserted. Use SCOPE_IDENTITY?
-
-                    SqlCommand command2 = new SqlCommand("INSERT INTO PERSON_PROGRAM VALUES (@personID, @programID)", conn);
-                    //command2.Parameters.Add(new SqlParameter)
                 }
             }
             else
