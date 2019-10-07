@@ -101,40 +101,53 @@ namespace Lista_de_Presencia
                     conn.ConnectionString = "Server=USUARIO-PC\\SQLEXPRESS;Database=MALM;Trusted_Connection=true";
                     conn.Open();
 
-                    SqlCommand commandInsertPerson = new SqlCommand("INSERT INTO PERSON (FIRSTNAME, LASTNAME, BIRTHDAY) VALUES (@firstname, @lastname, @birthday)", conn);
-                    commandInsertPerson.Parameters.Add(new SqlParameter("firstname", txtFirstname.Text));
-                    commandInsertPerson.Parameters.Add(new SqlParameter("lastname", txtLastname.Text));
-                    commandInsertPerson.Parameters.Add(new SqlParameter("birthday", dtpBirthday.Value));
-
-                    Console.WriteLine("Insert affected " + commandInsertPerson.ExecuteNonQuery() + " rows.");
-                    
-                    // TODO: We need to find the ID of the person we just inserted. Use SCOPE_IDENTITY?
-                    SqlCommand commandGetPersonID = new SqlCommand("SELECT MAX(PERSON_ID) AS LAST_ID FROM PERSON WHERE FIRSTNAME = @firstname AND LASTNAME = @lastname", conn);
-                    commandGetPersonID.Parameters.Add(new SqlParameter("firstname", txtFirstname.Text));
-                    commandGetPersonID.Parameters.Add(new SqlParameter("lastname", txtLastname.Text));
-
-                    int personID;
-                    using (SqlDataReader reader = commandGetPersonID.ExecuteReader())
+                    SqlTransaction transaction = conn.BeginTransaction();
+                    try
                     {
-                        reader.Read();
-                        personID = (int) reader["LAST_ID"];
-                        Console.WriteLine("Last inserted ID is: " + personID);
-                    }
+                        SqlCommand commandInsertPerson = new SqlCommand("INSERT INTO PERSON (FIRSTNAME, LASTNAME, BIRTHDAY) VALUES (@firstname, @lastname, @birthday)", conn, transaction);
+                        commandInsertPerson.Parameters.Add(new SqlParameter("firstname", txtFirstname.Text));
+                        commandInsertPerson.Parameters.Add(new SqlParameter("lastname", txtLastname.Text));
+                        commandInsertPerson.Parameters.Add(new SqlParameter("birthday", dtpBirthday.Value));
 
-                    foreach (CheckBox cb in gbPrograms.Controls.OfType<CheckBox>())
-                    {
-                        if (cb.Checked)
+                        Console.WriteLine("Insert affected " + commandInsertPerson.ExecuteNonQuery() + " rows.");
+
+                        // TODO: We need to find the ID of the person we just inserted. Use SCOPE_IDENTITY?
+                        SqlCommand commandGetPersonID = new SqlCommand("SELECT MAX(PERSON_ID) AS LAST_ID FROM PERSON WHERE FIRSTNAME = @firstname AND LASTNAME = @lastname", conn, transaction);
+                        commandGetPersonID.Parameters.Add(new SqlParameter("firstname", txtFirstname.Text));
+                        commandGetPersonID.Parameters.Add(new SqlParameter("lastname", txtLastname.Text));
+
+                        int personID;
+                        using (SqlDataReader reader = commandGetPersonID.ExecuteReader())
                         {
-                            //MessageBox.Show("Checkbox " + cb.Text + " (" + cb.Tag + "): " + cb.Checked);
-                            SqlCommand commandAddProgramToPerson = new SqlCommand("INSERT INTO PERSON_PROGRAM VALUES (@personID, @programID)", conn);
-                            commandAddProgramToPerson.Parameters.AddWithValue("personID", personID);
-                            commandAddProgramToPerson.Parameters.AddWithValue("programID", cb.Tag);
-
-                            commandAddProgramToPerson.ExecuteNonQuery();
+                            reader.Read();
+                            personID = (int)reader["LAST_ID"];
+                            Console.WriteLine("Last inserted ID is: " + personID);
                         }
-                    }
 
-                    ClearPersonAdditionFields();
+                        foreach (CheckBox cb in gbPrograms.Controls.OfType<CheckBox>())
+                        {
+                            if (cb.Checked)
+                            {
+                                //MessageBox.Show("Checkbox " + cb.Text + " (" + cb.Tag + "): " + cb.Checked);
+                                SqlCommand commandAddProgramToPerson = new SqlCommand("INSERT INTO PERSON_PROGRAM VALUES (@personID, @programID)", conn, transaction);
+                                commandAddProgramToPerson.Parameters.AddWithValue("personID", personID);
+                                commandAddProgramToPerson.Parameters.AddWithValue("programID", cb.Tag);
+
+                                commandAddProgramToPerson.ExecuteNonQuery();
+                            }
+                        }
+                        
+                        transaction.Commit();
+
+                        ClearPersonAdditionFields();
+                    }
+                    catch(Exception excep)
+                    {
+                        transaction.Rollback();
+
+                        Console.WriteLine(excep.Message);
+                        MessageBox.Show("An error has occured!\nThe person couldn't be added to the database...", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
                 }
             }
             else
