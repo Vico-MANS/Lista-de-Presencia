@@ -11,7 +11,7 @@ using System.Data.SqlClient;
 
 namespace Lista_de_Presencia
 {
-    public partial class Form1 : Form
+    public partial class MainForm : Form
     {
         // Dates of the current week
         private string[] m_Dates;
@@ -29,7 +29,7 @@ namespace Lista_de_Presencia
         // If this is false the changes are from the user himself and not from the initialisation
         private bool m_Initialisation;
 
-        public Form1()
+        public MainForm()
         {
             InitializeComponent();
 
@@ -189,17 +189,6 @@ namespace Lista_de_Presencia
         {
             GetPersonData();
             gbWeeklyPresence.Visible = false;
-        }
-        
-        private void btnAddPerson_Click(object sender, EventArgs e)
-        {
-            Form2 form = Form2.GetInstance();
-            if (!form.Visible)
-                form.Show();
-            else
-                form.BringToFront();
-            
-            // TODO: On form close refresh the datagridview containing the persons
         }
 
         private void btn_DeleteSelected(object sender, EventArgs e)
@@ -461,6 +450,31 @@ namespace Lista_de_Presencia
             //        Console.WriteLine("Deletion affected " + command.ExecuteNonQuery() + " rows.");
             //    }
             //}
+        }
+
+        private void btnAddPerson_Click(object sender, EventArgs e)
+        {
+            PersonAdditionForm form = PersonAdditionForm.GetInstance();
+            form.FormClosing += OnFormClosing;
+
+            if (!form.Visible)
+                form.Show();
+            else
+                form.BringToFront();
+        }
+        
+        public void OnFormClosing(object sender, FormClosingEventArgs e)
+        {
+            GetPersonData();
+        }
+
+        private void btnAddProgram_Click(object sender, EventArgs e)
+        {
+            ProgramAdditionForm form = ProgramAdditionForm.GetInstance();
+            if (!form.Visible)
+                form.Show();
+            else
+                form.BringToFront();
         }
     }
 }

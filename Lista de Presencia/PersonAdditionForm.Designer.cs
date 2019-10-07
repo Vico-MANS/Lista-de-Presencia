@@ -1,6 +1,6 @@
 ﻿namespace Lista_de_Presencia
 {
-    partial class Form2
+    partial class PersonAdditionForm
     {
         /// <summary>
         /// Required designer variable.
@@ -36,6 +36,7 @@
             this.label1 = new System.Windows.Forms.Label();
             this.btnAddPerson = new System.Windows.Forms.Button();
             this.gbPrograms = new System.Windows.Forms.GroupBox();
+            this.cbWorker = new System.Windows.Forms.CheckBox();
             this.SuspendLayout();
             // 
             // label3
@@ -106,11 +107,22 @@
             this.gbPrograms.TabStop = false;
             this.gbPrograms.Text = "Programs";
             // 
-            // Form2
+            // cbWorker
+            // 
+            this.cbWorker.AutoSize = true;
+            this.cbWorker.Location = new System.Drawing.Point(558, 27);
+            this.cbWorker.Name = "cbWorker";
+            this.cbWorker.Size = new System.Drawing.Size(61, 17);
+            this.cbWorker.TabIndex = 17;
+            this.cbWorker.Text = "Worker";
+            this.cbWorker.UseVisualStyleBackColor = true;
+            // 
+            // PersonAdditionForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
+            this.Controls.Add(this.cbWorker);
             this.Controls.Add(this.gbPrograms);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.dtpBirthday);
@@ -119,8 +131,8 @@
             this.Controls.Add(this.txtFirstname);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.btnAddPerson);
-            this.Name = "Form2";
-            this.Text = "Form2";
+            this.Name = "PersonAdditionForm";
+            this.Text = "Person Addition";
             this.Load += new System.EventHandler(this.Form2_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -137,5 +149,6 @@
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Button btnAddPerson;
         private System.Windows.Forms.GroupBox gbPrograms;
+        private System.Windows.Forms.CheckBox cbWorker;
     }
 }

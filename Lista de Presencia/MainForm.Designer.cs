@@ -1,6 +1,6 @@
 ﻿namespace Lista_de_Presencia
 {
-    partial class Form1
+    partial class MainForm
     {
         /// <summary>
         /// Required designer variable.
@@ -39,6 +39,7 @@
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.tabControl = new System.Windows.Forms.TabControl();
             this.tabOverview = new System.Windows.Forms.TabPage();
+            this.btnAddProgram = new System.Windows.Forms.Button();
             this.gbWeeklyPresence = new System.Windows.Forms.GroupBox();
             this.dgvWeeklyDetail = new System.Windows.Forms.DataGridView();
             this.colWeekPresPersonID = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -159,6 +160,7 @@
             // 
             // tabOverview
             // 
+            this.tabOverview.Controls.Add(this.btnAddProgram);
             this.tabOverview.Controls.Add(this.gbWeeklyPresence);
             this.tabOverview.Controls.Add(this.btnDeleteSelected);
             this.tabOverview.Controls.Add(this.dgvOverview);
@@ -170,6 +172,16 @@
             this.tabOverview.TabIndex = 0;
             this.tabOverview.Text = "Overview";
             this.tabOverview.UseVisualStyleBackColor = true;
+            // 
+            // btnAddProgram
+            // 
+            this.btnAddProgram.Location = new System.Drawing.Point(99, 375);
+            this.btnAddProgram.Name = "btnAddProgram";
+            this.btnAddProgram.Size = new System.Drawing.Size(86, 29);
+            this.btnAddProgram.TabIndex = 13;
+            this.btnAddProgram.Text = "Add Program";
+            this.btnAddProgram.UseVisualStyleBackColor = true;
+            this.btnAddProgram.Click += new System.EventHandler(this.btnAddProgram_Click);
             // 
             // gbWeeklyPresence
             // 
@@ -418,15 +430,15 @@
             this.notifyIcon1.Text = "notifyIcon1";
             this.notifyIcon1.Visible = true;
             // 
-            // Form1
+            // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
             this.Controls.Add(this.tabControl);
             this.Controls.Add(this.splitContainer1);
-            this.Name = "Form1";
-            this.Text = "Form1";
+            this.Name = "MainForm";
+            this.Text = "Main";
             this.Load += new System.EventHandler(this.Form1_Load);
             ((System.ComponentModel.ISupportInitialize)(this.dgvOverview)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
@@ -482,6 +494,7 @@
         private System.Windows.Forms.DataGridViewCheckBoxColumn colWeekSaturday;
         private System.Windows.Forms.DataGridViewCheckBoxColumn colWeekSunday;
         private System.Windows.Forms.NotifyIcon notifyIcon1;
+        private System.Windows.Forms.Button btnAddProgram;
     }
 }
 

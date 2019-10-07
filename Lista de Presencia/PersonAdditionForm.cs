@@ -11,18 +11,27 @@ using System.Data.SqlClient;
 
 namespace Lista_de_Presencia
 {
-    public partial class Form2 : Form
+    public partial class PersonAdditionForm : Form
     {
-        private static Form2 s_Instance;
+        private static PersonAdditionForm s_Instance;
 
-        public static Form2 GetInstance()
+        public static PersonAdditionForm GetInstance()
         {
             if (s_Instance == null)
-                s_Instance = new Form2();
+            {
+                s_Instance = new PersonAdditionForm();
+                s_Instance.FormClosing += OnFormClosing;
+            }
             return s_Instance;
         }
+        
+        public static void OnFormClosing(object sender, FormClosingEventArgs e)
+        {
+            // When the form is closed again we set the reference of the singleton to null
+            s_Instance = null;
+        }
 
-        public Form2()
+        public PersonAdditionForm()
         {
             InitializeComponent();
             this.CenterToScreen();
@@ -30,7 +39,6 @@ namespace Lista_de_Presencia
         
         private void Form2_Load(object sender, EventArgs e)
         {
-            Console.WriteLine("Form 2 LOAD");
             LoadPrograms();
         }
 
@@ -88,13 +96,40 @@ namespace Lista_de_Presencia
             {
                 cb.Checked = false;
             }
+
+            cbWorker.Checked = false;
+        }
+
+        // Checks if all the necessary fields have been filled out
+        private bool IsPersonAdditionValid()
+        {
+            // The person has to have a first and last name
+            if (txtFirstname.Text == "" || txtLastname.Text == "")
+                return false;
+
+            // TODO: What about parents? (there aren't part of any program)
+            // If the person isn't working here, it has to be part of a program
+            if(!cbWorker.Checked)
+            {
+                bool found = false;
+                foreach(CheckBox cb in gbPrograms.Controls.OfType<CheckBox>())
+                {
+                    if (cb.Checked)
+                    {
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found)
+                    return false;
+            }
+
+            return true;
         }
         
         private void btnAddPerson_Click(object sender, EventArgs e)
         {
-            // TODO: Make it a transaction with rollback, since we need to insert in multiple tables.
-
-            if(txtFirstname.Text != "" && txtLastname.Text != "")
+            if(IsPersonAdditionValid())
             {
                 using (SqlConnection conn = new SqlConnection())
                 {
@@ -104,14 +139,14 @@ namespace Lista_de_Presencia
                     SqlTransaction transaction = conn.BeginTransaction();
                     try
                     {
-                        SqlCommand commandInsertPerson = new SqlCommand("INSERT INTO PERSON (FIRSTNAME, LASTNAME, BIRTHDAY) VALUES (@firstname, @lastname, @birthday)", conn, transaction);
-                        commandInsertPerson.Parameters.Add(new SqlParameter("firstname", txtFirstname.Text));
-                        commandInsertPerson.Parameters.Add(new SqlParameter("lastname", txtLastname.Text));
-                        commandInsertPerson.Parameters.Add(new SqlParameter("birthday", dtpBirthday.Value));
+                        SqlCommand commandInsertPerson = new SqlCommand("INSERT INTO PERSON (FIRSTNAME, LASTNAME, BIRTHDAY, WORKER) VALUES (@firstname, @lastname, @birthday, @worker)", conn, transaction);
+                        commandInsertPerson.Parameters.AddWithValue("firstname", txtFirstname.Text);
+                        commandInsertPerson.Parameters.AddWithValue("lastname", txtLastname.Text);
+                        commandInsertPerson.Parameters.AddWithValue("birthday", dtpBirthday.Value);
+                        commandInsertPerson.Parameters.AddWithValue("worker", cbWorker.Checked ? 1 : 0);
 
                         Console.WriteLine("Insert affected " + commandInsertPerson.ExecuteNonQuery() + " rows.");
-
-                        // TODO: We need to find the ID of the person we just inserted. Use SCOPE_IDENTITY?
+                        
                         SqlCommand commandGetPersonID = new SqlCommand("SELECT MAX(PERSON_ID) AS LAST_ID FROM PERSON WHERE FIRSTNAME = @firstname AND LASTNAME = @lastname", conn, transaction);
                         commandGetPersonID.Parameters.Add(new SqlParameter("firstname", txtFirstname.Text));
                         commandGetPersonID.Parameters.Add(new SqlParameter("lastname", txtLastname.Text));
@@ -138,6 +173,8 @@ namespace Lista_de_Presencia
                         }
                         
                         transaction.Commit();
+
+                        MessageBox.Show("The person has been succesfully added to the database", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
                         ClearPersonAdditionFields();
                     }
