@@ -68,8 +68,7 @@ namespace Lista_de_Presencia
                 {
                     while (reader.Read())
                     {
-                        Console.WriteLine(String.Format("{0} \t | {1} \t | {2}", reader["FIRSTNAME"], reader["LASTNAME"], reader["BIRTHDAY"]));
-
+                        //Console.WriteLine(String.Format("{0} \t | {1} \t | {2}", reader["FIRSTNAME"], reader["LASTNAME"], reader["BIRTHDAY"]));
                         dgvOverview.Rows.Add(reader["PERSON_ID"], reader["FIRSTNAME"], reader["LASTNAME"], reader["BIRTHDAY"]);
                     }
                 }
@@ -82,6 +81,8 @@ namespace Lista_de_Presencia
                 // Overview tab
                 case 0:
                     InitOverviewTab();
+                    // We get rid of the focus
+                    dgvOverview.ClearSelection();
                     break;
                 // Presence tab
                 case 1:
@@ -96,6 +97,11 @@ namespace Lista_de_Presencia
             GetPrograms();
             gbPresence.Visible = false;
             m_Initialisation = false;
+
+            // TODO: Get rid of focus, doesn't work like this...
+            dgvPresence.ClearSelection();
+            dgvPresence.CurrentCell.Selected = false;
+            dgvPresence.CurrentCell = null;
         }
 
         private void InitOverviewTab()
@@ -231,6 +237,11 @@ namespace Lista_de_Presencia
                         
                         // And all the content in the Program table
                         command = new SqlCommand("DELETE FROM PROGRAM WHERE ID_EDUCATOR = @id", conn);
+                        command.Parameters.Add(new SqlParameter("id", row.Cells["colOverPersonID"].Value.ToString()));
+                        command.ExecuteNonQuery();
+
+                        // And all the content in the Weekly_Presence table
+                        command = new SqlCommand("DELETE FROM WEEKLY_PRESENCE WHERE ID_PERSON = @id", conn);
                         command.Parameters.Add(new SqlParameter("id", row.Cells["colOverPersonID"].Value.ToString()));
                         command.ExecuteNonQuery();
 
@@ -379,82 +390,13 @@ namespace Lista_de_Presencia
             return true;
         }
 
-        private void RetrieveWeeklyPresenceInformation()
-        {
-            using (SqlConnection conn = new SqlConnection())
-            {
-                DatabaseConnection.OpenConnection(conn);
-
-                m_Initialisation = true;
-                m_WeeklyPresenceCheckedCells.Clear();
-                m_WeeklyPresenceChanges.Clear();
-
-                SqlCommand command = new SqlCommand("SELECT WEEK_DAY FROM WEEKLY_PRESENCE WHERE ID_PERSON = @id", conn);
-                command.Parameters.Add(new SqlParameter("id", (int)dgvWeeklyDetail.Rows[0].Cells["colWeekPresPersonID"].Value));
-
-                using (SqlDataReader reader = command.ExecuteReader())
-                {
-                    while (reader.Read())
-                    {
-                        // +2 'cause we have personID and personName in the first two columns of the dgv
-                        dgvWeeklyDetail.Rows[0].Cells[(int)reader["WEEK_DAY"] + 2].Value = true;
-                        m_WeeklyPresenceCheckedCells.Add((int)reader["WEEK_DAY"]);
-                    }
-                }
-
-                m_Initialisation = false;
-            }
-        }
-
         private void dgvOverview_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
         {
-            gbWeeklyPresence.Visible = true;
-            dgvWeeklyDetail.Rows.Clear();
-            dgvWeeklyDetail.Rows.Add(dgvOverview.Rows[e.RowIndex].Cells["colOverPersonID"].Value, dgvOverview.Rows[e.RowIndex].Cells["colFirstName"].Value + " " + dgvOverview.Rows[e.RowIndex].Cells["colLastName"].Value);
-            RetrieveWeeklyPresenceInformation();
-        }
-
-        private void dgvWeeklyDetail_CellValueChanged(object sender, DataGridViewCellEventArgs e)
-        {
-            if (m_Initialisation)
-                return;
-
-            if(e.RowIndex != -1)
-            {
-                if (((bool)dgvWeeklyDetail.Rows[e.RowIndex].Cells[e.ColumnIndex].Value && !m_WeeklyPresenceCheckedCells.Contains(e.ColumnIndex - 1))
-                    || (!(bool)dgvWeeklyDetail.Rows[e.RowIndex].Cells[e.ColumnIndex].Value && m_WeeklyPresenceCheckedCells.Contains(e.ColumnIndex - 1)))
-                    m_WeeklyPresenceChanges.Add(e.ColumnIndex - 1);
-                else
-                    m_WeeklyPresenceChanges.Remove(e.ColumnIndex - 1);
-            }
-        }
-
-        private void dgvWeeklyDetail_CellMouseUp(object sender, DataGridViewCellMouseEventArgs e)
-        {
-            if (e.RowIndex != -1)
-            {
-                dgvWeeklyDetail.EndEdit();
-            }
-        }
-
-        private void btnSaveWeeklyChanges_Click(object sender, EventArgs e)
-        {
-            MessageBox.Show("Not working for now because I don't know if it's really necessary...");
-
-            //using (SqlConnection conn = new SqlConnection())
-            //{
-            //    conn.ConnectionString = "Server=USUARIO-PC\\SQLEXPRESS;Database=MALM;Trusted_Connection=true";
-            //    conn.Open();
-
-            //    foreach(int weekday in m_WeeklyPresenceChanges)
-            //    {
-            //        SqlCommand command = new SqlCommand("INSERT INTO WEEKLY_PRESENCE VALUES (@id, @weekday)", conn);
-            //        command.Parameters.Add(new SqlParameter("id", (int)dgvWeeklyDetail.Rows[0].Cells["colWeekPresPersonID"].Value));
-            //        command.Parameters.Add(new SqlParameter("weekday", weekday));
-
-            //        Console.WriteLine("Deletion affected " + command.ExecuteNonQuery() + " rows.");
-            //    }
-            //}
+            PersonInformationForm form = PersonInformationForm.GetInstance(int.Parse(dgvOverview.Rows[e.RowIndex].Cells["colOverPersonID"].Value.ToString()));
+            if (!form.Visible)
+                form.Show();
+            else
+                form.BringToFront();
         }
 
         private void btnAddPerson_Click(object sender, EventArgs e)

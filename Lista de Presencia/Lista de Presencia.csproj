@@ -59,6 +59,12 @@
     <Compile Include="PersonAdditionForm.Designer.cs">
       <DependentUpon>PersonAdditionForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="PersonInformationForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="PersonInformationForm.Designer.cs">
+      <DependentUpon>PersonInformationForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="ProgramAdditionForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -72,6 +78,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="PersonAdditionForm.resx">
       <DependentUpon>PersonAdditionForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="PersonInformationForm.resx">
+      <DependentUpon>PersonInformationForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="ProgramAdditionForm.resx">
       <DependentUpon>ProgramAdditionForm.cs</DependentUpon>

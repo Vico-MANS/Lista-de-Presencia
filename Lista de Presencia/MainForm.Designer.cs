@@ -217,8 +217,6 @@
             this.dgvWeeklyDetail.Name = "dgvWeeklyDetail";
             this.dgvWeeklyDetail.Size = new System.Drawing.Size(716, 45);
             this.dgvWeeklyDetail.TabIndex = 10;
-            this.dgvWeeklyDetail.CellMouseUp += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.dgvWeeklyDetail_CellMouseUp);
-            this.dgvWeeklyDetail.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvWeeklyDetail_CellValueChanged);
             // 
             // colWeekPresPersonID
             // 
@@ -297,7 +295,6 @@
             this.btnSaveWeeklyChanges.TabIndex = 11;
             this.btnSaveWeeklyChanges.Text = "Save changes";
             this.btnSaveWeeklyChanges.UseVisualStyleBackColor = true;
-            this.btnSaveWeeklyChanges.Click += new System.EventHandler(this.btnSaveWeeklyChanges_Click);
             // 
             // btnDeleteSelected
             // 
