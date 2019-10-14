@@ -55,16 +55,29 @@ namespace Lista_de_Presencia
                 SqlCommand command = new SqlCommand("SELECT PROGRAM_ID, NAME FROM PROGRAM", conn);
 
                 int programCounter = 0;
-
+                
                 using (SqlDataReader reader = command.ExecuteReader())
                 {
+                    int x = 30;
+                    int y = 15;
                     while (reader.Read())
                     {
                         CheckBox box = new CheckBox();
                         box.Tag = reader["PROGRAM_ID"].ToString();
                         box.Text = reader["NAME"].ToString();
                         box.AutoSize = true;
-                        box.Location = new Point(10, 20 + programCounter * 25);
+                        
+                        if (programCounter > 1 && programCounter % 5 == 0)
+                        {
+                            x += 200;
+                            y = 15;
+                        }
+                        else if(programCounter > 0)
+                        {
+                            y += 25;
+                        }
+
+                        box.Location = new Point(x, y);
                         gbPrograms.Controls.Add(box);
                         programCounter++;
                     }
@@ -87,6 +100,7 @@ namespace Lista_de_Presencia
 
             dgvWeeklyDetail.Rows.Clear();
             dgvWeeklyDetail.Rows.Add();
+            dgvWeeklyDetail.ClearSelection();
         }
 
         // Checks if all the necessary fields have been filled out
@@ -112,7 +126,6 @@ namespace Lista_de_Presencia
                 if (!found)
                     return false;
             }
-
             return true;
         }
 
