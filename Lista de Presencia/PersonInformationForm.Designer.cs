@@ -36,7 +36,6 @@
             this.dtpBirthday = new System.Windows.Forms.DateTimePicker();
             this.gbWeeklyPresence = new System.Windows.Forms.GroupBox();
             this.dgvWeeklyDetail = new System.Windows.Forms.DataGridView();
-            this.btnSaveWeeklyChanges = new System.Windows.Forms.Button();
             this.colWeekPresPersonID = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colWeekPersonName = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colWeekMonday = new System.Windows.Forms.DataGridViewCheckBoxColumn();
@@ -46,6 +45,7 @@
             this.colWeekFriday = new System.Windows.Forms.DataGridViewCheckBoxColumn();
             this.colWeekSaturday = new System.Windows.Forms.DataGridViewCheckBoxColumn();
             this.colWeekSunday = new System.Windows.Forms.DataGridViewCheckBoxColumn();
+            this.btnSaveWeeklyChanges = new System.Windows.Forms.Button();
             this.gbWeeklyPresence.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvWeeklyDetail)).BeginInit();
             this.SuspendLayout();
@@ -129,19 +129,9 @@
             this.dgvWeeklyDetail.Name = "dgvWeeklyDetail";
             this.dgvWeeklyDetail.Size = new System.Drawing.Size(716, 45);
             this.dgvWeeklyDetail.TabIndex = 10;
+            this.dgvWeeklyDetail.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvWeeklyDetail_CellClick);
             this.dgvWeeklyDetail.CellMouseUp += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.dgvWeeklyDetail_CellMouseUp);
             this.dgvWeeklyDetail.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvWeeklyDetail_CellValueChanged);
-            // 
-            // btnSaveWeeklyChanges
-            // 
-            this.btnSaveWeeklyChanges.Enabled = false;
-            this.btnSaveWeeklyChanges.Location = new System.Drawing.Point(627, 86);
-            this.btnSaveWeeklyChanges.Name = "btnSaveWeeklyChanges";
-            this.btnSaveWeeklyChanges.Size = new System.Drawing.Size(89, 23);
-            this.btnSaveWeeklyChanges.TabIndex = 11;
-            this.btnSaveWeeklyChanges.Text = "Save changes";
-            this.btnSaveWeeklyChanges.UseVisualStyleBackColor = true;
-            this.btnSaveWeeklyChanges.Click += new System.EventHandler(this.btnSaveWeeklyChanges_Click);
             // 
             // colWeekPresPersonID
             // 
@@ -212,6 +202,17 @@
             this.colWeekSunday.Resizable = System.Windows.Forms.DataGridViewTriState.True;
             this.colWeekSunday.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic;
             this.colWeekSunday.Width = 75;
+            // 
+            // btnSaveWeeklyChanges
+            // 
+            this.btnSaveWeeklyChanges.Enabled = false;
+            this.btnSaveWeeklyChanges.Location = new System.Drawing.Point(627, 86);
+            this.btnSaveWeeklyChanges.Name = "btnSaveWeeklyChanges";
+            this.btnSaveWeeklyChanges.Size = new System.Drawing.Size(89, 23);
+            this.btnSaveWeeklyChanges.TabIndex = 11;
+            this.btnSaveWeeklyChanges.Text = "Save changes";
+            this.btnSaveWeeklyChanges.UseVisualStyleBackColor = true;
+            this.btnSaveWeeklyChanges.Click += new System.EventHandler(this.btnSaveWeeklyChanges_Click);
             // 
             // PersonInformationForm
             // 

@@ -370,6 +370,7 @@
             this.dgvPresence.Name = "dgvPresence";
             this.dgvPresence.Size = new System.Drawing.Size(766, 287);
             this.dgvPresence.TabIndex = 0;
+            this.dgvPresence.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvPresence_CellClick);
             // 
             // colPresPersonID
             // 

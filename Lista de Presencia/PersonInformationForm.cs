@@ -186,5 +186,14 @@ namespace Lista_de_Presencia
                 MessageBox.Show("All weekly presence changes are saved.", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
         }
+
+        private void dgvWeeklyDetail_CellClick(object sender, DataGridViewCellEventArgs e)
+        {
+            // This works, but the problem is that the cell click event is not always called, if we click too fast.
+            if (dgvWeeklyDetail.Rows[e.RowIndex].Cells[e.ColumnIndex].Value == null || (bool)dgvWeeklyDetail.Rows[e.RowIndex].Cells[e.ColumnIndex].Value == false)
+                dgvWeeklyDetail.Rows[e.RowIndex].Cells[e.ColumnIndex].Value = true;
+            else
+                dgvWeeklyDetail.Rows[e.RowIndex].Cells[e.ColumnIndex].Value = false;
+        }
     }
 }

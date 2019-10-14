@@ -471,5 +471,14 @@ namespace Lista_de_Presencia
             UpdatePresenceGridInformation();
             gbPresence.Text = (String)((KeyValuePair<Object, Object>)cbbPrograms.SelectedItem).Value;
         }
+
+        private void dgvPresence_CellClick(object sender, DataGridViewCellEventArgs e)
+        {
+            // This works, but the problem is that the cell click event is not always called, if we click too fast.
+            if (dgvPresence.Rows[e.RowIndex].Cells[e.ColumnIndex].Value == null || (bool)dgvPresence.Rows[e.RowIndex].Cells[e.ColumnIndex].Value == false)
+                dgvPresence.Rows[e.RowIndex].Cells[e.ColumnIndex].Value = true;
+            else
+                dgvPresence.Rows[e.RowIndex].Cells[e.ColumnIndex].Value = false;
+        }
     }
 }

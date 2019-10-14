@@ -156,6 +156,7 @@
             this.dgvWeeklyDetail.Name = "dgvWeeklyDetail";
             this.dgvWeeklyDetail.Size = new System.Drawing.Size(671, 45);
             this.dgvWeeklyDetail.TabIndex = 10;
+            this.dgvWeeklyDetail.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvWeeklyDetail_CellClick);
             this.dgvWeeklyDetail.CellMouseUp += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.dgvWeeklyDetail_CellMouseUp);
             this.dgvWeeklyDetail.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvWeeklyDetail_CellValueChanged);
             // 
