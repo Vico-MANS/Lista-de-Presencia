@@ -60,8 +60,7 @@ namespace Lista_de_Presencia
 
             using (SqlConnection conn = new SqlConnection())
             {
-                conn.ConnectionString = "Server=USUARIO-PC\\SQLEXPRESS;Database=MALM;Trusted_Connection=true";
-                conn.Open();
+                DatabaseConnection.OpenConnection(conn);
 
                 SqlCommand command = new SqlCommand("SELECT PERSON_ID, FIRSTNAME, LASTNAME, (SELECT CONVERT(varchar(10), BIRTHDAY, 103) AS [DD/MM/YYYY]) AS BIRTHDAY FROM PERSON", conn);
 
@@ -109,8 +108,7 @@ namespace Lista_de_Presencia
         {
             using (SqlConnection conn = new SqlConnection())
             {
-                conn.ConnectionString = "Server=USUARIO-PC\\SQLEXPRESS;Database=MALM;Trusted_Connection=true";
-                conn.Open();
+                DatabaseConnection.OpenConnection(conn);
 
                 m_Initialisation = true;
                 dgvPresence.Rows.Clear();
@@ -216,8 +214,7 @@ namespace Lista_de_Presencia
             {
                 using (SqlConnection conn = new SqlConnection())
                 {
-                    conn.ConnectionString = "Server=USUARIO-PC\\SQLEXPRESS;Database=MALM;Trusted_Connection=true";
-                    conn.Open();
+                    DatabaseConnection.OpenConnection(conn);
 
                     int deletionCounter = 0;
                     foreach (DataGridViewRow row in dgvOverview.SelectedRows)
@@ -308,8 +305,7 @@ namespace Lista_de_Presencia
 
                     using (SqlConnection conn = new SqlConnection())
                     {
-                        conn.ConnectionString = "Server=USUARIO-PC\\SQLEXPRESS;Database=MALM;Trusted_Connection=true";
-                        conn.Open();
+                        DatabaseConnection.OpenConnection(conn);
 
                         SqlCommand command = new SqlCommand("SELECT * FROM PRESENCE WHERE DIA = convert(varchar(30),cast(@day as datetime),102) AND ID_PERSON = @id " +
                                                             "IF @@ROWCOUNT = 0" +
@@ -333,8 +329,7 @@ namespace Lista_de_Presencia
 
                     using (SqlConnection conn = new SqlConnection())
                     {
-                        conn.ConnectionString = "Server=USUARIO-PC\\SQLEXPRESS;Database=MALM;Trusted_Connection=true";
-                        conn.Open();
+                        DatabaseConnection.OpenConnection(conn);
 
                         SqlCommand command = new SqlCommand("DELETE FROM PRESENCE WHERE DIA = CONVERT(VARCHAR(30), CAST(@day AS DATETIME), 102) AND ID_PERSON = @id", conn);
                         command.Parameters.Add(new SqlParameter("day", m_Dates[changedCells[1] - 2]));
@@ -388,8 +383,7 @@ namespace Lista_de_Presencia
         {
             using (SqlConnection conn = new SqlConnection())
             {
-                conn.ConnectionString = "Server=USUARIO-PC\\SQLEXPRESS;Database=MALM;Trusted_Connection=true";
-                conn.Open();
+                DatabaseConnection.OpenConnection(conn);
 
                 m_Initialisation = true;
                 m_WeeklyPresenceCheckedCells.Clear();
@@ -492,8 +486,7 @@ namespace Lista_de_Presencia
         {
             using (SqlConnection conn = new SqlConnection())
             {
-                conn.ConnectionString = "Server=USUARIO-PC\\SQLEXPRESS;Database=MALM;Trusted_Connection=true";
-                conn.Open();
+                DatabaseConnection.OpenConnection(conn);
 
                 SqlCommand command = new SqlCommand("SELECT PROGRAM_ID AS ID, NAME FROM PROGRAM", conn);
 

@@ -52,8 +52,7 @@ namespace Lista_de_Presencia
         {
             using (SqlConnection conn = new SqlConnection())
             {
-                conn.ConnectionString = "Server=USUARIO-PC\\SQLEXPRESS;Database=MALM;Trusted_Connection=true";
-                conn.Open();
+                DatabaseConnection.OpenConnection(conn);
 
                 SqlCommand command = new SqlCommand("SELECT PERSON_ID AS ID, FIRSTNAME+' '+LASTNAME AS NAME FROM PERSON WHERE WORKER = 1", conn);
 
@@ -87,8 +86,7 @@ namespace Lista_de_Presencia
 
             using (SqlConnection conn = new SqlConnection())
             {
-                conn.ConnectionString = "Server=USUARIO-PC\\SQLEXPRESS;Database=MALM;Trusted_Connection=true";
-                conn.Open();
+                DatabaseConnection.OpenConnection(conn);
 
                 SqlCommand command = new SqlCommand("INSERT INTO PROGRAM(NAME, ID_EDUCATOR) VALUES(@name, @educator)", conn);
                 command.Parameters.AddWithValue("name", txtProgramName.Text);
