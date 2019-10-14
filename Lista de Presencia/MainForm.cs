@@ -97,11 +97,6 @@ namespace Lista_de_Presencia
             GetPrograms();
             gbPresence.Visible = false;
             m_Initialisation = false;
-
-            // TODO: Get rid of focus, doesn't work like this...
-            dgvPresence.ClearSelection();
-            dgvPresence.CurrentCell.Selected = false;
-            dgvPresence.CurrentCell = null;
         }
 
         private void InitOverviewTab()
@@ -178,9 +173,9 @@ namespace Lista_de_Presencia
                                                     "AND DIA BETWEEN CONVERT(VARCHAR(30), CAST(@week_start AS DATETIME), 102)" +
                                                     "AND CONVERT(VARCHAR(30), CAST(@week_end AS DATETIME), 102))" +
                                              "AS SUB_QUERY", conn);
-                    command.Parameters.Add(new SqlParameter("id", id));
-                    command.Parameters.Add(new SqlParameter("week_start", m_Dates[0]));
-                    command.Parameters.Add(new SqlParameter("week_end", m_Dates[6]));
+                    command.Parameters.AddWithValue("id", id);
+                    command.Parameters.AddWithValue("week_start", m_Dates[0]);
+                    command.Parameters.AddWithValue("week_end", m_Dates[6]);
 
                     using (SqlDataReader reader = command.ExecuteReader())
                     {
@@ -196,6 +191,20 @@ namespace Lista_de_Presencia
                             //Console.WriteLine("Adding to checked cells row " + rowIndex + " and column " + colIndex +" cellIndex: "+(rowIndex * dgvPresence.ColumnCount + colIndex));
                         }
                     }
+                    
+                    // TODO: Find a better way to do this 'cause it doesn't change from week to week, therefore no need to ask the database again
+                    command = new SqlCommand("SELECT WEEK_DAY FROM WEEKLY_PRESENCE WHERE ID_PERSON = @id", conn);
+                    command.Parameters.AddWithValue("id", id);
+
+                    using (SqlDataReader reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            int rowIndex = personIDs.IndexOf(id);
+                            int colIndex = (int)reader["WEEK_DAY"] + 1;
+                            dgvPresence.Rows[rowIndex].Cells[colIndex].Style.BackColor = Color.LightGreen;
+                        }
+                    }
                 }
 
                 // We clear the table of changes now so we don't keep track of the initialisation changes
@@ -203,6 +212,7 @@ namespace Lista_de_Presencia
                 
                 m_Initialisation = false;
                 gbPresence.Visible = true;
+                dgvPresence.ClearSelection();
             }
         }
 

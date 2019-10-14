@@ -146,7 +146,6 @@ namespace Lista_de_Presencia
                     SqlTransaction transaction = conn.BeginTransaction();
                     try
                     {
-
                         /**
                          * INSERT PERSON
                          * */
@@ -233,26 +232,9 @@ namespace Lista_de_Presencia
             }
         }
 
-
-        //private void Blabla()
-        //{
-        //    using (SqlConnection conn = new SqlConnection())
-        //    {
-        //        DatabaseConnection.OpenConnection(conn);
-
-        //        foreach (DataGridCell cell in dgvWeeklyDetail.Rows[0].Cells)
-        //        {
-        //            if ((bool)dgvWeeklyDetail.Rows[cell.RowNumber].Cells[cell.ColumnNumber].Value)
-        //            {
-        //                SqlCommand command = new SqlCommand("INSERT INTO WEEKLY_PRESENCE VALUES (@id, @weekday)", conn);
-        //                command.Parameters.Add(new SqlParameter("id", (int)dgvWeeklyDetail.Rows[0].Cells["colWeekPresPersonID"].Value));
-        //                command.Parameters.Add(new SqlParameter("weekday", cell.ColumnNumber + 1));
-        //                Console.WriteLine("Change affected " + command.ExecuteNonQuery() + " row.");
-        //            }
-        //        }
-                
-        //        MessageBox.Show("All weekly presence changes are saved.", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
-        //    }
-        //}
+        private void cbWorker_CheckedChanged(object sender, EventArgs e)
+        {
+            gbWeeklyPresence.Enabled = !cbWorker.Checked;
+        }
     }
 }

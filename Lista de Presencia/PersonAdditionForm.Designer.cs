@@ -127,6 +127,7 @@
             this.cbWorker.TabIndex = 4;
             this.cbWorker.Text = "Worker";
             this.cbWorker.UseVisualStyleBackColor = true;
+            this.cbWorker.CheckedChanged += new System.EventHandler(this.cbWorker_CheckedChanged);
             // 
             // gbWeeklyPresence
             // 
