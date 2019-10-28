@@ -102,7 +102,6 @@ namespace Lista_de_Presencia
         private void InitOverviewTab()
         {
             GetPersonData();
-            gbWeeklyPresence.Visible = false;
         }
 
         private void UpdatePresenceGridInformation()
@@ -231,40 +230,53 @@ namespace Lista_de_Presencia
                 using (SqlConnection conn = new SqlConnection())
                 {
                     DatabaseConnection.OpenConnection(conn);
+                    SqlTransaction transaction = conn.BeginTransaction();
+                        try
+                        {
 
-                    int deletionCounter = 0;
-                    foreach (DataGridViewRow row in dgvOverview.SelectedRows)
-                    {
-                        // We first have to delete all the content related to that individual in the Presence table
-                        SqlCommand command = new SqlCommand("DELETE FROM PRESENCE WHERE ID_PERSON = @id", conn);
-                        command.Parameters.Add(new SqlParameter("id", row.Cells["colOverPersonID"].Value.ToString()));
-                        command.ExecuteNonQuery();
+                        int deletionCounter = 0;
+                        foreach (DataGridViewRow row in dgvOverview.SelectedRows)
+                        {
+                            // We first have to delete all the content related to that individual in the Presence table
+                            SqlCommand command = new SqlCommand("DELETE FROM PRESENCE WHERE ID_PERSON = @id", conn, transaction);
+                            command.Parameters.Add(new SqlParameter("id", row.Cells["colOverPersonID"].Value.ToString()));
+                            command.ExecuteNonQuery();
 
-                        // And all the content in the Person_Program table
-                        command = new SqlCommand("DELETE FROM PERSON_PROGRAM WHERE ID_PERSON = @id", conn);
-                        command.Parameters.Add(new SqlParameter("id", row.Cells["colOverPersonID"].Value.ToString()));
-                        command.ExecuteNonQuery();
-                        
-                        // And all the content in the Program table
-                        command = new SqlCommand("DELETE FROM PROGRAM WHERE ID_EDUCATOR = @id", conn);
-                        command.Parameters.Add(new SqlParameter("id", row.Cells["colOverPersonID"].Value.ToString()));
-                        command.ExecuteNonQuery();
+                            // And all the content in the Person_Program table
+                            command = new SqlCommand("DELETE FROM PERSON_PROGRAM WHERE ID_PERSON = @id", conn, transaction);
+                            command.Parameters.Add(new SqlParameter("id", row.Cells["colOverPersonID"].Value.ToString()));
+                            command.ExecuteNonQuery();
 
-                        // And all the content in the Weekly_Presence table
-                        command = new SqlCommand("DELETE FROM WEEKLY_PRESENCE WHERE ID_PERSON = @id", conn);
-                        command.Parameters.Add(new SqlParameter("id", row.Cells["colOverPersonID"].Value.ToString()));
-                        command.ExecuteNonQuery();
+                            // And all the content in the Program table
+                            command = new SqlCommand("DELETE FROM PROGRAM WHERE ID_EDUCATOR = @id", conn, transaction);
+                            command.Parameters.Add(new SqlParameter("id", row.Cells["colOverPersonID"].Value.ToString()));
+                            command.ExecuteNonQuery();
 
-                        // Then we can safely delete the individual from the Person table
-                        command = new SqlCommand("DELETE FROM PERSON WHERE PERSON_ID = @id", conn);
-                        command.Parameters.Add(new SqlParameter("id", row.Cells["colOverPersonID"].Value.ToString()));
+                            // And all the content in the Weekly_Presence table
+                            command = new SqlCommand("DELETE FROM WEEKLY_PRESENCE WHERE ID_PERSON = @id", conn, transaction);
+                            command.Parameters.Add(new SqlParameter("id", row.Cells["colOverPersonID"].Value.ToString()));
+                            command.ExecuteNonQuery();
 
-                        deletionCounter += command.ExecuteNonQuery();
+                            // Then we can safely delete the individual from the Person table
+                            command = new SqlCommand("DELETE FROM PERSON WHERE PERSON_ID = @id", conn, transaction);
+                            command.Parameters.Add(new SqlParameter("id", row.Cells["colOverPersonID"].Value.ToString()));
+
+                            deletionCounter += command.ExecuteNonQuery();
+
+                            transaction.Commit();
+                        }
+
+                        Console.WriteLine(deletionCounter + " rows where deleted.");
+                        GetPersonData();
                     }
+                    catch (Exception excep)
+                    {
+                        transaction.Rollback();
 
-                    Console.WriteLine(deletionCounter + " rows where deleted.");
-                    GetPersonData();
-                }
+                        Console.WriteLine(excep);
+                        MessageBox.Show("An error has occured!\nThe person couldn't be added to the database...", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                }              
             }
         }
         
@@ -402,7 +414,7 @@ namespace Lista_de_Presencia
 
         private void dgvOverview_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
         {
-            PersonAdditionForm form = PersonAdditionForm.GetInstance(PersonAdditionForm.FormType.MODIFICATION, int.Parse(dgvOverview.Rows[e.RowIndex].Cells["colOverPersonID"].Value.ToString()));
+            PersonForm form = PersonForm.GetInstance(PersonForm.FormType.MODIFICATION, int.Parse(dgvOverview.Rows[e.RowIndex].Cells["colOverPersonID"].Value.ToString()));
             form.FormClosing += OnFormClosing;
 
             if (!form.Visible)
@@ -413,7 +425,7 @@ namespace Lista_de_Presencia
 
         private void btnAddPerson_Click(object sender, EventArgs e)
         {
-            PersonAdditionForm form = PersonAdditionForm.GetInstance(PersonAdditionForm.FormType.ADDITION);
+            PersonForm form = PersonForm.GetInstance(PersonForm.FormType.ADDITION);
             form.FormClosing += OnFormClosing;
 
             if (!form.Visible)

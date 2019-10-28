@@ -11,19 +11,19 @@ using System.Data.SqlClient;
 
 namespace Lista_de_Presencia
 {
-    public partial class PersonAdditionForm : Form
+    public partial class PersonForm : Form
     {
         public enum FormType { ADDITION, MODIFICATION };
 
-        private static PersonAdditionForm s_Instance;
+        private static PersonForm s_Instance;
 
-        public static PersonAdditionForm GetInstance(FormType type, int personID = -1)
+        public static PersonForm GetInstance(FormType type, int personID = -1)
         {
             if (type.Equals(FormType.ADDITION))
             {
                 if (s_Instance == null)
                 {
-                    s_Instance = new PersonAdditionForm(type, personID);
+                    s_Instance = new PersonForm(type, personID);
                     s_Instance.FormClosing += OnFormClosing;
                 }
             }
@@ -36,7 +36,7 @@ namespace Lista_de_Presencia
                     // We close the last form
                     if (s_Instance != null)
                         s_Instance.Close();
-                    s_Instance = new PersonAdditionForm(type, personID);
+                    s_Instance = new PersonForm(type, personID);
                     s_Instance.FormClosing += OnFormClosing;
                 }
             }
@@ -59,24 +59,26 @@ namespace Lista_de_Presencia
             s_Instance = null;
         }
 
-        public PersonAdditionForm(FormType type, int personID)
+        public PersonForm(FormType type, int personID)
         {
             InitializeComponent();
             this.CenterToScreen();
             m_FormType = type;
+
+            dgvWeeklyDetail.Rows.Clear();
+            dgvWeeklyDetail.Rows.Add();
+
             if (type.Equals(FormType.ADDITION))
             {
-                btnAddPerson.Text = "Add Person";
+                btnValidateForm.Text = "Add Person";
             }
             else if (type.Equals(FormType.MODIFICATION))
             {
-                btnAddPerson.Text = "Update Person";
+                btnValidateForm.Text = "Update Person";
                 m_PersonID = personID;
                 LoadPersonInformation();
                 RetrievePersonProgramInformation();
             }
-            dgvWeeklyDetail.Rows.Clear();
-            dgvWeeklyDetail.Rows.Add();
             LoadPrograms();
             m_WeeklyPresence = new List<int>();
         }
@@ -161,7 +163,6 @@ namespace Lista_de_Presencia
                 {
                     while (reader.Read())
                     {
-                        // +1 'cause we have personID and personName in the first two columns of the dgv
                         dgvWeeklyDetail.Rows[0].Cells[(int)reader["WEEK_DAY"] - 1].Value = true;
                         m_WeeklyPresenceCheckedCells.Add((int)reader["WEEK_DAY"]);
                     }
