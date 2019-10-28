@@ -91,6 +91,7 @@
             this.Controls.Add(this.label1);
             this.Name = "ProgramAdditionForm";
             this.Text = "Program Addition";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.ProgramAdditionForm_FormClosing);
             this.Load += new System.EventHandler(this.Form3_Load);
             this.ResumeLayout(false);
             this.PerformLayout();

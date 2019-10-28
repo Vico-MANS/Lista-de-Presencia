@@ -46,6 +46,7 @@
             this.colWeekFriday = new System.Windows.Forms.DataGridViewCheckBoxColumn();
             this.colWeekSaturday = new System.Windows.Forms.DataGridViewCheckBoxColumn();
             this.colWeekSunday = new System.Windows.Forms.DataGridViewCheckBoxColumn();
+            this.btnCancel = new System.Windows.Forms.Button();
             this.gbWeeklyPresence.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvWeeklyDetail)).BeginInit();
             this.SuspendLayout();
@@ -101,7 +102,7 @@
             // 
             // btnValidateForm
             // 
-            this.btnValidateForm.Location = new System.Drawing.Point(626, 355);
+            this.btnValidateForm.Location = new System.Drawing.Point(558, 351);
             this.btnValidateForm.Name = "btnValidateForm";
             this.btnValidateForm.Size = new System.Drawing.Size(86, 29);
             this.btnValidateForm.TabIndex = 9;
@@ -216,11 +217,22 @@
             this.colWeekSunday.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic;
             this.colWeekSunday.Width = 75;
             // 
-            // PersonAdditionForm
+            // btnCancel
+            // 
+            this.btnCancel.Location = new System.Drawing.Point(660, 351);
+            this.btnCancel.Name = "btnCancel";
+            this.btnCancel.Size = new System.Drawing.Size(75, 29);
+            this.btnCancel.TabIndex = 18;
+            this.btnCancel.Text = "Cancel";
+            this.btnCancel.UseVisualStyleBackColor = true;
+            this.btnCancel.Click += new System.EventHandler(this.btnCancel_Click);
+            // 
+            // PersonForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
+            this.Controls.Add(this.btnCancel);
             this.Controls.Add(this.gbWeeklyPresence);
             this.Controls.Add(this.cbWorker);
             this.Controls.Add(this.gbPrograms);
@@ -231,8 +243,10 @@
             this.Controls.Add(this.txtFirstname);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.btnValidateForm);
-            this.Name = "PersonAdditionForm";
+            this.Name = "PersonForm";
             this.Text = "Person";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.PersonForm_FormClosing);
+            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.PersonForm_FormClosed);
             this.Load += new System.EventHandler(this.Form2_Load);
             this.gbWeeklyPresence.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dgvWeeklyDetail)).EndInit();
@@ -261,5 +275,6 @@
         private System.Windows.Forms.DataGridViewCheckBoxColumn colWeekFriday;
         private System.Windows.Forms.DataGridViewCheckBoxColumn colWeekSaturday;
         private System.Windows.Forms.DataGridViewCheckBoxColumn colWeekSunday;
+        private System.Windows.Forms.Button btnCancel;
     }
 }

@@ -99,5 +99,11 @@ namespace Lista_de_Presencia
                 ResetForm();
             }
         }
+
+        private void ProgramAdditionForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            //DialogResult res = MessageBox.Show("If you have made changes, these won't be saved!", "Information", MessageBoxButtons.OKCancel, MessageBoxIcon.Exclamation);
+            //e.Cancel = res.Equals(DialogResult.Cancel);
+        }
     }
 }

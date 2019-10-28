@@ -31,10 +31,6 @@
             this.components = new System.ComponentModel.Container();
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.dgvOverview = new System.Windows.Forms.DataGridView();
-            this.colOverPersonID = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.colFirstName = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.colLastName = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.colBirthday = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.btnAddPerson = new System.Windows.Forms.Button();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.tabControl = new System.Windows.Forms.TabControl();
@@ -60,6 +56,10 @@
             this.btnNextWeek = new System.Windows.Forms.Button();
             this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
             this.notifyIcon1 = new System.Windows.Forms.NotifyIcon(this.components);
+            this.colOverPersonID = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colFirstName = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colLastName = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colBirthday = new System.Windows.Forms.DataGridViewTextBoxColumn();
             ((System.ComponentModel.ISupportInitialize)(this.dgvOverview)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.SuspendLayout();
@@ -91,34 +91,6 @@
             this.dgvOverview.Size = new System.Drawing.Size(722, 301);
             this.dgvOverview.TabIndex = 1;
             this.dgvOverview.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvOverview_CellDoubleClick);
-            // 
-            // colOverPersonID
-            // 
-            this.colOverPersonID.HeaderText = "ID";
-            this.colOverPersonID.Name = "colOverPersonID";
-            this.colOverPersonID.ReadOnly = true;
-            this.colOverPersonID.Visible = false;
-            // 
-            // colFirstName
-            // 
-            this.colFirstName.HeaderText = "FIRSTNAME";
-            this.colFirstName.Name = "colFirstName";
-            this.colFirstName.ReadOnly = true;
-            this.colFirstName.Width = 225;
-            // 
-            // colLastName
-            // 
-            this.colLastName.HeaderText = "LASTNAME";
-            this.colLastName.Name = "colLastName";
-            this.colLastName.ReadOnly = true;
-            this.colLastName.Width = 225;
-            // 
-            // colBirthday
-            // 
-            this.colBirthday.HeaderText = "BIRTHDAY";
-            this.colBirthday.Name = "colBirthday";
-            this.colBirthday.ReadOnly = true;
-            this.colBirthday.Width = 225;
             // 
             // btnAddPerson
             // 
@@ -339,6 +311,35 @@
             this.notifyIcon1.Text = "notifyIcon1";
             this.notifyIcon1.Visible = true;
             // 
+            // colOverPersonID
+            // 
+            this.colOverPersonID.HeaderText = "ID";
+            this.colOverPersonID.Name = "colOverPersonID";
+            this.colOverPersonID.ReadOnly = true;
+            this.colOverPersonID.Visible = false;
+            // 
+            // colFirstName
+            // 
+            this.colFirstName.HeaderText = "FIRSTNAME";
+            this.colFirstName.Name = "colFirstName";
+            this.colFirstName.ReadOnly = true;
+            this.colFirstName.Width = 225;
+            // 
+            // colLastName
+            // 
+            this.colLastName.HeaderText = "LASTNAME";
+            this.colLastName.Name = "colLastName";
+            this.colLastName.ReadOnly = true;
+            this.colLastName.Width = 225;
+            // 
+            // colBirthday
+            // 
+            this.colBirthday.HeaderText = "BIRTHDAY";
+            this.colBirthday.Name = "colBirthday";
+            this.colBirthday.ReadOnly = true;
+            this.colBirthday.Resizable = System.Windows.Forms.DataGridViewTriState.False;
+            this.colBirthday.Width = 225;
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -377,10 +378,6 @@
         private System.Windows.Forms.Button btnSavePresenceChanges;
         private System.Windows.Forms.Button btnPreviousWeek;
         private System.Windows.Forms.Button btnNextWeek;
-        private System.Windows.Forms.DataGridViewTextBoxColumn colOverPersonID;
-        private System.Windows.Forms.DataGridViewTextBoxColumn colFirstName;
-        private System.Windows.Forms.DataGridViewTextBoxColumn colLastName;
-        private System.Windows.Forms.DataGridViewTextBoxColumn colBirthday;
         private System.Windows.Forms.DataGridViewTextBoxColumn colPresPersonID;
         private System.Windows.Forms.DataGridViewTextBoxColumn colPerson;
         private System.Windows.Forms.DataGridViewCheckBoxColumn colMonday;
@@ -395,6 +392,10 @@
         private System.Windows.Forms.GroupBox gbPresence;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.ComboBox cbbPrograms;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colOverPersonID;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colFirstName;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colLastName;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colBirthday;
     }
 }
 

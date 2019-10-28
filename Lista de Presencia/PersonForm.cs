@@ -24,7 +24,6 @@ namespace Lista_de_Presencia
                 if (s_Instance == null)
                 {
                     s_Instance = new PersonForm(type, personID);
-                    s_Instance.FormClosing += OnFormClosing;
                 }
             }
             else if (type.Equals(FormType.MODIFICATION))
@@ -37,7 +36,6 @@ namespace Lista_de_Presencia
                     if (s_Instance != null)
                         s_Instance.Close();
                     s_Instance = new PersonForm(type, personID);
-                    s_Instance.FormClosing += OnFormClosing;
                 }
             }
             return s_Instance;
@@ -54,13 +52,7 @@ namespace Lista_de_Presencia
 
         private List<int> m_WeeklyPresenceCheckedCells = new List<int>();
         private List<int> m_WeeklyPresenceChanges = new List<int>();
-
-        public static void OnFormClosing(object sender, FormClosingEventArgs e)
-        {
-            // When the form is closed again we set the reference of the singleton to null
-            s_Instance = null;
-        }
-
+        
         public PersonForm(FormType type, int personID)
         {
             InitializeComponent();
@@ -506,7 +498,7 @@ namespace Lista_de_Presencia
 
         private void dgvWeeklyDetail_CellClick(object sender, DataGridViewCellEventArgs e)
         {
-            if (e.RowIndex == -1)
+            if (e.RowIndex == -1 || e.ColumnIndex == -1)
                 return;
 
             // This works, but the problem is that the cell click event is not always called, if we click too fast.
@@ -514,6 +506,23 @@ namespace Lista_de_Presencia
                 dgvWeeklyDetail.Rows[e.RowIndex].Cells[e.ColumnIndex].Value = true;
             else
                 dgvWeeklyDetail.Rows[e.RowIndex].Cells[e.ColumnIndex].Value = false;
+        }
+
+        private void btnCancel_Click(object sender, EventArgs e)
+        {
+            s_Instance.Close();
+        }
+
+        private void PersonForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            DialogResult res = MessageBox.Show("If you have made changes, these won't be saved!", "Information", MessageBoxButtons.OKCancel, MessageBoxIcon.Exclamation);
+            e.Cancel = res.Equals(DialogResult.Cancel);
+        }
+
+        private void PersonForm_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            // When the form is closed again we set the reference of the singleton to null
+            s_Instance = null;
         }
     }
 }
