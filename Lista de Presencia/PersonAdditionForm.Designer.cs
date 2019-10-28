@@ -111,7 +111,7 @@
             // 
             // gbPrograms
             // 
-            this.gbPrograms.Location = new System.Drawing.Point(32, 178);
+            this.gbPrograms.Location = new System.Drawing.Point(32, 50);
             this.gbPrograms.Name = "gbPrograms";
             this.gbPrograms.Size = new System.Drawing.Size(680, 138);
             this.gbPrograms.TabIndex = 16;
@@ -132,7 +132,7 @@
             // gbWeeklyPresence
             // 
             this.gbWeeklyPresence.Controls.Add(this.dgvWeeklyDetail);
-            this.gbWeeklyPresence.Location = new System.Drawing.Point(32, 66);
+            this.gbWeeklyPresence.Location = new System.Drawing.Point(32, 194);
             this.gbWeeklyPresence.Name = "gbWeeklyPresence";
             this.gbWeeklyPresence.Size = new System.Drawing.Size(680, 86);
             this.gbWeeklyPresence.TabIndex = 17;

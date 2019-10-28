@@ -13,37 +13,162 @@ namespace Lista_de_Presencia
 {
     public partial class PersonAdditionForm : Form
     {
+        public enum FormType { ADDITION, MODIFICATION };
+
         private static PersonAdditionForm s_Instance;
 
-        public static PersonAdditionForm GetInstance()
+        public static PersonAdditionForm GetInstance(FormType type, int personID = -1)
         {
-            if (s_Instance == null)
+            if (type.Equals(FormType.ADDITION))
             {
-                s_Instance = new PersonAdditionForm();
-                s_Instance.FormClosing += OnFormClosing;
+                if (s_Instance == null)
+                {
+                    s_Instance = new PersonAdditionForm(type, personID);
+                    s_Instance.FormClosing += OnFormClosing;
+                }
+            }
+            else if (type.Equals(FormType.MODIFICATION))
+            {
+                //if (s_Instance != null)
+                //    Console.WriteLine("Current ID: " + s_Instance.m_PersonID + " & wanted ID: " + personID);
+                if (s_Instance == null || (s_Instance != null && s_Instance.m_PersonID != personID))
+                {
+                    // We close the last form
+                    if (s_Instance != null)
+                        s_Instance.Close();
+                    s_Instance = new PersonAdditionForm(type, personID);
+                    s_Instance.FormClosing += OnFormClosing;
+                }
             }
             return s_Instance;
         }
 
+        private bool m_Initialisation;
+
         private List<int> m_WeeklyPresence;
-        
+        private FormType m_FormType;
+        private int m_PersonID;
+        private List<int> m_PersonPrograms;
+
+        private List<int> m_WeeklyPresenceCheckedCells = new List<int>();
+        private List<int> m_WeeklyPresenceChanges = new List<int>();
+
         public static void OnFormClosing(object sender, FormClosingEventArgs e)
         {
             // When the form is closed again we set the reference of the singleton to null
             s_Instance = null;
         }
 
-        public PersonAdditionForm()
+        public PersonAdditionForm(FormType type, int personID)
         {
             InitializeComponent();
             this.CenterToScreen();
+            m_FormType = type;
+            if (type.Equals(FormType.ADDITION))
+            {
+                btnAddPerson.Text = "Add Person";
+            }
+            else if (type.Equals(FormType.MODIFICATION))
+            {
+                btnAddPerson.Text = "Update Person";
+                m_PersonID = personID;
+                LoadPersonInformation();
+                RetrievePersonProgramInformation();
+            }
+            dgvWeeklyDetail.Rows.Clear();
+            dgvWeeklyDetail.Rows.Add();
+            LoadPrograms();
             m_WeeklyPresence = new List<int>();
         }
         
         private void Form2_Load(object sender, EventArgs e)
         {
-            LoadPrograms();
-            ClearPersonAdditionFields();
+            //ClearPersonAdditionFields();
+        }
+
+        public void LoadPersonInformation()
+        {
+            bool worker = RetrievePersonInformation();
+
+            if (!worker)
+            {
+                gbWeeklyPresence.Visible = true;
+                RetrieveWeeklyPresenceInformation();
+            }
+            else
+            {
+                gbWeeklyPresence.Visible = false;
+            }
+        }
+
+        private bool RetrievePersonInformation()
+        {
+            using (SqlConnection conn = new SqlConnection())
+            {
+                DatabaseConnection.OpenConnection(conn);
+
+                SqlCommand command = new SqlCommand("SELECT * FROM PERSON WHERE PERSON_ID = @id", conn);
+                command.Parameters.AddWithValue("id", m_PersonID);
+
+                using (SqlDataReader reader = command.ExecuteReader())
+                {
+                    // Should only be one retrieved row
+                    reader.Read();
+                    
+                    txtFirstname.Text = reader["FIRSTNAME"].ToString();
+                    txtLastname.Text = reader["LASTNAME"].ToString();
+                    dtpBirthday.Value = Convert.ToDateTime(reader["BIRTHDAY"]);
+
+                    return (bool)reader["WORKER"];
+                }
+            }
+        }
+
+        private void RetrievePersonProgramInformation()
+        {
+            using (SqlConnection conn = new SqlConnection())
+            {
+                DatabaseConnection.OpenConnection(conn);
+
+                SqlCommand command = new SqlCommand("SELECT * FROM PERSON_PROGRAM WHERE ID_PERSON = @id", conn);
+                command.Parameters.AddWithValue("id", m_PersonID);
+
+                m_PersonPrograms = new List<int>();
+                using (SqlDataReader reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        m_PersonPrograms.Add((int)reader["ID_PROGRAM"]);
+                    }
+                }
+            }
+        }
+
+        private void RetrieveWeeklyPresenceInformation()
+        {
+            using (SqlConnection conn = new SqlConnection())
+            {
+                DatabaseConnection.OpenConnection(conn);
+
+                m_Initialisation = true;
+                m_WeeklyPresenceCheckedCells.Clear();
+                m_WeeklyPresenceChanges.Clear();
+
+                SqlCommand command = new SqlCommand("SELECT WEEK_DAY FROM WEEKLY_PRESENCE WHERE ID_PERSON = @id", conn);
+                command.Parameters.AddWithValue("id", m_PersonID);
+
+                using (SqlDataReader reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        // +1 'cause we have personID and personName in the first two columns of the dgv
+                        dgvWeeklyDetail.Rows[0].Cells[(int)reader["WEEK_DAY"] - 1].Value = true;
+                        m_WeeklyPresenceCheckedCells.Add((int)reader["WEEK_DAY"]);
+                    }
+                }
+
+                m_Initialisation = false;
+            }
         }
 
         private void LoadPrograms()
@@ -66,6 +191,9 @@ namespace Lista_de_Presencia
                         box.Tag = reader["PROGRAM_ID"].ToString();
                         box.Text = reader["NAME"].ToString();
                         box.AutoSize = true;
+
+                        if (m_FormType.Equals(FormType.MODIFICATION) && m_PersonPrograms.Contains((int)reader["PROGRAM_ID"]))
+                                box.Checked = true;
                         
                         if (programCounter > 1 && programCounter % 5 == 0)
                         {
@@ -92,9 +220,7 @@ namespace Lista_de_Presencia
             dtpBirthday.Value = DateTime.Now;
 
             foreach(CheckBox cb in gbPrograms.Controls.OfType<CheckBox>())
-            {
                 cb.Checked = false;
-            }
 
             cbWorker.Checked = false;
 
@@ -131,12 +257,26 @@ namespace Lista_de_Presencia
 
         private void dgvWeeklyDetail_CellValueChanged(object sender, DataGridViewCellEventArgs e)
         {
+            if (m_Initialisation)
+                return;
+
             if (e.RowIndex != -1)
             {
-                if ((bool)dgvWeeklyDetail.Rows[e.RowIndex].Cells[e.ColumnIndex].Value)
-                    m_WeeklyPresence.Add(e.ColumnIndex + 1);
-                else
-                    m_WeeklyPresence.Remove(e.ColumnIndex + 1);
+                if (m_FormType.Equals(FormType.ADDITION))
+                {
+                    if ((bool)dgvWeeklyDetail.Rows[e.RowIndex].Cells[e.ColumnIndex].Value)
+                        m_WeeklyPresence.Add(e.ColumnIndex + 1);
+                    else
+                        m_WeeklyPresence.Remove(e.ColumnIndex + 1);
+                }
+                else if (m_FormType.Equals(FormType.MODIFICATION))
+                {
+                    if (((bool)dgvWeeklyDetail.Rows[e.RowIndex].Cells[e.ColumnIndex].Value && !m_WeeklyPresenceCheckedCells.Contains(e.ColumnIndex - 1))
+                       || (!(bool)dgvWeeklyDetail.Rows[e.RowIndex].Cells[e.ColumnIndex].Value && m_WeeklyPresenceCheckedCells.Contains(e.ColumnIndex - 1)))
+                        m_WeeklyPresenceChanges.Add(e.ColumnIndex - 1);
+                    else
+                        m_WeeklyPresenceChanges.Remove(e.ColumnIndex - 1);
+                }
             }
         }
 
@@ -152,96 +292,112 @@ namespace Lista_de_Presencia
         {
             if(IsPersonAdditionValid())
             {
-                using (SqlConnection conn = new SqlConnection())
-                {
-                    DatabaseConnection.OpenConnection(conn);
-
-                    SqlTransaction transaction = conn.BeginTransaction();
-                    try
-                    {
-                        /**
-                         * INSERT PERSON
-                         * */
-
-                        SqlCommand commandInsertPerson = new SqlCommand("INSERT INTO PERSON (FIRSTNAME, LASTNAME, BIRTHDAY, WORKER) VALUES (@firstname, @lastname, @birthday, @worker)", conn, transaction);
-                        commandInsertPerson.Parameters.AddWithValue("firstname", txtFirstname.Text);
-                        commandInsertPerson.Parameters.AddWithValue("lastname", txtLastname.Text);
-                        commandInsertPerson.Parameters.AddWithValue("birthday", dtpBirthday.Value);
-                        commandInsertPerson.Parameters.AddWithValue("worker", cbWorker.Checked ? 1 : 0);
-
-                        commandInsertPerson.ExecuteNonQuery();
-                        Console.WriteLine("Person inserted");
-                        
-                        /**
-                         * RETRIEVE PERSON ID
-                         * */
-
-                        SqlCommand commandGetPersonID = new SqlCommand("SELECT MAX(PERSON_ID) AS LAST_ID FROM PERSON WHERE FIRSTNAME = @firstname AND LASTNAME = @lastname", conn, transaction);
-                        commandGetPersonID.Parameters.Add(new SqlParameter("firstname", txtFirstname.Text));
-                        commandGetPersonID.Parameters.Add(new SqlParameter("lastname", txtLastname.Text));
-
-                        int personID;
-                        using (SqlDataReader reader = commandGetPersonID.ExecuteReader())
-                        {
-                            reader.Read();
-                            personID = (int)reader["LAST_ID"];
-                            Console.WriteLine("ID retrieved: " + personID);
-                        }
-
-                        /**
-                         * INSERT PROGRAMS
-                         * */
-
-                        foreach (CheckBox cb in gbPrograms.Controls.OfType<CheckBox>())
-                        {
-                            if (cb.Checked)
-                            {
-                                //MessageBox.Show("Checkbox " + cb.Text + " (" + cb.Tag + "): " + cb.Checked);
-                                SqlCommand commandAddProgramToPerson = new SqlCommand("INSERT INTO PERSON_PROGRAM VALUES (@personID, @programID)", conn, transaction);
-                                commandAddProgramToPerson.Parameters.AddWithValue("personID", personID);
-                                commandAddProgramToPerson.Parameters.AddWithValue("programID", cb.Tag);
-
-                                commandAddProgramToPerson.ExecuteNonQuery();
-                            }
-                        }
-
-                        Console.WriteLine("Program participation inserted");
-
-                        /**
-                         * INSERT WEEKLY PRESENCE
-                         * */
-
-                        if (!cbWorker.Checked)
-                        {
-                            foreach(int weekday in m_WeeklyPresence)
-                            {
-                                SqlCommand command = new SqlCommand("INSERT INTO WEEKLY_PRESENCE VALUES (@id, @weekday)", conn, transaction);
-                                command.Parameters.AddWithValue("id", personID);
-                                command.Parameters.AddWithValue("weekday", weekday);
-                                command.ExecuteNonQuery();
-                            }
-                        }
-
-                        Console.WriteLine("Weekly presence inserted");
-                        
-                        transaction.Commit();
-
-                        MessageBox.Show("The person has been succesfully added to the database", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
-
-                        ClearPersonAdditionFields();
-                    }
-                    catch(Exception excep)
-                    {
-                        transaction.Rollback();
-
-                        Console.WriteLine(excep);
-                        MessageBox.Show("An error has occured!\nThe person couldn't be added to the database...", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    }
-                }
+                if (m_FormType.Equals(FormType.ADDITION))
+                    AddPerson();
+                else if (m_FormType.Equals(FormType.MODIFICATION))
+                    UpdatePerson();
             }
             else
             {
                 MessageBox.Show("Please fill out all the mandatory fields!");
+            }
+        }
+
+        private void UpdatePerson()
+        {
+            MessageBox.Show("Update person");
+            
+        }
+
+        private void AddPerson()
+        {
+            MessageBox.Show("Add person");
+
+            using (SqlConnection conn = new SqlConnection())
+            {
+                DatabaseConnection.OpenConnection(conn);
+
+                SqlTransaction transaction = conn.BeginTransaction();
+                try
+                {
+                    /**
+                     * INSERT PERSON
+                     * */
+
+                    SqlCommand commandInsertPerson = new SqlCommand("INSERT INTO PERSON (FIRSTNAME, LASTNAME, BIRTHDAY, WORKER) VALUES (@firstname, @lastname, @birthday, @worker)", conn, transaction);
+                    commandInsertPerson.Parameters.AddWithValue("firstname", txtFirstname.Text);
+                    commandInsertPerson.Parameters.AddWithValue("lastname", txtLastname.Text);
+                    commandInsertPerson.Parameters.AddWithValue("birthday", dtpBirthday.Value);
+                    commandInsertPerson.Parameters.AddWithValue("worker", cbWorker.Checked ? 1 : 0);
+
+                    commandInsertPerson.ExecuteNonQuery();
+                    Console.WriteLine("Person inserted");
+
+                    /**
+                     * RETRIEVE PERSON ID
+                     * */
+
+                    SqlCommand commandGetPersonID = new SqlCommand("SELECT MAX(PERSON_ID) AS LAST_ID FROM PERSON WHERE FIRSTNAME = @firstname AND LASTNAME = @lastname", conn, transaction);
+                    commandGetPersonID.Parameters.Add(new SqlParameter("firstname", txtFirstname.Text));
+                    commandGetPersonID.Parameters.Add(new SqlParameter("lastname", txtLastname.Text));
+
+                    int personID;
+                    using (SqlDataReader reader = commandGetPersonID.ExecuteReader())
+                    {
+                        reader.Read();
+                        personID = (int)reader["LAST_ID"];
+                        Console.WriteLine("ID retrieved: " + personID);
+                    }
+
+                    /**
+                     * INSERT PROGRAMS
+                     * */
+
+                    foreach (CheckBox cb in gbPrograms.Controls.OfType<CheckBox>())
+                    {
+                        if (cb.Checked)
+                        {
+                            //MessageBox.Show("Checkbox " + cb.Text + " (" + cb.Tag + "): " + cb.Checked);
+                            SqlCommand commandAddProgramToPerson = new SqlCommand("INSERT INTO PERSON_PROGRAM VALUES (@personID, @programID)", conn, transaction);
+                            commandAddProgramToPerson.Parameters.AddWithValue("personID", personID);
+                            commandAddProgramToPerson.Parameters.AddWithValue("programID", cb.Tag);
+
+                            commandAddProgramToPerson.ExecuteNonQuery();
+                        }
+                    }
+
+                    Console.WriteLine("Program participation inserted");
+
+                    /**
+                     * INSERT WEEKLY PRESENCE
+                     * */
+
+                    if (!cbWorker.Checked)
+                    {
+                        foreach (int weekday in m_WeeklyPresence)
+                        {
+                            SqlCommand command = new SqlCommand("INSERT INTO WEEKLY_PRESENCE VALUES (@id, @weekday)", conn, transaction);
+                            command.Parameters.AddWithValue("id", personID);
+                            command.Parameters.AddWithValue("weekday", weekday);
+                            command.ExecuteNonQuery();
+                        }
+                    }
+
+                    Console.WriteLine("Weekly presence inserted");
+
+                    transaction.Commit();
+
+                    MessageBox.Show("The person has been succesfully added to the database", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                    ClearPersonAdditionFields();
+                }
+                catch (Exception excep)
+                {
+                    transaction.Rollback();
+
+                    Console.WriteLine(excep);
+                    MessageBox.Show("An error has occured!\nThe person couldn't be added to the database...", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
             }
         }
 
