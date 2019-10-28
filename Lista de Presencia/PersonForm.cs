@@ -48,7 +48,9 @@ namespace Lista_de_Presencia
         private List<int> m_WeeklyPresence;
         private FormType m_FormType;
         private int m_PersonID;
-        private List<int> m_PersonPrograms;
+        private bool m_IsWorker;
+        // The programs that the person is assigned to in the database
+        private List<int> m_InitPersonPrograms;
 
         private List<int> m_WeeklyPresenceCheckedCells = new List<int>();
         private List<int> m_WeeklyPresenceChanges = new List<int>();
@@ -90,9 +92,9 @@ namespace Lista_de_Presencia
 
         public void LoadPersonInformation()
         {
-            bool worker = RetrievePersonInformation();
+            RetrievePersonInformation();
 
-            if (!worker)
+            if (!m_IsWorker)
             {
                 gbWeeklyPresence.Visible = true;
                 RetrieveWeeklyPresenceInformation();
@@ -103,7 +105,7 @@ namespace Lista_de_Presencia
             }
         }
 
-        private bool RetrievePersonInformation()
+        private void RetrievePersonInformation()
         {
             using (SqlConnection conn = new SqlConnection())
             {
@@ -120,8 +122,10 @@ namespace Lista_de_Presencia
                     txtFirstname.Text = reader["FIRSTNAME"].ToString();
                     txtLastname.Text = reader["LASTNAME"].ToString();
                     dtpBirthday.Value = Convert.ToDateTime(reader["BIRTHDAY"]);
+                    m_IsWorker = (bool)reader["WORKER"];
 
-                    return (bool)reader["WORKER"];
+                    cbWorker.Checked = m_IsWorker;
+                    cbWorker.Enabled = false;
                 }
             }
         }
@@ -135,12 +139,12 @@ namespace Lista_de_Presencia
                 SqlCommand command = new SqlCommand("SELECT * FROM PERSON_PROGRAM WHERE ID_PERSON = @id", conn);
                 command.Parameters.AddWithValue("id", m_PersonID);
 
-                m_PersonPrograms = new List<int>();
+                m_InitPersonPrograms = new List<int>();
                 using (SqlDataReader reader = command.ExecuteReader())
                 {
                     while (reader.Read())
                     {
-                        m_PersonPrograms.Add((int)reader["ID_PROGRAM"]);
+                        m_InitPersonPrograms.Add((int)reader["ID_PROGRAM"]);
                     }
                 }
             }
@@ -193,7 +197,7 @@ namespace Lista_de_Presencia
                         box.Text = reader["NAME"].ToString();
                         box.AutoSize = true;
 
-                        if (m_FormType.Equals(FormType.MODIFICATION) && m_PersonPrograms.Contains((int)reader["PROGRAM_ID"]))
+                        if (m_FormType.Equals(FormType.MODIFICATION) && m_InitPersonPrograms.Contains((int)reader["PROGRAM_ID"]))
                                 box.Checked = true;
                         
                         if (programCounter > 1 && programCounter % 5 == 0)
@@ -272,18 +276,18 @@ namespace Lista_de_Presencia
                 }
                 else if (m_FormType.Equals(FormType.MODIFICATION))
                 {
-                    if (((bool)dgvWeeklyDetail.Rows[e.RowIndex].Cells[e.ColumnIndex].Value && !m_WeeklyPresenceCheckedCells.Contains(e.ColumnIndex - 1))
-                       || (!(bool)dgvWeeklyDetail.Rows[e.RowIndex].Cells[e.ColumnIndex].Value && m_WeeklyPresenceCheckedCells.Contains(e.ColumnIndex - 1)))
-                        m_WeeklyPresenceChanges.Add(e.ColumnIndex - 1);
+                    if (((bool)dgvWeeklyDetail.Rows[e.RowIndex].Cells[e.ColumnIndex].Value && !m_WeeklyPresenceCheckedCells.Contains(e.ColumnIndex + 1))
+                       || (!(bool)dgvWeeklyDetail.Rows[e.RowIndex].Cells[e.ColumnIndex].Value && m_WeeklyPresenceCheckedCells.Contains(e.ColumnIndex + 1)))
+                        m_WeeklyPresenceChanges.Add(e.ColumnIndex + 1);
                     else
-                        m_WeeklyPresenceChanges.Remove(e.ColumnIndex - 1);
+                        m_WeeklyPresenceChanges.Remove(e.ColumnIndex + 1);
                 }
             }
         }
 
         private void dgvWeeklyDetail_CellMouseUp(object sender, DataGridViewCellMouseEventArgs e)
         {
-            if (e.RowIndex != -1)
+            if (e.RowIndex != -1) 
             {
                 dgvWeeklyDetail.EndEdit();
             }
@@ -304,16 +308,109 @@ namespace Lista_de_Presencia
             }
         }
 
+        // Maybe change this later so that we don't insert all the stuff all the time when there's like no or only a minor change
+        // We can't change the worker statement, it doesn't really make sense to do that anyway.
         private void UpdatePerson()
         {
-            MessageBox.Show("Update person");
-            
+            using (SqlConnection conn = new SqlConnection())
+            {
+                DatabaseConnection.OpenConnection(conn);
+                SqlTransaction transaction = conn.BeginTransaction();
+
+                try
+                {
+                    /*
+                     * UPDATE PERSON TABLE
+                     * */
+                    SqlCommand commandUpdatePerson = new SqlCommand("UPDATE PERSON SET FIRSTNAME = @firstname, LASTNAME = @lastname, BIRTHDAY = @birthday WHERE PERSON_ID = @id", conn, transaction);
+                    commandUpdatePerson.Parameters.AddWithValue("firstname", txtFirstname.Text);
+                    commandUpdatePerson.Parameters.AddWithValue("lastname", txtLastname.Text);
+                    commandUpdatePerson.Parameters.AddWithValue("birthday", dtpBirthday.Value);
+                    commandUpdatePerson.Parameters.AddWithValue("id", m_PersonID);
+                    commandUpdatePerson.ExecuteNonQuery();
+                    Console.WriteLine("Person table UPDATED");
+
+                    /*
+                     * UPDATE PERSON_PROGRAM TABLE
+                     * */
+                    // First we have to get all the programs that the person has now
+                    List<int> currentPersonPrograms = new List<int>();
+                    foreach (CheckBox cb in gbPrograms.Controls.OfType<CheckBox>())
+                        if (cb.Checked)
+                            currentPersonPrograms.Add(Convert.ToInt32(cb.Tag));
+                    // Now that we got that information we can compate to the initial values
+                    foreach(int programID in currentPersonPrograms)
+                    {
+                        // If the value isn't present in the initial list it means that the person got added to the program, we have to register it in the database
+                        if(!m_InitPersonPrograms.Contains(programID))
+                        {
+                            // Add program to person
+                            SqlCommand commandAddPersonProgram = new SqlCommand("INSERT INTO PERSON_PROGRAM (ID_PERSON, ID_PROGRAM) VALUES (@idPerson, @idProgram)", conn, transaction);
+                            commandAddPersonProgram.Parameters.AddWithValue("idPerson", m_PersonID);
+                            commandAddPersonProgram.Parameters.AddWithValue("idProgram", programID);
+                            commandAddPersonProgram.ExecuteNonQuery();
+                        }
+                        // The person is already assigned to that program
+                        else
+                        {
+                            // We remove it from the list so we can keep track of which programs we have to delete from the database later
+                            m_InitPersonPrograms.Remove(programID);
+                        }
+                    }
+                    // Now that we are here all the program IDs left in the m_InitPersonPrograms list should be those that we have to remove from the database for that person
+                    foreach(int programID in m_InitPersonPrograms)
+                    {
+                        SqlCommand commandDeletePersonProgram = new SqlCommand("DELETE FROM PERSON_PROGRAM WHERE ID_PERSON = @idPerson AND ID_PROGRAM = @idProgram", conn, transaction);
+                        commandDeletePersonProgram.Parameters.AddWithValue("idPerson", m_PersonID);
+                        commandDeletePersonProgram.Parameters.AddWithValue("idProgram", programID);
+                        commandDeletePersonProgram.ExecuteNonQuery();
+                    }
+                    Console.WriteLine("Person_Program table UPDATED");
+
+                    /*
+                     * UPDATE WEEKLY_PRESENCE TABLE
+                     * */
+                    if (!m_IsWorker)
+                    {
+                        // The list contains ONLY the changes to the weekly presence
+                        foreach(int weekday in m_WeeklyPresenceChanges)
+                        {
+                            // If this particular weekday is checked we need to add that information to the database
+                            if ((bool)dgvWeeklyDetail.Rows[0].Cells[weekday - 1].Value)
+                            {
+                                SqlCommand commandInsertWeeklyPresence = new SqlCommand("INSERT INTO WEEKLY_PRESENCE (ID_PERSON, WEEK_DAY) VALUES (@idPerson, @weekday)", conn, transaction);
+                                commandInsertWeeklyPresence.Parameters.AddWithValue("idPerson", m_PersonID);
+                                commandInsertWeeklyPresence.Parameters.AddWithValue("weekday", weekday);
+                                commandInsertWeeklyPresence.ExecuteNonQuery();
+                            }
+                            // If it's not checked we need to remove this weekday from the database
+                            else
+                            {
+                                SqlCommand commandDeleteWeeklyPresence = new SqlCommand("DELETE FROM WEEKLY_PRESENCE WHERE ID_PERSON = @idPerson AND WEEK_DAY = @weekday", conn, transaction);
+                                commandDeleteWeeklyPresence.Parameters.AddWithValue("idPerson", m_PersonID);
+                                commandDeleteWeeklyPresence.Parameters.AddWithValue("weekday", weekday);
+                                commandDeleteWeeklyPresence.ExecuteNonQuery();
+                            }
+                        }
+                        Console.WriteLine("Weekly_Presence table UPDATED");
+                    }
+
+                    transaction.Commit();
+
+                    MessageBox.Show("The person's information has been successfully updated!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+                catch(Exception e)
+                {
+                    transaction.Rollback();
+
+                    Console.WriteLine(e);
+                    MessageBox.Show("An error has occured!\nThe person couldn't be updated in the database...", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
         }
 
         private void AddPerson()
         {
-            MessageBox.Show("Add person");
-
             using (SqlConnection conn = new SqlConnection())
             {
                 DatabaseConnection.OpenConnection(conn);
@@ -409,6 +506,9 @@ namespace Lista_de_Presencia
 
         private void dgvWeeklyDetail_CellClick(object sender, DataGridViewCellEventArgs e)
         {
+            if (e.RowIndex == -1)
+                return;
+
             // This works, but the problem is that the cell click event is not always called, if we click too fast.
             if (dgvWeeklyDetail.Rows[e.RowIndex].Cells[e.ColumnIndex].Value == null || (bool)dgvWeeklyDetail.Rows[e.RowIndex].Cells[e.ColumnIndex].Value == false)
                 dgvWeeklyDetail.Rows[e.RowIndex].Cells[e.ColumnIndex].Value = true;
