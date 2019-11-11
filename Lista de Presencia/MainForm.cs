@@ -230,13 +230,12 @@ namespace Lista_de_Presencia
                 using (SqlConnection conn = new SqlConnection())
                 {
                     DatabaseConnection.OpenConnection(conn);
-                    SqlTransaction transaction = conn.BeginTransaction();
+                    int deletionCounter = 0;
+                    foreach (DataGridViewRow row in dgvOverview.SelectedRows)
+                    {
+                        SqlTransaction transaction = conn.BeginTransaction();
                         try
-                        {
-
-                        int deletionCounter = 0;
-                        foreach (DataGridViewRow row in dgvOverview.SelectedRows)
-                        {
+                            {
                             // We first have to delete all the content related to that individual in the Presence table
                             SqlCommand command = new SqlCommand("DELETE FROM PRESENCE WHERE ID_PERSON = @id", conn, transaction);
                             command.Parameters.Add(new SqlParameter("id", row.Cells["colOverPersonID"].Value.ToString()));
@@ -265,17 +264,17 @@ namespace Lista_de_Presencia
 
                             transaction.Commit();
                         }
+                        catch (Exception excep)
+                        {
+                            transaction.Rollback();
 
-                        Console.WriteLine(deletionCounter + " rows where deleted.");
-                        GetPersonData();
+                            Console.WriteLine(excep);
+                            MessageBox.Show("An error has occured!\nThe person couldn't be deleted from the database...", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        }
                     }
-                    catch (Exception excep)
-                    {
-                        transaction.Rollback();
 
-                        Console.WriteLine(excep);
-                        MessageBox.Show("An error has occured!\nThe person couldn't be added to the database...", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    }
+                    Console.WriteLine(deletionCounter + " rows where deleted.");
+                    GetPersonData();
                 }              
             }
         }
@@ -461,18 +460,23 @@ namespace Lista_de_Presencia
 
                 Dictionary<Object, Object> comboSource = new Dictionary<Object, Object>();
 
+                bool empty = true;
                 using (SqlDataReader reader = command.ExecuteReader())
                 {
                     while (reader.Read())
                     {
                         comboSource.Add(reader["ID"], reader["NAME"]);
+                        empty = false;
                     }
                 }
 
-                cbbPrograms.DataSource = new BindingSource(comboSource, null);
-                cbbPrograms.DisplayMember = "Value";
-                cbbPrograms.ValueMember = "Key";
-                cbbPrograms.SelectedItem = null;
+                if (!empty)
+                {
+                    cbbPrograms.DataSource = new BindingSource(comboSource, null);
+                    cbbPrograms.DisplayMember = "Value";
+                    cbbPrograms.ValueMember = "Key";
+                    cbbPrograms.SelectedItem = null;
+                }
             }
         }
 

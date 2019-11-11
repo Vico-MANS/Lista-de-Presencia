@@ -222,6 +222,8 @@ namespace Lista_de_Presencia
                         programCounter++;
                     }
                 }
+
+                // TODO: What to do if there's not a single program in the database? 'cause we can't add "non workers" then...
             }
         }
 
@@ -239,6 +241,8 @@ namespace Lista_de_Presencia
             dgvWeeklyDetail.Rows.Clear();
             dgvWeeklyDetail.Rows.Add();
             dgvWeeklyDetail.ClearSelection();
+
+            m_WeeklyPresence.Clear();
         }
 
         // Checks if all the necessary fields have been filled out
@@ -486,6 +490,13 @@ namespace Lista_de_Presencia
 
                     if (!cbWorker.Checked)
                     {
+                        Console.Write("Week days: ");
+                        foreach (int weekday in m_WeeklyPresence)
+                        {
+                            Console.Write(weekday + " ");
+                        }
+                        Console.WriteLine();
+
                         foreach (int weekday in m_WeeklyPresence)
                         {
                             SqlCommand command = new SqlCommand("INSERT INTO WEEKLY_PRESENCE VALUES (@id, @weekday)", conn, transaction);
@@ -537,30 +548,34 @@ namespace Lista_de_Presencia
 
         private void PersonForm_FormClosing(object sender, FormClosingEventArgs e)
         {
-            bool modificationInPrograms = false;
-            List<int> currentPersonPrograms = new List<int>();
-            foreach (CheckBox cb in gbPrograms.Controls.OfType<CheckBox>())
-                if (cb.Checked)
-                    currentPersonPrograms.Add(Convert.ToInt32(cb.Tag));
-            // Now that we got that information we can compare it to the initial values
-            foreach (int programID in currentPersonPrograms)
+            // Only for modification!?
+            if (m_FormType.Equals(FormType.MODIFICATION))
             {
-                // If the value isn't present in the initial list it means that the user just checked the box
-                if (!m_InitPersonPrograms.Contains(programID))
-                    modificationInPrograms = true;
-            }
-            // A bit redundant, but necessary
-            foreach(int programID in m_InitPersonPrograms)
-            {
-                // If the value isn't present in the current list it means that the user just unchecked the box
-                if (!currentPersonPrograms.Contains(programID))
-                    modificationInPrograms = true;
-            }
-            
-            if(m_InitFirstname != txtFirstname.Text || m_InitLastname != txtLastname.Text || m_InitBirthday != dtpBirthday.Value.ToString() || modificationInPrograms || m_WeeklyPresenceChanges.Count > 0)
-            {
-                DialogResult res = MessageBox.Show("If you have made changes, these won't be saved!", "Information", MessageBoxButtons.OKCancel, MessageBoxIcon.Exclamation);
-                e.Cancel = res.Equals(DialogResult.Cancel);
+                bool modificationInPrograms = false;
+                List<int> currentPersonPrograms = new List<int>();
+                foreach (CheckBox cb in gbPrograms.Controls.OfType<CheckBox>())
+                    if (cb.Checked)
+                        currentPersonPrograms.Add(Convert.ToInt32(cb.Tag));
+                // Now that we got that information we can compare it to the initial values
+                foreach (int programID in currentPersonPrograms)
+                {
+                    // If the value isn't present in the initial list it means that the user just checked the box
+                    if (!m_InitPersonPrograms.Contains(programID))
+                        modificationInPrograms = true;
+                }
+                // A bit redundant, but necessary
+                foreach (int programID in m_InitPersonPrograms)
+                {
+                    // If the value isn't present in the current list it means that the user just unchecked the box
+                    if (!currentPersonPrograms.Contains(programID))
+                        modificationInPrograms = true;
+                }
+
+                if (m_InitFirstname != txtFirstname.Text || m_InitLastname != txtLastname.Text || m_InitBirthday != dtpBirthday.Value.ToString() || modificationInPrograms || m_WeeklyPresenceChanges.Count > 0)
+                {
+                    DialogResult res = MessageBox.Show("If you have made changes, these won't be saved!", "Information", MessageBoxButtons.OKCancel, MessageBoxIcon.Exclamation);
+                    e.Cancel = res.Equals(DialogResult.Cancel);
+                }
             }
         }
 
