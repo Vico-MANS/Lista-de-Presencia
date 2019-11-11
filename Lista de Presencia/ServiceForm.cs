@@ -83,6 +83,12 @@ namespace Lista_de_Presencia
 
         private void btnAddService_Click(object sender, EventArgs e)
         {
+            if (txtServiceName.Text == "" || cbbPrograms.SelectedItem == null)
+            {
+                MessageBox.Show("All fields are mandatory!", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
             using (SqlConnection conn = new SqlConnection())
             {
                 DatabaseConnection.OpenConnection(conn);

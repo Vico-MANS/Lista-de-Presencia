@@ -36,6 +36,7 @@
             this.dtpEndDate = new System.Windows.Forms.DateTimePicker();
             this.cbbServices = new System.Windows.Forms.ComboBox();
             this.label5 = new System.Windows.Forms.Label();
+            this.btnAddGroup = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // label1
@@ -65,6 +66,7 @@
             // 
             // cbbSupervisors
             // 
+            this.cbbSupervisors.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cbbSupervisors.FormattingEnabled = true;
             this.cbbSupervisors.Location = new System.Drawing.Point(474, 25);
             this.cbbSupervisors.Name = "cbbSupervisors";
@@ -107,6 +109,7 @@
             // 
             // cbbServices
             // 
+            this.cbbServices.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cbbServices.FormattingEnabled = true;
             this.cbbServices.Location = new System.Drawing.Point(271, 25);
             this.cbbServices.Name = "cbbServices";
@@ -122,11 +125,22 @@
             this.label5.TabIndex = 8;
             this.label5.Text = "Service";
             // 
+            // btnAddGroup
+            // 
+            this.btnAddGroup.Location = new System.Drawing.Point(520, 95);
+            this.btnAddGroup.Name = "btnAddGroup";
+            this.btnAddGroup.Size = new System.Drawing.Size(75, 23);
+            this.btnAddGroup.TabIndex = 10;
+            this.btnAddGroup.Text = "Add Group";
+            this.btnAddGroup.UseVisualStyleBackColor = true;
+            this.btnAddGroup.Click += new System.EventHandler(this.btnAddGroup_Click);
+            // 
             // GroupForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
+            this.Controls.Add(this.btnAddGroup);
             this.Controls.Add(this.cbbServices);
             this.Controls.Add(this.label5);
             this.Controls.Add(this.label4);
@@ -157,5 +171,6 @@
         private System.Windows.Forms.DateTimePicker dtpEndDate;
         private System.Windows.Forms.ComboBox cbbServices;
         private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.Button btnAddGroup;
     }
 }

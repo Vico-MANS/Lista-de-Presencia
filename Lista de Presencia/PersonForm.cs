@@ -199,10 +199,12 @@ namespace Lista_de_Presencia
                     int y = 15;
                     while (reader.Read())
                     {
-                        CheckBox box = new CheckBox();
-                        box.Tag = reader["PROGRAM_ID"].ToString();
-                        box.Text = reader["NAME"].ToString();
-                        box.AutoSize = true;
+                        CheckBox box = new CheckBox
+                        {
+                            Tag = reader["PROGRAM_ID"].ToString(),
+                            Text = reader["NAME"].ToString(),
+                            AutoSize = true
+                        };
 
                         if (m_FormType.Equals(FormType.MODIFICATION) && m_InitPersonPrograms.Contains((int)reader["PROGRAM_ID"]))
                                 box.Checked = true;

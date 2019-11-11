@@ -149,7 +149,7 @@ namespace Lista_de_Presencia
                     }
                 }
 
-                command = new SqlCommand("SELECT PERSON_ID AS ID, (FIRSTNAME + ' ' + LASTNAME) AS NAME FROM PERSON WHERE PERSON_ID IN (SELECT ID_PERSON FROM PERSON_PROGRAM WHERE ID_PROGRAM = @programID)", conn);
+                command = new SqlCommand("SELECT PERSON_ID AS ID, (FIRSTNAME + ' ' + LASTNAME) AS NAME FROM PERSON WHERE WORKER != 1 AND PERSON_ID IN (SELECT ID_PERSON FROM PERSON_PROGRAM WHERE ID_PROGRAM = @programID)", conn);
                 command.Parameters.AddWithValue("programID", m_ProgramID);
 
                 List<int> personIDs = new List<int>();

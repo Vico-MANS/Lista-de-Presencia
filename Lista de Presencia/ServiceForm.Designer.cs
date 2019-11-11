@@ -42,10 +42,10 @@
             this.label1.TabIndex = 0;
             this.label1.Text = "Name";
             // 
-            // txtName
+            // txtServiceName
             // 
             this.txtServiceName.Location = new System.Drawing.Point(63, 21);
-            this.txtServiceName.Name = "txtName";
+            this.txtServiceName.Name = "txtServiceName";
             this.txtServiceName.Size = new System.Drawing.Size(100, 20);
             this.txtServiceName.TabIndex = 1;
             // 
@@ -60,6 +60,7 @@
             // 
             // cbbPrograms
             // 
+            this.cbbPrograms.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cbbPrograms.FormattingEnabled = true;
             this.cbbPrograms.Location = new System.Drawing.Point(251, 20);
             this.cbbPrograms.Name = "cbbPrograms";

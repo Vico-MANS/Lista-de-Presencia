@@ -125,7 +125,7 @@
             // 
             // btnAddPerson
             // 
-            this.btnAddPerson.Location = new System.Drawing.Point(7, 375);
+            this.btnAddPerson.Location = new System.Drawing.Point(656, 375);
             this.btnAddPerson.Name = "btnAddPerson";
             this.btnAddPerson.Size = new System.Drawing.Size(86, 29);
             this.btnAddPerson.TabIndex = 2;
@@ -169,7 +169,7 @@
             // 
             // btnAddProgram
             // 
-            this.btnAddProgram.Location = new System.Drawing.Point(99, 375);
+            this.btnAddProgram.Location = new System.Drawing.Point(20, 375);
             this.btnAddProgram.Name = "btnAddProgram";
             this.btnAddProgram.Size = new System.Drawing.Size(86, 29);
             this.btnAddProgram.TabIndex = 13;
@@ -346,7 +346,7 @@
             // 
             // btnAddGroup
             // 
-            this.btnAddGroup.Location = new System.Drawing.Point(283, 375);
+            this.btnAddGroup.Location = new System.Drawing.Point(204, 375);
             this.btnAddGroup.Name = "btnAddGroup";
             this.btnAddGroup.Size = new System.Drawing.Size(86, 29);
             this.btnAddGroup.TabIndex = 14;
@@ -356,7 +356,7 @@
             // 
             // btnAddService
             // 
-            this.btnAddService.Location = new System.Drawing.Point(191, 375);
+            this.btnAddService.Location = new System.Drawing.Point(112, 375);
             this.btnAddService.Name = "btnAddService";
             this.btnAddService.Size = new System.Drawing.Size(86, 29);
             this.btnAddService.TabIndex = 15;

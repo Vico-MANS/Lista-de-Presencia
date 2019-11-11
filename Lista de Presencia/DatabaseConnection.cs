@@ -9,8 +9,8 @@ namespace Lista_de_Presencia
 {
     class DatabaseConnection
     {
-        private static string s_Server = "USUARIO-PC\\SQLEXPRESS";
-        private static string s_Database = "MALM";
+        private static readonly string s_Server = "USUARIO-PC\\SQLEXPRESS";
+        private static readonly string s_Database = "MALM";
 
         public static void OpenConnection(SqlConnection conn)
         {
