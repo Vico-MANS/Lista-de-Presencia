@@ -31,6 +31,10 @@
             this.components = new System.ComponentModel.Container();
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.dgvOverview = new System.Windows.Forms.DataGridView();
+            this.colOverPersonID = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colFirstName = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colLastName = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colBirthday = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.btnAddPerson = new System.Windows.Forms.Button();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.tabControl = new System.Windows.Forms.TabControl();
@@ -56,10 +60,8 @@
             this.btnNextWeek = new System.Windows.Forms.Button();
             this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
             this.notifyIcon1 = new System.Windows.Forms.NotifyIcon(this.components);
-            this.colOverPersonID = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.colFirstName = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.colLastName = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.colBirthday = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.btnAddGroup = new System.Windows.Forms.Button();
+            this.btnAddService = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.dgvOverview)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.SuspendLayout();
@@ -92,6 +94,35 @@
             this.dgvOverview.TabIndex = 1;
             this.dgvOverview.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvOverview_CellDoubleClick);
             // 
+            // colOverPersonID
+            // 
+            this.colOverPersonID.HeaderText = "ID";
+            this.colOverPersonID.Name = "colOverPersonID";
+            this.colOverPersonID.ReadOnly = true;
+            this.colOverPersonID.Visible = false;
+            // 
+            // colFirstName
+            // 
+            this.colFirstName.HeaderText = "FIRSTNAME";
+            this.colFirstName.Name = "colFirstName";
+            this.colFirstName.ReadOnly = true;
+            this.colFirstName.Width = 225;
+            // 
+            // colLastName
+            // 
+            this.colLastName.HeaderText = "LASTNAME";
+            this.colLastName.Name = "colLastName";
+            this.colLastName.ReadOnly = true;
+            this.colLastName.Width = 225;
+            // 
+            // colBirthday
+            // 
+            this.colBirthday.HeaderText = "BIRTHDAY";
+            this.colBirthday.Name = "colBirthday";
+            this.colBirthday.ReadOnly = true;
+            this.colBirthday.Resizable = System.Windows.Forms.DataGridViewTriState.False;
+            this.colBirthday.Width = 225;
+            // 
             // btnAddPerson
             // 
             this.btnAddPerson.Location = new System.Drawing.Point(7, 375);
@@ -122,6 +153,8 @@
             // 
             // tabOverview
             // 
+            this.tabOverview.Controls.Add(this.btnAddService);
+            this.tabOverview.Controls.Add(this.btnAddGroup);
             this.tabOverview.Controls.Add(this.btnAddProgram);
             this.tabOverview.Controls.Add(this.btnDeleteSelected);
             this.tabOverview.Controls.Add(this.dgvOverview);
@@ -311,34 +344,25 @@
             this.notifyIcon1.Text = "notifyIcon1";
             this.notifyIcon1.Visible = true;
             // 
-            // colOverPersonID
+            // btnAddGroup
             // 
-            this.colOverPersonID.HeaderText = "ID";
-            this.colOverPersonID.Name = "colOverPersonID";
-            this.colOverPersonID.ReadOnly = true;
-            this.colOverPersonID.Visible = false;
+            this.btnAddGroup.Location = new System.Drawing.Point(283, 375);
+            this.btnAddGroup.Name = "btnAddGroup";
+            this.btnAddGroup.Size = new System.Drawing.Size(86, 29);
+            this.btnAddGroup.TabIndex = 14;
+            this.btnAddGroup.Text = "Add Group";
+            this.btnAddGroup.UseVisualStyleBackColor = true;
+            this.btnAddGroup.Click += new System.EventHandler(this.btnAddGroup_Click);
             // 
-            // colFirstName
+            // btnAddService
             // 
-            this.colFirstName.HeaderText = "FIRSTNAME";
-            this.colFirstName.Name = "colFirstName";
-            this.colFirstName.ReadOnly = true;
-            this.colFirstName.Width = 225;
-            // 
-            // colLastName
-            // 
-            this.colLastName.HeaderText = "LASTNAME";
-            this.colLastName.Name = "colLastName";
-            this.colLastName.ReadOnly = true;
-            this.colLastName.Width = 225;
-            // 
-            // colBirthday
-            // 
-            this.colBirthday.HeaderText = "BIRTHDAY";
-            this.colBirthday.Name = "colBirthday";
-            this.colBirthday.ReadOnly = true;
-            this.colBirthday.Resizable = System.Windows.Forms.DataGridViewTriState.False;
-            this.colBirthday.Width = 225;
+            this.btnAddService.Location = new System.Drawing.Point(191, 375);
+            this.btnAddService.Name = "btnAddService";
+            this.btnAddService.Size = new System.Drawing.Size(86, 29);
+            this.btnAddService.TabIndex = 15;
+            this.btnAddService.Text = "Add Service";
+            this.btnAddService.UseVisualStyleBackColor = true;
+            this.btnAddService.Click += new System.EventHandler(this.btnAddService_Click);
             // 
             // MainForm
             // 
@@ -396,6 +420,8 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn colFirstName;
         private System.Windows.Forms.DataGridViewTextBoxColumn colLastName;
         private System.Windows.Forms.DataGridViewTextBoxColumn colBirthday;
+        private System.Windows.Forms.Button btnAddGroup;
+        private System.Windows.Forms.Button btnAddService;
     }
 }
 

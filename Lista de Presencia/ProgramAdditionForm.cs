@@ -78,7 +78,7 @@ namespace Lista_de_Presencia
 
         private void btnCreateProgram_Click(object sender, EventArgs e)
         {
-            if (txtProgramName.Text == "" || cbbWorkers.SelectedItem == null)
+            if (txtProgramName.Text == ""/* || cbbWorkers.SelectedItem == null*/)
             {
                 MessageBox.Show("All fields are mandatory!", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
@@ -88,9 +88,12 @@ namespace Lista_de_Presencia
             {
                 DatabaseConnection.OpenConnection(conn);
 
-                SqlCommand command = new SqlCommand("INSERT INTO PROGRAM(NAME, ID_EDUCATOR) VALUES(@name, @educator)", conn);
+                //SqlCommand command = new SqlCommand("INSERT INTO PROGRAM(NAME, ID_EDUCATOR) VALUES(@name, @educator)", conn);
+                //command.Parameters.AddWithValue("name", txtProgramName.Text);
+                //command.Parameters.AddWithValue("educator", ((KeyValuePair<Object, Object>)cbbWorkers.SelectedItem).Key);
+
+                SqlCommand command = new SqlCommand("INSERT INTO PROGRAM(NAME) VALUES(@name)", conn);
                 command.Parameters.AddWithValue("name", txtProgramName.Text);
-                command.Parameters.AddWithValue("educator", ((KeyValuePair<Object, Object>)cbbWorkers.SelectedItem).Key);
 
                 command.ExecuteNonQuery();
 

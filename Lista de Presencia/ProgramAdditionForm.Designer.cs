@@ -48,10 +48,11 @@
             // 
             this.cbbWorkers.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cbbWorkers.FormattingEnabled = true;
-            this.cbbWorkers.Location = new System.Drawing.Point(279, 23);
+            this.cbbWorkers.Location = new System.Drawing.Point(601, 182);
             this.cbbWorkers.Name = "cbbWorkers";
             this.cbbWorkers.Size = new System.Drawing.Size(121, 21);
             this.cbbWorkers.TabIndex = 2;
+            this.cbbWorkers.Visible = false;
             // 
             // txtProgramName
             // 
@@ -63,15 +64,16 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(186, 27);
+            this.label2.Location = new System.Drawing.Point(508, 186);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(87, 13);
             this.label2.TabIndex = 3;
             this.label2.Text = "Person in charge";
+            this.label2.Visible = false;
             // 
             // btnCreateProgram
             // 
-            this.btnCreateProgram.Location = new System.Drawing.Point(305, 90);
+            this.btnCreateProgram.Location = new System.Drawing.Point(204, 17);
             this.btnCreateProgram.Name = "btnCreateProgram";
             this.btnCreateProgram.Size = new System.Drawing.Size(95, 27);
             this.btnCreateProgram.TabIndex = 4;

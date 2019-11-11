@@ -498,5 +498,23 @@ namespace Lista_de_Presencia
             else
                 dgvPresence.Rows[e.RowIndex].Cells[e.ColumnIndex].Value = false;
         }
+
+        private void btnAddGroup_Click(object sender, EventArgs e)
+        {
+            GroupForm form = GroupForm.GetInstance();
+            if (!form.Visible)
+                form.Show();
+            else
+                form.BringToFront();
+        }
+
+        private void btnAddService_Click(object sender, EventArgs e)
+        {
+            ServiceForm form = ServiceForm.GetInstance();
+            if (!form.Visible)
+                form.Show();
+            else
+                form.BringToFront();
+        }
     }
 }
