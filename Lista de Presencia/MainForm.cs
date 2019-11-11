@@ -404,7 +404,7 @@ namespace Lista_de_Presencia
         {
             if (m_PresenceChanges.Count != 0)
             {
-                DialogResult res = MessageBox.Show("You have made "+m_PresenceChanges.Count+" changes that won't be saved.\nDo you want to continue?", "Seguro?", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                DialogResult res = MessageBox.Show("You have made "+m_PresenceChanges.Count+" changes that won't be saved.\nDo you want to continue?", "Information", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation);
 
                 if (res == DialogResult.No)
                     return false;

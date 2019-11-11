@@ -43,18 +43,29 @@ namespace Lista_de_Presencia
 
         private bool m_Initialisation;
 
-        private List<int> m_WeeklyPresence;
         private FormType m_FormType;
         private int m_PersonID;
         private bool m_IsWorker;
         // The programs that the person is assigned to in the database
         private List<int> m_InitPersonPrograms;
 
+        // (ADDITION) Contains the cells that are checked for a person's addition, these cell's information need to be registered into the database
+        private List<int> m_WeeklyPresence;
+        // (MODIFICATION) Contains the cells that were initially checked, before the user could perform any modification
         private List<int> m_WeeklyPresenceCheckedCells = new List<int>();
+        // (MODIFICATION) Contains the cells that got changed in comparision to the WeeklyPresenceCheckedCells, therefore it holds the information that has to be updated in the database
         private List<int> m_WeeklyPresenceChanges = new List<int>();
+
+        /**
+         * TO KNOW IF THE USER MADE ANY MODIFICATION (ON FORM CLOSING)
+         * */
+        private string m_InitFirstname;
+        private string m_InitLastname;
+        private string m_InitBirthday;
+        
         
         public PersonForm(FormType type, int personID)
-        {
+        {            
             InitializeComponent();
             this.CenterToScreen();
             m_FormType = type;
@@ -115,6 +126,10 @@ namespace Lista_de_Presencia
                     txtLastname.Text = reader["LASTNAME"].ToString();
                     dtpBirthday.Value = Convert.ToDateTime(reader["BIRTHDAY"]);
                     m_IsWorker = (bool)reader["WORKER"];
+
+                    m_InitFirstname = txtFirstname.Text;
+                    m_InitLastname = txtLastname.Text;
+                    m_InitBirthday = dtpBirthday.Value.ToString();
 
                     cbWorker.Checked = m_IsWorker;
                     cbWorker.Enabled = false;
@@ -320,6 +335,11 @@ namespace Lista_de_Presencia
                     commandUpdatePerson.Parameters.AddWithValue("birthday", dtpBirthday.Value);
                     commandUpdatePerson.Parameters.AddWithValue("id", m_PersonID);
                     commandUpdatePerson.ExecuteNonQuery();
+
+                    m_InitFirstname = txtFirstname.Text;
+                    m_InitLastname = txtLastname.Text;
+                    m_InitBirthday = dtpBirthday.Value.ToString();
+
                     Console.WriteLine("Person table UPDATED");
 
                     /*
@@ -330,7 +350,7 @@ namespace Lista_de_Presencia
                     foreach (CheckBox cb in gbPrograms.Controls.OfType<CheckBox>())
                         if (cb.Checked)
                             currentPersonPrograms.Add(Convert.ToInt32(cb.Tag));
-                    // Now that we got that information we can compate to the initial values
+                    // Now that we got that information we can compare it to the initial values
                     foreach(int programID in currentPersonPrograms)
                     {
                         // If the value isn't present in the initial list it means that the person got added to the program, we have to register it in the database
@@ -357,8 +377,10 @@ namespace Lista_de_Presencia
                         commandDeletePersonProgram.Parameters.AddWithValue("idProgram", programID);
                         commandDeletePersonProgram.ExecuteNonQuery();
                     }
+                    // Now we update the list with the right values
+                    m_InitPersonPrograms = currentPersonPrograms;
                     Console.WriteLine("Person_Program table UPDATED");
-
+                    
                     /*
                      * UPDATE WEEKLY_PRESENCE TABLE
                      * */
@@ -515,8 +537,31 @@ namespace Lista_de_Presencia
 
         private void PersonForm_FormClosing(object sender, FormClosingEventArgs e)
         {
-            DialogResult res = MessageBox.Show("If you have made changes, these won't be saved!", "Information", MessageBoxButtons.OKCancel, MessageBoxIcon.Exclamation);
-            e.Cancel = res.Equals(DialogResult.Cancel);
+            bool modificationInPrograms = false;
+            List<int> currentPersonPrograms = new List<int>();
+            foreach (CheckBox cb in gbPrograms.Controls.OfType<CheckBox>())
+                if (cb.Checked)
+                    currentPersonPrograms.Add(Convert.ToInt32(cb.Tag));
+            // Now that we got that information we can compare it to the initial values
+            foreach (int programID in currentPersonPrograms)
+            {
+                // If the value isn't present in the initial list it means that the user just checked the box
+                if (!m_InitPersonPrograms.Contains(programID))
+                    modificationInPrograms = true;
+            }
+            // A bit redundant, but necessary
+            foreach(int programID in m_InitPersonPrograms)
+            {
+                // If the value isn't present in the current list it means that the user just unchecked the box
+                if (!currentPersonPrograms.Contains(programID))
+                    modificationInPrograms = true;
+            }
+            
+            if(m_InitFirstname != txtFirstname.Text || m_InitLastname != txtLastname.Text || m_InitBirthday != dtpBirthday.Value.ToString() || modificationInPrograms || m_WeeklyPresenceChanges.Count > 0)
+            {
+                DialogResult res = MessageBox.Show("If you have made changes, these won't be saved!", "Information", MessageBoxButtons.OKCancel, MessageBoxIcon.Exclamation);
+                e.Cancel = res.Equals(DialogResult.Cancel);
+            }
         }
 
         private void PersonForm_FormClosed(object sender, FormClosedEventArgs e)
