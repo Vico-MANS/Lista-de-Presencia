@@ -47,8 +47,18 @@
             this.colWeekSaturday = new System.Windows.Forms.DataGridViewCheckBoxColumn();
             this.colWeekSunday = new System.Windows.Forms.DataGridViewCheckBoxColumn();
             this.btnCancel = new System.Windows.Forms.Button();
+            this.cbbPrograms = new System.Windows.Forms.ComboBox();
+            this.label4 = new System.Windows.Forms.Label();
+            this.label5 = new System.Windows.Forms.Label();
+            this.cbbProgramGroups = new System.Windows.Forms.ComboBox();
+            this.btnAddGroup = new System.Windows.Forms.Button();
+            this.gbGroupInfo = new System.Windows.Forms.GroupBox();
+            this.lblGroupNameLegend = new System.Windows.Forms.Label();
+            this.lblGroupIDLegend = new System.Windows.Forms.Label();
+            this.lblGroupDatesLegend = new System.Windows.Forms.Label();
             this.gbWeeklyPresence.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvWeeklyDetail)).BeginInit();
+            this.gbGroupInfo.SuspendLayout();
             this.SuspendLayout();
             // 
             // label3
@@ -102,7 +112,7 @@
             // 
             // btnValidateForm
             // 
-            this.btnValidateForm.Location = new System.Drawing.Point(558, 351);
+            this.btnValidateForm.Location = new System.Drawing.Point(533, 393);
             this.btnValidateForm.Name = "btnValidateForm";
             this.btnValidateForm.Size = new System.Drawing.Size(86, 29);
             this.btnValidateForm.TabIndex = 9;
@@ -112,12 +122,13 @@
             // 
             // gbPrograms
             // 
-            this.gbPrograms.Location = new System.Drawing.Point(32, 50);
+            this.gbPrograms.Location = new System.Drawing.Point(35, 295);
             this.gbPrograms.Name = "gbPrograms";
-            this.gbPrograms.Size = new System.Drawing.Size(680, 138);
+            this.gbPrograms.Size = new System.Drawing.Size(680, 92);
             this.gbPrograms.TabIndex = 16;
             this.gbPrograms.TabStop = false;
             this.gbPrograms.Text = "Programs";
+            this.gbPrograms.Visible = false;
             // 
             // cbWorker
             // 
@@ -219,7 +230,7 @@
             // 
             // btnCancel
             // 
-            this.btnCancel.Location = new System.Drawing.Point(660, 351);
+            this.btnCancel.Location = new System.Drawing.Point(635, 393);
             this.btnCancel.Name = "btnCancel";
             this.btnCancel.Size = new System.Drawing.Size(75, 29);
             this.btnCancel.TabIndex = 18;
@@ -227,11 +238,109 @@
             this.btnCancel.UseVisualStyleBackColor = true;
             this.btnCancel.Click += new System.EventHandler(this.btnCancel_Click);
             // 
+            // cbbPrograms
+            // 
+            this.cbbPrograms.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cbbPrograms.FormattingEnabled = true;
+            this.cbbPrograms.Location = new System.Drawing.Point(84, 63);
+            this.cbbPrograms.Name = "cbbPrograms";
+            this.cbbPrograms.Size = new System.Drawing.Size(121, 21);
+            this.cbbPrograms.TabIndex = 19;
+            this.cbbPrograms.SelectedIndexChanged += new System.EventHandler(this.cbbPrograms_SelectedIndexChanged);
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(32, 66);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(46, 13);
+            this.label4.TabIndex = 20;
+            this.label4.Text = "Program";
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(222, 66);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(36, 13);
+            this.label5.TabIndex = 22;
+            this.label5.Text = "Group";
+            // 
+            // cbbProgramGroups
+            // 
+            this.cbbProgramGroups.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cbbProgramGroups.FormattingEnabled = true;
+            this.cbbProgramGroups.Location = new System.Drawing.Point(264, 63);
+            this.cbbProgramGroups.Name = "cbbProgramGroups";
+            this.cbbProgramGroups.Size = new System.Drawing.Size(121, 21);
+            this.cbbProgramGroups.TabIndex = 21;
+            // 
+            // btnAddGroup
+            // 
+            this.btnAddGroup.Location = new System.Drawing.Point(401, 61);
+            this.btnAddGroup.Name = "btnAddGroup";
+            this.btnAddGroup.Size = new System.Drawing.Size(36, 23);
+            this.btnAddGroup.TabIndex = 23;
+            this.btnAddGroup.Text = "Add";
+            this.btnAddGroup.UseVisualStyleBackColor = true;
+            this.btnAddGroup.Click += new System.EventHandler(this.btnAddGroup_Click);
+            // 
+            // gbGroupInfo
+            // 
+            this.gbGroupInfo.Controls.Add(this.lblGroupDatesLegend);
+            this.gbGroupInfo.Controls.Add(this.lblGroupIDLegend);
+            this.gbGroupInfo.Controls.Add(this.lblGroupNameLegend);
+            this.gbGroupInfo.Location = new System.Drawing.Point(35, 90);
+            this.gbGroupInfo.Name = "gbGroupInfo";
+            this.gbGroupInfo.Size = new System.Drawing.Size(675, 98);
+            this.gbGroupInfo.TabIndex = 24;
+            this.gbGroupInfo.TabStop = false;
+            this.gbGroupInfo.Text = "Group Info";
+            // 
+            // lblGroupNameLegend
+            // 
+            this.lblGroupNameLegend.AutoSize = true;
+            this.lblGroupNameLegend.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblGroupNameLegend.Location = new System.Drawing.Point(14, 18);
+            this.lblGroupNameLegend.Name = "lblGroupNameLegend";
+            this.lblGroupNameLegend.Size = new System.Drawing.Size(35, 13);
+            this.lblGroupNameLegend.TabIndex = 0;
+            this.lblGroupNameLegend.Tag = "Freeze";
+            this.lblGroupNameLegend.Text = "Name";
+            // 
+            // lblGroupIDLegend
+            // 
+            this.lblGroupIDLegend.AutoSize = true;
+            this.lblGroupIDLegend.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblGroupIDLegend.Location = new System.Drawing.Point(226, 18);
+            this.lblGroupIDLegend.Name = "lblGroupIDLegend";
+            this.lblGroupIDLegend.Size = new System.Drawing.Size(18, 13);
+            this.lblGroupIDLegend.TabIndex = 1;
+            this.lblGroupIDLegend.Tag = "Freeze";
+            this.lblGroupIDLegend.Text = "ID";
+            // 
+            // lblGroupDatesLegend
+            // 
+            this.lblGroupDatesLegend.AutoSize = true;
+            this.lblGroupDatesLegend.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblGroupDatesLegend.Location = new System.Drawing.Point(367, 18);
+            this.lblGroupDatesLegend.Name = "lblGroupDatesLegend";
+            this.lblGroupDatesLegend.Size = new System.Drawing.Size(35, 13);
+            this.lblGroupDatesLegend.TabIndex = 2;
+            this.lblGroupDatesLegend.Tag = "Freeze";
+            this.lblGroupDatesLegend.Text = "Dates";
+            // 
             // PersonForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
+            this.Controls.Add(this.gbGroupInfo);
+            this.Controls.Add(this.btnAddGroup);
+            this.Controls.Add(this.label5);
+            this.Controls.Add(this.cbbProgramGroups);
+            this.Controls.Add(this.label4);
+            this.Controls.Add(this.cbbPrograms);
             this.Controls.Add(this.btnCancel);
             this.Controls.Add(this.gbWeeklyPresence);
             this.Controls.Add(this.cbWorker);
@@ -250,6 +359,8 @@
             this.Load += new System.EventHandler(this.Form2_Load);
             this.gbWeeklyPresence.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dgvWeeklyDetail)).EndInit();
+            this.gbGroupInfo.ResumeLayout(false);
+            this.gbGroupInfo.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -276,5 +387,14 @@
         private System.Windows.Forms.DataGridViewCheckBoxColumn colWeekSaturday;
         private System.Windows.Forms.DataGridViewCheckBoxColumn colWeekSunday;
         private System.Windows.Forms.Button btnCancel;
+        private System.Windows.Forms.ComboBox cbbPrograms;
+        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.ComboBox cbbProgramGroups;
+        private System.Windows.Forms.Button btnAddGroup;
+        private System.Windows.Forms.GroupBox gbGroupInfo;
+        private System.Windows.Forms.Label lblGroupDatesLegend;
+        private System.Windows.Forms.Label lblGroupIDLegend;
+        private System.Windows.Forms.Label lblGroupNameLegend;
     }
 }

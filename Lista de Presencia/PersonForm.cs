@@ -56,13 +56,15 @@ namespace Lista_de_Presencia
         // (MODIFICATION) Contains the cells that got changed in comparision to the WeeklyPresenceCheckedCells, therefore it holds the information that has to be updated in the database
         private List<int> m_WeeklyPresenceChanges = new List<int>();
 
+        // Keeps track of the group's that the person was added to
+        private List<int> m_GroupIDs;
+
         /**
          * TO KNOW IF THE USER MADE ANY MODIFICATION (ON FORM CLOSING)
          * */
         private string m_InitFirstname;
         private string m_InitLastname;
-        private string m_InitBirthday;
-        
+        private string m_InitBirthday;        
         
         public PersonForm(FormType type, int personID)
         {            
@@ -85,7 +87,9 @@ namespace Lista_de_Presencia
                 RetrievePersonProgramInformation();
             }
             LoadPrograms();
+            GetPrograms();
             m_WeeklyPresence = new List<int>();
+            m_GroupIDs = new List<int>();
         }
         
         private void Form2_Load(object sender, EventArgs e)
@@ -229,20 +233,79 @@ namespace Lista_de_Presencia
             }
         }
 
+        private void GetPrograms()
+        {
+            using (SqlConnection conn = new SqlConnection())
+            {
+                DatabaseConnection.OpenConnection(conn);
+
+                SqlCommand command = new SqlCommand("SELECT PROGRAM_ID AS ID, NAME FROM PROGRAM", conn);
+
+                cbbPrograms.DisplayMember = "Text";
+                cbbPrograms.ValueMember = "Value";
+
+                Dictionary<Object, Object> comboSource = new Dictionary<Object, Object>();
+
+                using (SqlDataReader reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        comboSource.Add(reader["ID"], reader["NAME"]);
+                    }
+                }
+
+                cbbPrograms.DataSource = new BindingSource(comboSource, null);
+                cbbPrograms.DisplayMember = "Value";
+                cbbPrograms.ValueMember = "Key";
+                cbbPrograms.SelectedItem = null;
+            }
+        }
+
+        private void GetProgramGroups(int programID)
+        {
+            using (SqlConnection conn = new SqlConnection())
+            {
+                DatabaseConnection.OpenConnection(conn);
+
+                SqlCommand command = new SqlCommand("SELECT GRUPO_ID AS ID, GRUPO.NAME+' ('+CONVERT(NVARCHAR,GRUPO_ID)+')' AS NAME FROM GRUPO WHERE ID_SERVICIO IN (SELECT SERVICIO_ID FROM SERVICIO WHERE ID_PROGRAM = @programID);", conn);
+                command.Parameters.AddWithValue("programID", programID);
+
+                cbbProgramGroups.DisplayMember = "Text";
+                cbbProgramGroups.ValueMember = "Value";
+
+                Dictionary<Object, Object> comboSource = new Dictionary<Object, Object>();
+
+                using (SqlDataReader reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        comboSource.Add(reader["ID"], reader["NAME"]);
+                    }
+                }
+
+                cbbProgramGroups.DataSource = new BindingSource(comboSource, null);
+                cbbProgramGroups.DisplayMember = "Value";
+                cbbProgramGroups.ValueMember = "Key";
+                cbbProgramGroups.SelectedItem = null;
+            }
+        }
+
         private void ClearPersonAdditionFields()
         {
             txtFirstname.Clear();
             txtLastname.Clear();
             dtpBirthday.Value = DateTime.Now;
 
-            foreach(CheckBox cb in gbPrograms.Controls.OfType<CheckBox>())
-                cb.Checked = false;
+            //foreach(CheckBox cb in gbPrograms.Controls.OfType<CheckBox>())
+            //    cb.Checked = false;
 
             cbWorker.Checked = false;
 
             dgvWeeklyDetail.Rows.Clear();
             dgvWeeklyDetail.Rows.Add();
             dgvWeeklyDetail.ClearSelection();
+
+            ClearGroupInfoBox();
 
             m_WeeklyPresence.Clear();
         }
@@ -258,17 +321,19 @@ namespace Lista_de_Presencia
             // If the person isn't working here, it has to be part of a program
             if(!cbWorker.Checked)
             {
-                bool found = false;
-                foreach(CheckBox cb in gbPrograms.Controls.OfType<CheckBox>())
-                {
-                    if (cb.Checked)
-                    {
-                        found = true;
-                        break;
-                    }
-                }
-                if (!found)
-                    return false;
+                // If this is true it means that the person is part of at least one group
+                return gbGroupInfo.Controls.Count > 3;
+                //bool found = false;
+                //foreach(CheckBox cb in gbPrograms.Controls.OfType<CheckBox>())
+                //{
+                //    if (cb.Checked)
+                //    {
+                //        found = true;
+                //        break;
+                //    }
+                //}
+                //if (!found)
+                //    return false;
             }
             return true;
         }
@@ -468,7 +533,7 @@ namespace Lista_de_Presencia
                     }
 
                     /**
-                     * INSERT PROGRAMS
+                     * INSERT PROGRAMS (useless since we do it with groups now)
                      * */
 
                     foreach (CheckBox cb in gbPrograms.Controls.OfType<CheckBox>())
@@ -484,7 +549,20 @@ namespace Lista_de_Presencia
                         }
                     }
 
-                    Console.WriteLine("Program participation inserted");
+                    /**
+                     * INSERT GROUPS
+                     * */
+
+                    foreach(int groupID in m_GroupIDs)
+                    {
+                        SqlCommand commandAddGroupToPerson = new SqlCommand("INSERT INTO PERSON_GRUPO VALUES (@personID, @groupID)", conn, transaction);
+                        commandAddGroupToPerson.Parameters.AddWithValue("personID", personID);
+                        commandAddGroupToPerson.Parameters.AddWithValue("groupID", groupID);
+
+                        commandAddGroupToPerson.ExecuteNonQuery();
+                    }
+
+                    Console.WriteLine("Group assignement inserted");
 
                     /**
                      * INSERT WEEKLY PRESENCE
@@ -585,6 +663,118 @@ namespace Lista_de_Presencia
         {
             // When the form is closed again we set the reference of the singleton to null
             s_Instance = null;
+        }
+
+        private void cbbPrograms_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if(cbbPrograms.SelectedIndex != -1)
+                GetProgramGroups((int)((KeyValuePair<Object, Object>)cbbPrograms.SelectedItem).Key);
+        }
+
+        private void btnAddGroup_Click(object sender, EventArgs e)
+        {
+            if (cbbProgramGroups.SelectedItem == null)
+                return;
+
+            int groupID = (int)((KeyValuePair<Object, Object>)cbbProgramGroups.SelectedItem).Key;
+            if (m_GroupIDs.Contains(groupID))
+            {
+                ResetGroupAddition();
+                return;
+            }
+            // We keep track of the group's ID to insert it later in the database
+            m_GroupIDs.Add(groupID);
+
+            // We also add a line in the form to show the user what he just added
+            UpdateGroupInfoBox();
+            
+            ResetGroupAddition();
+        }
+
+        private void ClearGroupInfoBox()
+        {
+            // We read it in reverse because we want to delete elements while reading
+            for (int i = gbGroupInfo.Controls.Count - 1; i >= 0; i--)
+            {
+                Control control = gbGroupInfo.Controls[i];
+                // The legend labels are tagged 'Freeze' and shouldn't be deleted
+                if (control.Tag == null || !control.Tag.Equals("Freeze"))
+                    gbGroupInfo.Controls.Remove(control);
+            }
+        }
+
+        // Updates the GroupBox that holds the information about the groups to which the person belongs
+        private void UpdateGroupInfoBox()
+        {
+            ClearGroupInfoBox();
+
+            // Not the cleanest way to do it since we retrieved the information of the form load...
+            using (SqlConnection conn = new SqlConnection())
+            {
+                DatabaseConnection.OpenConnection(conn);
+
+                int counter = 0;
+                foreach(int groupID in m_GroupIDs)
+                {
+                    SqlCommand command = new SqlCommand("SELECT GRUPO_ID, NAME, CONVERT(VARCHAR, START_DATE, 103) AS START_DATE, CONVERT(VARCHAR, END_DATE, 103) AS END_DATE FROM GRUPO WHERE GRUPO_ID = @groupID", conn);
+                    command.Parameters.AddWithValue("groupID", groupID);
+
+                    using (SqlDataReader reader = command.ExecuteReader())
+                    {
+                        reader.Read();
+
+                        int y = lblGroupNameLegend.Location.Y + 20 + counter * 20;
+                        Label lblGroupName = new Label
+                        {
+                            Text = reader["NAME"].ToString(),
+                            Location = new Point(lblGroupNameLegend.Location.X, y),
+                            AutoSize = true
+                        };
+                        gbGroupInfo.Controls.Add(lblGroupName);
+
+                        Label lblGroupID = new Label
+                        {
+                            Text = reader["GRUPO_ID"].ToString(),
+                            Location = new Point(lblGroupIDLegend.Location.X, y),
+                            AutoSize = true
+                        };
+                        gbGroupInfo.Controls.Add(lblGroupID);
+
+                        Label lblGroupDates = new Label
+                        {
+                            Text = reader["START_DATE"].ToString() + " - " + reader["END_DATE"].ToString(),
+                            Location = new Point(lblGroupDatesLegend.Location.X, y),
+                            AutoSize = true
+                        };
+                        gbGroupInfo.Controls.Add(lblGroupDates);
+
+                        Button btnDeleteGroupRelation = new Button
+                        {
+                            Text = "-",
+                            Location = new Point(lblGroupDates.Right + 10, y - 4),
+                            Tag = reader["GRUPO_ID"],
+                            TextAlign = ContentAlignment.MiddleCenter,
+                            Size = new Size(25, 20)
+                        };
+                        btnDeleteGroupRelation.Click += btnDeleteGroupRelation_Click;
+                        gbGroupInfo.Controls.Add(btnDeleteGroupRelation);
+
+                        counter++;
+                    }
+                }                
+            }
+        }
+
+        private void btnDeleteGroupRelation_Click(object sender, EventArgs e)
+        {
+            m_GroupIDs.Remove((int)((Button)sender).Tag);            
+            UpdateGroupInfoBox();
+        }
+
+        private void ResetGroupAddition()
+        {
+            cbbPrograms.SelectedItem = null;
+            cbbProgramGroups.SelectedItem = null;
         }
     }
 }
