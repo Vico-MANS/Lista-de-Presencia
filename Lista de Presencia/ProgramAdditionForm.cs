@@ -56,7 +56,7 @@ namespace Lista_de_Presencia
                     int counter = 0;
                     while (reader.Read())
                     {
-                        int x = 25;
+                        int x = 15;
                         int y = 20 + counter * 20;
                         Label label = new Label
                         {

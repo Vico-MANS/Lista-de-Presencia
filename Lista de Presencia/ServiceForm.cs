@@ -45,6 +45,37 @@ namespace Lista_de_Presencia
         private void ServiceForm_Load(object sender, EventArgs e)
         {
             GetPrograms();
+            GetServices();
+        }
+
+        private void GetServices()
+        {
+            gbExistingServices.Controls.Clear();
+            using (SqlConnection conn = new SqlConnection())
+            {
+                DatabaseConnection.OpenConnection(conn);
+
+                SqlCommand command = new SqlCommand("SELECT NAME AS SERVICE, (SELECT NAME FROM PROGRAM WHERE PROGRAM_ID = ID_PROGRAM) AS PROGRAM FROM SERVICIO ORDER BY PROGRAM, SERVICE", conn);
+
+                using (SqlDataReader reader = command.ExecuteReader())
+                {
+                    int counter = 0;
+                    while (reader.Read())
+                    {
+                        int x = 15;
+                        int y = 20 + counter * 20;
+
+                        Label label = new Label
+                        {
+                            Text = reader["PROGRAM"].ToString() + " - " + reader["SERVICE"].ToString(),
+                            Location = new Point(x, y),
+                            AutoSize = true
+                        };
+                        gbExistingServices.Controls.Add(label);
+                        counter++;
+                    }
+                }
+            }
         }
 
         private void GetPrograms()
@@ -79,6 +110,7 @@ namespace Lista_de_Presencia
         {
             txtServiceName.Text = "";
             cbbPrograms.SelectedItem = null;
+            GetServices();
         }
 
         private void btnAddService_Click(object sender, EventArgs e)
