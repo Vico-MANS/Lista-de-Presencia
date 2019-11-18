@@ -29,10 +29,9 @@
         private void InitializeComponent()
         {
             this.label1 = new System.Windows.Forms.Label();
-            this.cbbWorkers = new System.Windows.Forms.ComboBox();
             this.txtProgramName = new System.Windows.Forms.TextBox();
-            this.label2 = new System.Windows.Forms.Label();
             this.btnCreateProgram = new System.Windows.Forms.Button();
+            this.gbExistingPrograms = new System.Windows.Forms.GroupBox();
             this.SuspendLayout();
             // 
             // label1
@@ -44,16 +43,6 @@
             this.label1.TabIndex = 0;
             this.label1.Text = "Name";
             // 
-            // cbbWorkers
-            // 
-            this.cbbWorkers.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cbbWorkers.FormattingEnabled = true;
-            this.cbbWorkers.Location = new System.Drawing.Point(601, 182);
-            this.cbbWorkers.Name = "cbbWorkers";
-            this.cbbWorkers.Size = new System.Drawing.Size(121, 21);
-            this.cbbWorkers.TabIndex = 2;
-            this.cbbWorkers.Visible = false;
-            // 
             // txtProgramName
             // 
             this.txtProgramName.Location = new System.Drawing.Point(68, 24);
@@ -61,19 +50,9 @@
             this.txtProgramName.Size = new System.Drawing.Size(100, 20);
             this.txtProgramName.TabIndex = 1;
             // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(508, 186);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(87, 13);
-            this.label2.TabIndex = 3;
-            this.label2.Text = "Person in charge";
-            this.label2.Visible = false;
-            // 
             // btnCreateProgram
             // 
-            this.btnCreateProgram.Location = new System.Drawing.Point(204, 17);
+            this.btnCreateProgram.Location = new System.Drawing.Point(204, 20);
             this.btnCreateProgram.Name = "btnCreateProgram";
             this.btnCreateProgram.Size = new System.Drawing.Size(95, 27);
             this.btnCreateProgram.TabIndex = 4;
@@ -81,15 +60,23 @@
             this.btnCreateProgram.UseVisualStyleBackColor = true;
             this.btnCreateProgram.Click += new System.EventHandler(this.btnCreateProgram_Click);
             // 
+            // gbExistingPrograms
+            // 
+            this.gbExistingPrograms.Location = new System.Drawing.Point(30, 68);
+            this.gbExistingPrograms.Name = "gbExistingPrograms";
+            this.gbExistingPrograms.Size = new System.Drawing.Size(269, 149);
+            this.gbExistingPrograms.TabIndex = 5;
+            this.gbExistingPrograms.TabStop = false;
+            this.gbExistingPrograms.Text = "Existing programs";
+            // 
             // ProgramAdditionForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
+            this.Controls.Add(this.gbExistingPrograms);
             this.Controls.Add(this.btnCreateProgram);
-            this.Controls.Add(this.label2);
             this.Controls.Add(this.txtProgramName);
-            this.Controls.Add(this.cbbWorkers);
             this.Controls.Add(this.label1);
             this.Name = "ProgramAdditionForm";
             this.Text = "Program Addition";
@@ -103,9 +90,8 @@
         #endregion
 
         private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.ComboBox cbbWorkers;
         private System.Windows.Forms.TextBox txtProgramName;
-        private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Button btnCreateProgram;
+        private System.Windows.Forms.GroupBox gbExistingPrograms;
     }
 }

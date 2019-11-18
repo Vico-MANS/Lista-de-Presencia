@@ -39,46 +39,47 @@ namespace Lista_de_Presencia
 
         private void Form3_Load(object sender, EventArgs e)
         {
-            GetWorkers();
+            GetPrograms();
+        }
+
+        private void GetPrograms()
+        {
+            gbExistingPrograms.Controls.Clear();
+            using (SqlConnection conn = new SqlConnection())
+            {
+                DatabaseConnection.OpenConnection(conn);
+
+                SqlCommand command = new SqlCommand("SELECT NAME FROM PROGRAM", conn);
+
+                using (SqlDataReader reader = command.ExecuteReader())
+                {
+                    int counter = 0;
+                    while (reader.Read())
+                    {
+                        int x = 25;
+                        int y = 20 + counter * 20;
+                        Label label = new Label
+                        {
+                            Text = reader["NAME"].ToString(),
+                            Location = new Point(x, y),
+                            AutoSize = true
+                        };
+                        gbExistingPrograms.Controls.Add(label);
+                        counter++;
+                    }
+                }
+            }
         }
 
         private void ResetForm()
         {
             txtProgramName.Text = "";
-            cbbWorkers.SelectedItem = null;
-        }
-
-        private void GetWorkers()
-        {
-            using (SqlConnection conn = new SqlConnection())
-            {
-                DatabaseConnection.OpenConnection(conn);
-
-                SqlCommand command = new SqlCommand("SELECT PERSON_ID AS ID, FIRSTNAME+' '+LASTNAME AS NAME FROM PERSON WHERE WORKER = 1", conn);
-
-                cbbWorkers.DisplayMember = "Text";
-                cbbWorkers.ValueMember = "Value";
-
-                Dictionary<Object, Object> comboSource = new Dictionary<Object, Object>();
-
-                using (SqlDataReader reader = command.ExecuteReader())
-                {
-                    while (reader.Read())
-                    {
-                        comboSource.Add(reader["ID"], reader["NAME"]);
-                    }
-                }
-
-                cbbWorkers.DataSource = new BindingSource(comboSource, null);
-                cbbWorkers.DisplayMember = "Value";
-                cbbWorkers.ValueMember = "Key";
-                cbbWorkers.SelectedItem = null;
-            }
+            GetPrograms();
         }
 
         private void btnCreateProgram_Click(object sender, EventArgs e)
         {
-            if (txtProgramName.Text == ""/* || cbbWorkers.SelectedItem == null*/)
+            if (txtProgramName.Text == "")
             {
                 MessageBox.Show("All fields are mandatory!", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
@@ -86,11 +87,7 @@ namespace Lista_de_Presencia
 
             using (SqlConnection conn = new SqlConnection())
             {
-                DatabaseConnection.OpenConnection(conn);
-
-                //SqlCommand command = new SqlCommand("INSERT INTO PROGRAM(NAME, ID_EDUCATOR) VALUES(@name, @educator)", conn);
-                //command.Parameters.AddWithValue("name", txtProgramName.Text);
-                //command.Parameters.AddWithValue("educator", ((KeyValuePair<Object, Object>)cbbWorkers.SelectedItem).Key);
+                DatabaseConnection.OpenConnection(conn);               
 
                 SqlCommand command = new SqlCommand("INSERT INTO PROGRAM(NAME) VALUES(@name)", conn);
                 command.Parameters.AddWithValue("name", txtProgramName.Text);
