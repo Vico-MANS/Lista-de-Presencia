@@ -53,9 +53,9 @@
             this.cbbProgramGroups = new System.Windows.Forms.ComboBox();
             this.btnAddGroup = new System.Windows.Forms.Button();
             this.gbGroupInfo = new System.Windows.Forms.GroupBox();
-            this.lblGroupNameLegend = new System.Windows.Forms.Label();
-            this.lblGroupIDLegend = new System.Windows.Forms.Label();
             this.lblGroupDatesLegend = new System.Windows.Forms.Label();
+            this.lblGroupIDLegend = new System.Windows.Forms.Label();
+            this.lblGroupNameLegend = new System.Windows.Forms.Label();
             this.gbWeeklyPresence.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvWeeklyDetail)).BeginInit();
             this.gbGroupInfo.SuspendLayout();
@@ -122,9 +122,9 @@
             // 
             // gbPrograms
             // 
-            this.gbPrograms.Location = new System.Drawing.Point(35, 295);
+            this.gbPrograms.Location = new System.Drawing.Point(35, 337);
             this.gbPrograms.Name = "gbPrograms";
-            this.gbPrograms.Size = new System.Drawing.Size(680, 92);
+            this.gbPrograms.Size = new System.Drawing.Size(680, 50);
             this.gbPrograms.TabIndex = 16;
             this.gbPrograms.TabStop = false;
             this.gbPrograms.Text = "Programs";
@@ -144,7 +144,7 @@
             // gbWeeklyPresence
             // 
             this.gbWeeklyPresence.Controls.Add(this.dgvWeeklyDetail);
-            this.gbWeeklyPresence.Location = new System.Drawing.Point(32, 194);
+            this.gbWeeklyPresence.Location = new System.Drawing.Point(32, 245);
             this.gbWeeklyPresence.Name = "gbWeeklyPresence";
             this.gbWeeklyPresence.Size = new System.Drawing.Size(680, 86);
             this.gbWeeklyPresence.TabIndex = 17;
@@ -292,21 +292,21 @@
             this.gbGroupInfo.Controls.Add(this.lblGroupNameLegend);
             this.gbGroupInfo.Location = new System.Drawing.Point(35, 90);
             this.gbGroupInfo.Name = "gbGroupInfo";
-            this.gbGroupInfo.Size = new System.Drawing.Size(675, 98);
+            this.gbGroupInfo.Size = new System.Drawing.Size(675, 149);
             this.gbGroupInfo.TabIndex = 24;
             this.gbGroupInfo.TabStop = false;
             this.gbGroupInfo.Text = "Group Info";
             // 
-            // lblGroupNameLegend
+            // lblGroupDatesLegend
             // 
-            this.lblGroupNameLegend.AutoSize = true;
-            this.lblGroupNameLegend.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblGroupNameLegend.Location = new System.Drawing.Point(14, 18);
-            this.lblGroupNameLegend.Name = "lblGroupNameLegend";
-            this.lblGroupNameLegend.Size = new System.Drawing.Size(35, 13);
-            this.lblGroupNameLegend.TabIndex = 0;
-            this.lblGroupNameLegend.Tag = "Freeze";
-            this.lblGroupNameLegend.Text = "Name";
+            this.lblGroupDatesLegend.AutoSize = true;
+            this.lblGroupDatesLegend.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblGroupDatesLegend.Location = new System.Drawing.Point(367, 18);
+            this.lblGroupDatesLegend.Name = "lblGroupDatesLegend";
+            this.lblGroupDatesLegend.Size = new System.Drawing.Size(35, 13);
+            this.lblGroupDatesLegend.TabIndex = 2;
+            this.lblGroupDatesLegend.Tag = "Freeze";
+            this.lblGroupDatesLegend.Text = "Dates";
             // 
             // lblGroupIDLegend
             // 
@@ -319,16 +319,16 @@
             this.lblGroupIDLegend.Tag = "Freeze";
             this.lblGroupIDLegend.Text = "ID";
             // 
-            // lblGroupDatesLegend
+            // lblGroupNameLegend
             // 
-            this.lblGroupDatesLegend.AutoSize = true;
-            this.lblGroupDatesLegend.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblGroupDatesLegend.Location = new System.Drawing.Point(367, 18);
-            this.lblGroupDatesLegend.Name = "lblGroupDatesLegend";
-            this.lblGroupDatesLegend.Size = new System.Drawing.Size(35, 13);
-            this.lblGroupDatesLegend.TabIndex = 2;
-            this.lblGroupDatesLegend.Tag = "Freeze";
-            this.lblGroupDatesLegend.Text = "Dates";
+            this.lblGroupNameLegend.AutoSize = true;
+            this.lblGroupNameLegend.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblGroupNameLegend.Location = new System.Drawing.Point(14, 18);
+            this.lblGroupNameLegend.Name = "lblGroupNameLegend";
+            this.lblGroupNameLegend.Size = new System.Drawing.Size(35, 13);
+            this.lblGroupNameLegend.TabIndex = 0;
+            this.lblGroupNameLegend.Tag = "Freeze";
+            this.lblGroupNameLegend.Text = "Name";
             // 
             // PersonForm
             // 

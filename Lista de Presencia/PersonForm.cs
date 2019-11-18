@@ -47,7 +47,9 @@ namespace Lista_de_Presencia
         private int m_PersonID;
         private bool m_IsWorker;
         // The programs that the person is assigned to in the database
-        private List<int> m_InitPersonPrograms;
+        //private List<int> m_InitPersonPrograms;
+        // The groups that the person is assigned to in the database
+        private List<int> m_InitPersonGroups;
 
         // (ADDITION) Contains the cells that are checked for a person's addition, these cell's information need to be registered into the database
         private List<int> m_WeeklyPresence;
@@ -74,6 +76,7 @@ namespace Lista_de_Presencia
 
             dgvWeeklyDetail.Rows.Clear();
             dgvWeeklyDetail.Rows.Add();
+            m_GroupIDs = new List<int>();
 
             if (type.Equals(FormType.ADDITION))
             {
@@ -84,12 +87,12 @@ namespace Lista_de_Presencia
                 btnValidateForm.Text = "Update Person";
                 m_PersonID = personID;
                 LoadPersonInformation();
-                RetrievePersonProgramInformation();
+                RetrievePersonGroupInformation();
+                //RetrievePersonProgramInformation();
             }
-            LoadPrograms();
+            //LoadPrograms();
             GetPrograms();
             m_WeeklyPresence = new List<int>();
-            m_GroupIDs = new List<int>();
         }
         
         private void Form2_Load(object sender, EventArgs e)
@@ -141,23 +144,45 @@ namespace Lista_de_Presencia
             }
         }
 
-        private void RetrievePersonProgramInformation()
+        //private void RetrievePersonProgramInformation()
+        //{
+        //    using (SqlConnection conn = new SqlConnection())
+        //    {
+        //        DatabaseConnection.OpenConnection(conn);
+
+        //        SqlCommand command = new SqlCommand("SELECT * FROM PERSON_PROGRAM WHERE ID_PERSON = @id", conn);
+        //        command.Parameters.AddWithValue("id", m_PersonID);
+
+        //        m_InitPersonPrograms = new List<int>();
+        //        using (SqlDataReader reader = command.ExecuteReader())
+        //        {
+        //            while (reader.Read())
+        //                m_InitPersonPrograms.Add((int)reader["ID_PROGRAM"]);
+        //        }
+        //    }
+        //}
+
+        private void RetrievePersonGroupInformation()
         {
             using (SqlConnection conn = new SqlConnection())
             {
                 DatabaseConnection.OpenConnection(conn);
 
-                SqlCommand command = new SqlCommand("SELECT * FROM PERSON_PROGRAM WHERE ID_PERSON = @id", conn);
-                command.Parameters.AddWithValue("id", m_PersonID);
+                // We get all the groups ID that the person is part from
+                SqlCommand command = new SqlCommand("SELECT ID_GRUPO AS ID FROM PERSON_GRUPO WHERE ID_PERSON = @personID", conn);
+                command.Parameters.AddWithValue("personID", m_PersonID);
 
-                m_InitPersonPrograms = new List<int>();
+                m_InitPersonGroups = new List<int>();
                 using (SqlDataReader reader = command.ExecuteReader())
                 {
                     while (reader.Read())
                     {
-                        m_InitPersonPrograms.Add((int)reader["ID_PROGRAM"]);
+                        m_GroupIDs.Add((int)reader["ID"]);
+                        m_InitPersonGroups.Add((int)reader["ID"]);
                     }
                 }
+                // Then we show the information on the screen (a bit redundant since we retrieve the group's information again...)
+                UpdateGroupInfoBox();
             }
         }
 
@@ -187,51 +212,51 @@ namespace Lista_de_Presencia
             }
         }
 
-        private void LoadPrograms()
-        {
-            using (SqlConnection conn = new SqlConnection())
-            {
-                DatabaseConnection.OpenConnection(conn);
+        //private void LoadPrograms()
+        //{
+        //    using (SqlConnection conn = new SqlConnection())
+        //    {
+        //        DatabaseConnection.OpenConnection(conn);
 
-                SqlCommand command = new SqlCommand("SELECT PROGRAM_ID, NAME FROM PROGRAM", conn);
+        //        SqlCommand command = new SqlCommand("SELECT PROGRAM_ID, NAME FROM PROGRAM", conn);
 
-                int programCounter = 0;
+        //        int programCounter = 0;
                 
-                using (SqlDataReader reader = command.ExecuteReader())
-                {
-                    int x = 30;
-                    int y = 15;
-                    while (reader.Read())
-                    {
-                        CheckBox box = new CheckBox
-                        {
-                            Tag = reader["PROGRAM_ID"].ToString(),
-                            Text = reader["NAME"].ToString(),
-                            AutoSize = true
-                        };
+        //        using (SqlDataReader reader = command.ExecuteReader())
+        //        {
+        //            int x = 30;
+        //            int y = 15;
+        //            while (reader.Read())
+        //            {
+        //                CheckBox box = new CheckBox
+        //                {
+        //                    Tag = reader["PROGRAM_ID"].ToString(),
+        //                    Text = reader["NAME"].ToString(),
+        //                    AutoSize = true
+        //                };
 
-                        if (m_FormType.Equals(FormType.MODIFICATION) && m_InitPersonPrograms.Contains((int)reader["PROGRAM_ID"]))
-                                box.Checked = true;
+        //                if (m_FormType.Equals(FormType.MODIFICATION) && m_InitPersonPrograms.Contains((int)reader["PROGRAM_ID"]))
+        //                        box.Checked = true;
                         
-                        if (programCounter > 1 && programCounter % 5 == 0)
-                        {
-                            x += 200;
-                            y = 15;
-                        }
-                        else if(programCounter > 0)
-                        {
-                            y += 25;
-                        }
+        //                if (programCounter > 1 && programCounter % 5 == 0)
+        //                {
+        //                    x += 200;
+        //                    y = 15;
+        //                }
+        //                else if(programCounter > 0)
+        //                {
+        //                    y += 25;
+        //                }
 
-                        box.Location = new Point(x, y);
-                        gbPrograms.Controls.Add(box);
-                        programCounter++;
-                    }
-                }
+        //                box.Location = new Point(x, y);
+        //                gbPrograms.Controls.Add(box);
+        //                programCounter++;
+        //            }
+        //        }
 
-                // TODO: What to do if there's not a single program in the database? 'cause we can't add "non workers" then...
-            }
-        }
+        //        // TODO: What to do if there's not a single program in the database? 'cause we can't add "non workers" then...
+        //    }
+        //}
 
         private void GetPrograms()
         {
@@ -390,6 +415,28 @@ namespace Lista_de_Presencia
         // We can't change the worker statement, it doesn't really make sense to do that anyway.
         private void UpdatePerson()
         {
+            //m_GroupIDs.Sort();
+            //m_InitPersonGroups.Sort();
+
+            Console.Write("GroupIDs: ");
+            foreach (int id in m_GroupIDs)
+            {
+                Console.Write(id + " ");
+            }
+            Console.Write("\n");
+
+            Console.Write("InitGroups: ");
+            foreach (int id in m_InitPersonGroups)
+            {
+                Console.Write(id + " ");
+            }
+            Console.Write("\n");
+
+            if (m_InitPersonGroups.All(m_GroupIDs.Contains) && m_InitPersonGroups.Count == m_GroupIDs.Count)
+                Console.WriteLine("Equal");
+            else
+                Console.WriteLine("Not equal");
+
             using (SqlConnection conn = new SqlConnection())
             {
                 DatabaseConnection.OpenConnection(conn);
@@ -416,42 +463,69 @@ namespace Lista_de_Presencia
                     /*
                      * UPDATE PERSON_PROGRAM TABLE
                      * */
-                    // First we have to get all the programs that the person has now
-                    List<int> currentPersonPrograms = new List<int>();
-                    foreach (CheckBox cb in gbPrograms.Controls.OfType<CheckBox>())
-                        if (cb.Checked)
-                            currentPersonPrograms.Add(Convert.ToInt32(cb.Tag));
-                    // Now that we got that information we can compare it to the initial values
-                    foreach(int programID in currentPersonPrograms)
+                    //// First we have to get all the programs that the person has now
+                    //List<int> currentPersonPrograms = new List<int>();
+                    //foreach (CheckBox cb in gbPrograms.Controls.OfType<CheckBox>())
+                    //    if (cb.Checked)
+                    //        currentPersonPrograms.Add(Convert.ToInt32(cb.Tag));
+                    //// Now that we got that information we can compare it to the initial values
+                    //foreach(int programID in currentPersonPrograms)
+                    //{
+                    //    // If the value isn't present in the initial list it means that the person got added to the program, we have to register it in the database
+                    //    if(!m_InitPersonPrograms.Contains(programID))
+                    //    {
+                    //        // Add program to person
+                    //        SqlCommand commandAddPersonProgram = new SqlCommand("INSERT INTO PERSON_PROGRAM (ID_PERSON, ID_PROGRAM) VALUES (@idPerson, @idProgram)", conn, transaction);
+                    //        commandAddPersonProgram.Parameters.AddWithValue("idPerson", m_PersonID);
+                    //        commandAddPersonProgram.Parameters.AddWithValue("idProgram", programID);
+                    //        commandAddPersonProgram.ExecuteNonQuery();
+                    //    }
+                    //    // The person is already assigned to that program
+                    //    else
+                    //    {
+                    //        // We remove it from the list so we can keep track of which programs we have to delete from the database later
+                    //        m_InitPersonPrograms.Remove(programID);
+                    //    }
+                    //}
+                    //// Now that we are here all the program IDs left in the m_InitPersonPrograms list should be those that we have to remove from the database for that person
+                    //foreach(int programID in m_InitPersonPrograms)
+                    //{
+                    //    SqlCommand commandDeletePersonProgram = new SqlCommand("DELETE FROM PERSON_PROGRAM WHERE ID_PERSON = @idPerson AND ID_PROGRAM = @idProgram", conn, transaction);
+                    //    commandDeletePersonProgram.Parameters.AddWithValue("idPerson", m_PersonID);
+                    //    commandDeletePersonProgram.Parameters.AddWithValue("idProgram", programID);
+                    //    commandDeletePersonProgram.ExecuteNonQuery();
+                    //}
+                    //// Now we update the list with the right values
+                    //m_InitPersonPrograms = currentPersonPrograms;
+                    //Console.WriteLine("Person_Program table UPDATED");
+
+                    /*
+                     * UPDATE PERSON_GRUPO TABLE
+                     * */
+                    foreach(int groupID in m_InitPersonGroups)
                     {
-                        // If the value isn't present in the initial list it means that the person got added to the program, we have to register it in the database
-                        if(!m_InitPersonPrograms.Contains(programID))
+                        // If this is true it means that the group got deleted from the person
+                        if(!m_GroupIDs.Contains(groupID))
                         {
-                            // Add program to person
-                            SqlCommand commandAddPersonProgram = new SqlCommand("INSERT INTO PERSON_PROGRAM (ID_PERSON, ID_PROGRAM) VALUES (@idPerson, @idProgram)", conn, transaction);
-                            commandAddPersonProgram.Parameters.AddWithValue("idPerson", m_PersonID);
-                            commandAddPersonProgram.Parameters.AddWithValue("idProgram", programID);
-                            commandAddPersonProgram.ExecuteNonQuery();
-                        }
-                        // The person is already assigned to that program
-                        else
-                        {
-                            // We remove it from the list so we can keep track of which programs we have to delete from the database later
-                            m_InitPersonPrograms.Remove(programID);
+                            SqlCommand removePersonFromGroup = new SqlCommand("DELETE FROM PERSON_GRUPO WHERE ID_PERSON = @personID AND ID_GRUPO = @groupID", conn, transaction);
+                            removePersonFromGroup.Parameters.AddWithValue("personID", m_PersonID);
+                            removePersonFromGroup.Parameters.AddWithValue("groupID", groupID);
+                            removePersonFromGroup.ExecuteNonQuery();
                         }
                     }
-                    // Now that we are here all the program IDs left in the m_InitPersonPrograms list should be those that we have to remove from the database for that person
-                    foreach(int programID in m_InitPersonPrograms)
+                    foreach(int groupID in m_GroupIDs)
                     {
-                        SqlCommand commandDeletePersonProgram = new SqlCommand("DELETE FROM PERSON_PROGRAM WHERE ID_PERSON = @idPerson AND ID_PROGRAM = @idProgram", conn, transaction);
-                        commandDeletePersonProgram.Parameters.AddWithValue("idPerson", m_PersonID);
-                        commandDeletePersonProgram.Parameters.AddWithValue("idProgram", programID);
-                        commandDeletePersonProgram.ExecuteNonQuery();
+                        // If this is true it means that the group got added to the person
+                        if (!m_InitPersonGroups.Contains(groupID))
+                        {
+                            SqlCommand addPersonToGroup = new SqlCommand("INSERT INTO PERSON_GRUPO VALUES(@personID, @groupID)", conn, transaction);
+                            addPersonToGroup.Parameters.AddWithValue("personID", m_PersonID);
+                            addPersonToGroup.Parameters.AddWithValue("groupID", groupID);
+                            addPersonToGroup.ExecuteNonQuery();
+                        }
                     }
-                    // Now we update the list with the right values
-                    m_InitPersonPrograms = currentPersonPrograms;
-                    Console.WriteLine("Person_Program table UPDATED");
-                    
+                    Console.WriteLine("Person_Grupo table UPDATED");
+                                        
                     /*
                      * UPDATE WEEKLY_PRESENCE TABLE
                      * */
@@ -536,18 +610,18 @@ namespace Lista_de_Presencia
                      * INSERT PROGRAMS (useless since we do it with groups now)
                      * */
 
-                    foreach (CheckBox cb in gbPrograms.Controls.OfType<CheckBox>())
-                    {
-                        if (cb.Checked)
-                        {
-                            //MessageBox.Show("Checkbox " + cb.Text + " (" + cb.Tag + "): " + cb.Checked);
-                            SqlCommand commandAddProgramToPerson = new SqlCommand("INSERT INTO PERSON_PROGRAM VALUES (@personID, @programID)", conn, transaction);
-                            commandAddProgramToPerson.Parameters.AddWithValue("personID", personID);
-                            commandAddProgramToPerson.Parameters.AddWithValue("programID", cb.Tag);
+                    //foreach (CheckBox cb in gbPrograms.Controls.OfType<CheckBox>())
+                    //{
+                    //    if (cb.Checked)
+                    //    {
+                    //        //MessageBox.Show("Checkbox " + cb.Text + " (" + cb.Tag + "): " + cb.Checked);
+                    //        SqlCommand commandAddProgramToPerson = new SqlCommand("INSERT INTO PERSON_PROGRAM VALUES (@personID, @programID)", conn, transaction);
+                    //        commandAddProgramToPerson.Parameters.AddWithValue("personID", personID);
+                    //        commandAddProgramToPerson.Parameters.AddWithValue("programID", cb.Tag);
 
-                            commandAddProgramToPerson.ExecuteNonQuery();
-                        }
-                    }
+                    //        commandAddProgramToPerson.ExecuteNonQuery();
+                    //    }
+                    //}
 
                     /**
                      * INSERT GROUPS
@@ -631,27 +705,27 @@ namespace Lista_de_Presencia
             // Only for modification!?
             if (m_FormType.Equals(FormType.MODIFICATION))
             {
-                bool modificationInPrograms = false;
-                List<int> currentPersonPrograms = new List<int>();
-                foreach (CheckBox cb in gbPrograms.Controls.OfType<CheckBox>())
-                    if (cb.Checked)
-                        currentPersonPrograms.Add(Convert.ToInt32(cb.Tag));
-                // Now that we got that information we can compare it to the initial values
-                foreach (int programID in currentPersonPrograms)
-                {
-                    // If the value isn't present in the initial list it means that the user just checked the box
-                    if (!m_InitPersonPrograms.Contains(programID))
-                        modificationInPrograms = true;
-                }
-                // A bit redundant, but necessary
-                foreach (int programID in m_InitPersonPrograms)
-                {
-                    // If the value isn't present in the current list it means that the user just unchecked the box
-                    if (!currentPersonPrograms.Contains(programID))
-                        modificationInPrograms = true;
-                }
+                //bool modificationInPrograms = false;
+                //List<int> currentPersonPrograms = new List<int>();
+                //foreach (CheckBox cb in gbPrograms.Controls.OfType<CheckBox>())
+                //    if (cb.Checked)
+                //        currentPersonPrograms.Add(Convert.ToInt32(cb.Tag));
+                //// Now that we got that information we can compare it to the initial values
+                //foreach (int programID in currentPersonPrograms)
+                //{
+                //    // If the value isn't present in the initial list it means that the user just checked the box
+                //    if (!m_InitPersonPrograms.Contains(programID))
+                //        modificationInPrograms = true;
+                //}
+                //// A bit redundant, but necessary
+                //foreach (int programID in m_InitPersonPrograms)
+                //{
+                //    // If the value isn't present in the current list it means that the user just unchecked the box
+                //    if (!currentPersonPrograms.Contains(programID))
+                //        modificationInPrograms = true;
+                //}
 
-                if (m_InitFirstname != txtFirstname.Text || m_InitLastname != txtLastname.Text || m_InitBirthday != dtpBirthday.Value.ToString() || modificationInPrograms || m_WeeklyPresenceChanges.Count > 0)
+                if (m_InitFirstname != txtFirstname.Text || m_InitLastname != txtLastname.Text || m_InitBirthday != dtpBirthday.Value.ToString() || /*modificationInPrograms ||*/ m_WeeklyPresenceChanges.Count > 0)
                 {
                     DialogResult res = MessageBox.Show("If you have made changes, these won't be saved!", "Information", MessageBoxButtons.OKCancel, MessageBoxIcon.Exclamation);
                     e.Cancel = res.Equals(DialogResult.Cancel);
@@ -716,6 +790,7 @@ namespace Lista_de_Presencia
                 int counter = 0;
                 foreach(int groupID in m_GroupIDs)
                 {
+                    Console.WriteLine("Group id: " + groupID);
                     SqlCommand command = new SqlCommand("SELECT GRUPO_ID, NAME, CONVERT(VARCHAR, START_DATE, 103) AS START_DATE, CONVERT(VARCHAR, END_DATE, 103) AS END_DATE FROM GRUPO WHERE GRUPO_ID = @groupID", conn);
                     command.Parameters.AddWithValue("groupID", groupID);
 
