@@ -102,6 +102,7 @@ namespace Lista_de_Presencia
 
         private void ResetForm()
         {
+            txtGroupName.Text = "";
             txtGroupID.Text = "";
             cbbServices.SelectedItem = null;
             cbbSupervisors.SelectedItem = null;
@@ -111,7 +112,7 @@ namespace Lista_de_Presencia
 
         private void btnAddGroup_Click(object sender, EventArgs e)
         {
-            if (txtGroupID.Text == "" || cbbServices.SelectedItem == null || cbbSupervisors.SelectedItem == null)
+            if (txtGroupID.Text == "" || txtGroupName.Text == "" || cbbServices.SelectedItem == null || cbbSupervisors.SelectedItem == null)
             {
                 MessageBox.Show("All fields are mandatory!", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
@@ -128,10 +129,11 @@ namespace Lista_de_Presencia
                 {
                     DatabaseConnection.OpenConnection(conn);
 
-                    SqlCommand command = new SqlCommand("INSERT INTO GRUPO VALUES (@groupID, @serviceID, @supervisorID, @startDate, @endDate)", conn);
+                    SqlCommand command = new SqlCommand("INSERT INTO GRUPO VALUES (@groupID, @serviceID, @supervisorID, @name, @startDate, @endDate)", conn);
                     command.Parameters.AddWithValue("groupID", txtGroupID.Text);
                     command.Parameters.AddWithValue("serviceID", ((KeyValuePair<Object, Object>)cbbServices.SelectedItem).Key);
                     command.Parameters.AddWithValue("supervisorID", ((KeyValuePair<Object, Object>)cbbSupervisors.SelectedItem).Key);
+                    command.Parameters.AddWithValue("name", txtGroupName.Text);
                     command.Parameters.AddWithValue("startDate", dtpStartDate.Value);
                     command.Parameters.AddWithValue("endDate", dtpEndDate.Value);
 
