@@ -39,6 +39,14 @@
             this.btnAddGroup = new System.Windows.Forms.Button();
             this.txtGroupName = new System.Windows.Forms.TextBox();
             this.label6 = new System.Windows.Forms.Label();
+            this.gbExistingGroups = new System.Windows.Forms.GroupBox();
+            this.lblGroupIDLegend = new System.Windows.Forms.Label();
+            this.lblGroupNameLegend = new System.Windows.Forms.Label();
+            this.lblGroupServiceLegend = new System.Windows.Forms.Label();
+            this.lblGroupDatesLegend = new System.Windows.Forms.Label();
+            this.lblGroupSupervisorLegend = new System.Windows.Forms.Label();
+            this.pnlExistingGroups = new System.Windows.Forms.Panel();
+            this.gbExistingGroups.SuspendLayout();
             this.SuspendLayout();
             // 
             // label1
@@ -153,11 +161,91 @@
             this.label6.TabIndex = 11;
             this.label6.Text = "Group Name";
             // 
+            // gbExistingGroups
+            // 
+            this.gbExistingGroups.Controls.Add(this.lblGroupSupervisorLegend);
+            this.gbExistingGroups.Controls.Add(this.lblGroupDatesLegend);
+            this.gbExistingGroups.Controls.Add(this.lblGroupServiceLegend);
+            this.gbExistingGroups.Controls.Add(this.lblGroupNameLegend);
+            this.gbExistingGroups.Controls.Add(this.lblGroupIDLegend);
+            this.gbExistingGroups.Controls.Add(this.pnlExistingGroups);
+            this.gbExistingGroups.Location = new System.Drawing.Point(28, 142);
+            this.gbExistingGroups.Name = "gbExistingGroups";
+            this.gbExistingGroups.Size = new System.Drawing.Size(653, 161);
+            this.gbExistingGroups.TabIndex = 12;
+            this.gbExistingGroups.TabStop = false;
+            this.gbExistingGroups.Text = "Existing groups";
+            // 
+            // lblGroupIDLegend
+            // 
+            this.lblGroupIDLegend.AutoSize = true;
+            this.lblGroupIDLegend.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblGroupIDLegend.Location = new System.Drawing.Point(15, 20);
+            this.lblGroupIDLegend.Name = "lblGroupIDLegend";
+            this.lblGroupIDLegend.Size = new System.Drawing.Size(18, 13);
+            this.lblGroupIDLegend.TabIndex = 1;
+            this.lblGroupIDLegend.Tag = "Freeze";
+            this.lblGroupIDLegend.Text = "ID";
+            // 
+            // lblGroupNameLegend
+            // 
+            this.lblGroupNameLegend.AutoSize = true;
+            this.lblGroupNameLegend.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblGroupNameLegend.Location = new System.Drawing.Point(75, 20);
+            this.lblGroupNameLegend.Name = "lblGroupNameLegend";
+            this.lblGroupNameLegend.Size = new System.Drawing.Size(35, 13);
+            this.lblGroupNameLegend.TabIndex = 2;
+            this.lblGroupNameLegend.Tag = "Freeze";
+            this.lblGroupNameLegend.Text = "Name";
+            // 
+            // lblGroupServiceLegend
+            // 
+            this.lblGroupServiceLegend.AutoSize = true;
+            this.lblGroupServiceLegend.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblGroupServiceLegend.Location = new System.Drawing.Point(175, 20);
+            this.lblGroupServiceLegend.Name = "lblGroupServiceLegend";
+            this.lblGroupServiceLegend.Size = new System.Drawing.Size(43, 13);
+            this.lblGroupServiceLegend.TabIndex = 3;
+            this.lblGroupServiceLegend.Tag = "Freeze";
+            this.lblGroupServiceLegend.Text = "Service";
+            // 
+            // lblGroupDatesLegend
+            // 
+            this.lblGroupDatesLegend.AutoSize = true;
+            this.lblGroupDatesLegend.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblGroupDatesLegend.Location = new System.Drawing.Point(300, 20);
+            this.lblGroupDatesLegend.Name = "lblGroupDatesLegend";
+            this.lblGroupDatesLegend.Size = new System.Drawing.Size(35, 13);
+            this.lblGroupDatesLegend.TabIndex = 4;
+            this.lblGroupDatesLegend.Tag = "Freeze";
+            this.lblGroupDatesLegend.Text = "Dates";
+            // 
+            // lblGroupSupervisorLegend
+            // 
+            this.lblGroupSupervisorLegend.AutoSize = true;
+            this.lblGroupSupervisorLegend.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblGroupSupervisorLegend.Location = new System.Drawing.Point(450, 20);
+            this.lblGroupSupervisorLegend.Name = "lblGroupSupervisorLegend";
+            this.lblGroupSupervisorLegend.Size = new System.Drawing.Size(57, 13);
+            this.lblGroupSupervisorLegend.TabIndex = 5;
+            this.lblGroupSupervisorLegend.Tag = "Freeze";
+            this.lblGroupSupervisorLegend.Text = "Supervisor";
+            // 
+            // pnlExistingGroups
+            // 
+            this.pnlExistingGroups.AutoScroll = true;
+            this.pnlExistingGroups.Location = new System.Drawing.Point(6, 40);
+            this.pnlExistingGroups.Name = "pnlExistingGroups";
+            this.pnlExistingGroups.Size = new System.Drawing.Size(641, 115);
+            this.pnlExistingGroups.TabIndex = 13;
+            this.pnlExistingGroups.MouseEnter += new System.EventHandler(this.pnlExistingGroups_MouseEnter);
+            // 
             // GroupForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
+            this.Controls.Add(this.gbExistingGroups);
             this.Controls.Add(this.txtGroupName);
             this.Controls.Add(this.label6);
             this.Controls.Add(this.btnAddGroup);
@@ -174,6 +262,8 @@
             this.Name = "GroupForm";
             this.Text = "GroupForm";
             this.Load += new System.EventHandler(this.GroupForm_Load);
+            this.gbExistingGroups.ResumeLayout(false);
+            this.gbExistingGroups.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -194,5 +284,12 @@
         private System.Windows.Forms.Button btnAddGroup;
         private System.Windows.Forms.TextBox txtGroupName;
         private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.GroupBox gbExistingGroups;
+        private System.Windows.Forms.Label lblGroupSupervisorLegend;
+        private System.Windows.Forms.Label lblGroupDatesLegend;
+        private System.Windows.Forms.Label lblGroupServiceLegend;
+        private System.Windows.Forms.Label lblGroupNameLegend;
+        private System.Windows.Forms.Label lblGroupIDLegend;
+        private System.Windows.Forms.Panel pnlExistingGroups;
     }
 }

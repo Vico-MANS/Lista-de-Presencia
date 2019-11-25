@@ -42,6 +42,7 @@ namespace Lista_de_Presencia
         {
             GetServices();
             GetSupervisors();
+            GetGroups();
         }
 
         private void GetServices()
@@ -100,6 +101,78 @@ namespace Lista_de_Presencia
             }
         }
 
+        private void GetGroups()
+        {
+            pnlExistingGroups.Controls.Clear();
+
+            using (SqlConnection conn = new SqlConnection())
+            {
+                DatabaseConnection.OpenConnection(conn);
+
+                SqlCommand command = new SqlCommand("SELECT GRUPO_ID, NAME AS GROUP_NAME, CONVERT(VARCHAR, START_DATE, 103)+' - '+CONVERT(VARCHAR, END_DATE, 103) AS DATES, "
+                                                    +"(SELECT NAME FROM SERVICIO WHERE SERVICIO_ID = ID_SERVICIO) AS SERVICE_NAME, "
+                                                    +"(SELECT FIRSTNAME + ' ' + LASTNAME FROM PERSON WHERE PERSON_ID = ID_PERSON) AS SUPERVISOR "
+                                                    +"FROM GRUPO", conn);
+
+                using (SqlDataReader reader = command.ExecuteReader())
+                {
+                    int counter = 0;
+                    while (reader.Read())
+                    {
+                        int x = lblGroupIDLegend.Location.X - pnlExistingGroups.Location.X;
+                        int y = counter * 20;
+
+                        Label lblGroupID = new Label
+                        {
+                            Text = reader["GRUPO_ID"].ToString(),
+                            Location = new Point(x, y),
+                            AutoSize = true
+                        };
+                        pnlExistingGroups.Controls.Add(lblGroupID);
+
+                        x = lblGroupNameLegend.Location.X - pnlExistingGroups.Location.X;
+                        Label lblGroupName = new Label
+                        {
+                            Text = reader["GROUP_NAME"].ToString(),
+                            Location = new Point(x, y),
+                            AutoSize = true
+                        };
+                        pnlExistingGroups.Controls.Add(lblGroupName);
+
+                        x = lblGroupServiceLegend.Location.X - pnlExistingGroups.Location.X;
+                        Label lblServiceName = new Label
+                        {
+                            Text = reader["SERVICE_NAME"].ToString(),
+                            Location = new Point(x, y),
+                            AutoSize = true
+                        };
+                        pnlExistingGroups.Controls.Add(lblServiceName);
+
+                        x = lblGroupDatesLegend.Location.X - pnlExistingGroups.Location.X;
+                        Label lblDates = new Label
+                        {
+                            Text = reader["DATES"].ToString(),
+                            Location = new Point(x, y),
+                            AutoSize = true
+                        };
+                        pnlExistingGroups.Controls.Add(lblDates);
+
+                        x = lblGroupSupervisorLegend.Location.X - pnlExistingGroups.Location.X;
+                        Label lblSupervisor = new Label
+                        {
+                            Text = reader["SUPERVISOR"].ToString(),
+                            Location = new Point(x, y),
+                            AutoSize = true
+                        };
+                        Console.WriteLine("Supervisor: " + lblSupervisor.Text);
+                        pnlExistingGroups.Controls.Add(lblSupervisor);
+
+                        counter++;
+                    }
+                }
+            }
+        }
+
         private void ResetForm()
         {
             txtGroupName.Text = "";
@@ -142,6 +215,7 @@ namespace Lista_de_Presencia
                     MessageBox.Show("The group has been successfully added to the database!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
                     ResetForm();
+                    GetGroups();
                 }
             }
             catch (SqlException ex)
@@ -152,6 +226,11 @@ namespace Lista_de_Presencia
                 else
                     throw;
             }            
+        }
+
+        private void pnlExistingGroups_MouseEnter(object sender, EventArgs e)
+        {
+            pnlExistingGroups.Focus();
         }
     }
 }
