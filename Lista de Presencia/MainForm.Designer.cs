@@ -39,13 +39,30 @@
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.tabControl = new System.Windows.Forms.TabControl();
             this.tabOverview = new System.Windows.Forms.TabPage();
+            this.btnAddService = new System.Windows.Forms.Button();
+            this.btnAddGroup = new System.Windows.Forms.Button();
             this.btnAddProgram = new System.Windows.Forms.Button();
             this.btnDeleteSelected = new System.Windows.Forms.Button();
             this.tabPresence = new System.Windows.Forms.TabPage();
             this.label1 = new System.Windows.Forms.Label();
             this.cbbPrograms = new System.Windows.Forms.ComboBox();
             this.gbPresence = new System.Windows.Forms.GroupBox();
-            this.dgvPresence = new System.Windows.Forms.DataGridView();
+            this.lblRangeInfo = new System.Windows.Forms.Label();
+            this.btnViewRange = new System.Windows.Forms.Button();
+            this.btnPreviousRange = new System.Windows.Forms.Button();
+            this.btnSavePresenceChanges = new System.Windows.Forms.Button();
+            this.btnNextRange = new System.Windows.Forms.Button();
+            this.dgvPresenceMonthFormat = new System.Windows.Forms.DataGridView();
+            this.dataGridViewTextBoxColumn1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.dataGridViewTextBoxColumn2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.dataGridViewCheckBoxColumn1 = new System.Windows.Forms.DataGridViewCheckBoxColumn();
+            this.dataGridViewCheckBoxColumn2 = new System.Windows.Forms.DataGridViewCheckBoxColumn();
+            this.dataGridViewCheckBoxColumn3 = new System.Windows.Forms.DataGridViewCheckBoxColumn();
+            this.dataGridViewCheckBoxColumn4 = new System.Windows.Forms.DataGridViewCheckBoxColumn();
+            this.dataGridViewCheckBoxColumn5 = new System.Windows.Forms.DataGridViewCheckBoxColumn();
+            this.dataGridViewCheckBoxColumn6 = new System.Windows.Forms.DataGridViewCheckBoxColumn();
+            this.dataGridViewCheckBoxColumn7 = new System.Windows.Forms.DataGridViewCheckBoxColumn();
+            this.dgvPresenceWeekFormat = new System.Windows.Forms.DataGridView();
             this.colPresPersonID = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colPerson = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colMonday = new System.Windows.Forms.DataGridViewCheckBoxColumn();
@@ -55,13 +72,8 @@
             this.colFriday = new System.Windows.Forms.DataGridViewCheckBoxColumn();
             this.colSaturday = new System.Windows.Forms.DataGridViewCheckBoxColumn();
             this.colSunday = new System.Windows.Forms.DataGridViewCheckBoxColumn();
-            this.btnPreviousWeek = new System.Windows.Forms.Button();
-            this.btnSavePresenceChanges = new System.Windows.Forms.Button();
-            this.btnNextWeek = new System.Windows.Forms.Button();
             this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
             this.notifyIcon1 = new System.Windows.Forms.NotifyIcon(this.components);
-            this.btnAddGroup = new System.Windows.Forms.Button();
-            this.btnAddService = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.dgvOverview)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.SuspendLayout();
@@ -69,7 +81,8 @@
             this.tabOverview.SuspendLayout();
             this.tabPresence.SuspendLayout();
             this.gbPresence.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.dgvPresence)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dgvPresenceMonthFormat)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dgvPresenceWeekFormat)).BeginInit();
             this.SuspendLayout();
             // 
             // contextMenuStrip1
@@ -148,7 +161,7 @@
             this.tabControl.Location = new System.Drawing.Point(1, 2);
             this.tabControl.Name = "tabControl";
             this.tabControl.SelectedIndex = 0;
-            this.tabControl.Size = new System.Drawing.Size(787, 436);
+            this.tabControl.Size = new System.Drawing.Size(940, 436);
             this.tabControl.TabIndex = 4;
             // 
             // tabOverview
@@ -162,10 +175,30 @@
             this.tabOverview.Location = new System.Drawing.Point(4, 22);
             this.tabOverview.Name = "tabOverview";
             this.tabOverview.Padding = new System.Windows.Forms.Padding(3);
-            this.tabOverview.Size = new System.Drawing.Size(779, 410);
+            this.tabOverview.Size = new System.Drawing.Size(932, 410);
             this.tabOverview.TabIndex = 0;
             this.tabOverview.Text = "Overview";
             this.tabOverview.UseVisualStyleBackColor = true;
+            // 
+            // btnAddService
+            // 
+            this.btnAddService.Location = new System.Drawing.Point(112, 375);
+            this.btnAddService.Name = "btnAddService";
+            this.btnAddService.Size = new System.Drawing.Size(86, 29);
+            this.btnAddService.TabIndex = 15;
+            this.btnAddService.Text = "Add Service";
+            this.btnAddService.UseVisualStyleBackColor = true;
+            this.btnAddService.Click += new System.EventHandler(this.btnAddService_Click);
+            // 
+            // btnAddGroup
+            // 
+            this.btnAddGroup.Location = new System.Drawing.Point(204, 375);
+            this.btnAddGroup.Name = "btnAddGroup";
+            this.btnAddGroup.Size = new System.Drawing.Size(86, 29);
+            this.btnAddGroup.TabIndex = 14;
+            this.btnAddGroup.Text = "Add Group";
+            this.btnAddGroup.UseVisualStyleBackColor = true;
+            this.btnAddGroup.Click += new System.EventHandler(this.btnAddGroup_Click);
             // 
             // btnAddProgram
             // 
@@ -195,7 +228,7 @@
             this.tabPresence.Location = new System.Drawing.Point(4, 22);
             this.tabPresence.Name = "tabPresence";
             this.tabPresence.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPresence.Size = new System.Drawing.Size(779, 410);
+            this.tabPresence.Size = new System.Drawing.Size(932, 410);
             this.tabPresence.TabIndex = 1;
             this.tabPresence.Text = "Presence";
             this.tabPresence.UseVisualStyleBackColor = true;
@@ -221,23 +254,155 @@
             // 
             // gbPresence
             // 
-            this.gbPresence.Controls.Add(this.dgvPresence);
-            this.gbPresence.Controls.Add(this.btnPreviousWeek);
+            this.gbPresence.Controls.Add(this.lblRangeInfo);
+            this.gbPresence.Controls.Add(this.btnViewRange);
+            this.gbPresence.Controls.Add(this.btnPreviousRange);
             this.gbPresence.Controls.Add(this.btnSavePresenceChanges);
-            this.gbPresence.Controls.Add(this.btnNextWeek);
+            this.gbPresence.Controls.Add(this.btnNextRange);
+            this.gbPresence.Controls.Add(this.dgvPresenceMonthFormat);
+            this.gbPresence.Controls.Add(this.dgvPresenceWeekFormat);
             this.gbPresence.Location = new System.Drawing.Point(7, 43);
             this.gbPresence.Name = "gbPresence";
-            this.gbPresence.Size = new System.Drawing.Size(769, 361);
+            this.gbPresence.Size = new System.Drawing.Size(919, 361);
             this.gbPresence.TabIndex = 4;
             this.gbPresence.TabStop = false;
             this.gbPresence.Text = "TBD";
             // 
-            // dgvPresence
+            // lblRangeInfo
             // 
-            this.dgvPresence.AllowUserToAddRows = false;
-            this.dgvPresence.AllowUserToDeleteRows = false;
-            this.dgvPresence.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dgvPresence.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.lblRangeInfo.AutoSize = true;
+            this.lblRangeInfo.Location = new System.Drawing.Point(33, 17);
+            this.lblRangeInfo.Name = "lblRangeInfo";
+            this.lblRangeInfo.Size = new System.Drawing.Size(60, 13);
+            this.lblRangeInfo.TabIndex = 6;
+            this.lblRangeInfo.Text = "Range Info";
+            // 
+            // btnViewRange
+            // 
+            this.btnViewRange.Location = new System.Drawing.Point(417, 12);
+            this.btnViewRange.Name = "btnViewRange";
+            this.btnViewRange.Size = new System.Drawing.Size(86, 23);
+            this.btnViewRange.TabIndex = 4;
+            this.btnViewRange.Text = "Monthly View";
+            this.btnViewRange.UseVisualStyleBackColor = true;
+            this.btnViewRange.Click += new System.EventHandler(this.btnViewRange_Click);
+            // 
+            // btnPreviousRange
+            // 
+            this.btnPreviousRange.Location = new System.Drawing.Point(721, 12);
+            this.btnPreviousRange.Name = "btnPreviousRange";
+            this.btnPreviousRange.Size = new System.Drawing.Size(93, 23);
+            this.btnPreviousRange.TabIndex = 3;
+            this.btnPreviousRange.Text = "Previous week";
+            this.btnPreviousRange.UseVisualStyleBackColor = true;
+            this.btnPreviousRange.Click += new System.EventHandler(this.btnPreviousRange_Click);
+            // 
+            // btnSavePresenceChanges
+            // 
+            this.btnSavePresenceChanges.Location = new System.Drawing.Point(814, 332);
+            this.btnSavePresenceChanges.Name = "btnSavePresenceChanges";
+            this.btnSavePresenceChanges.Size = new System.Drawing.Size(99, 23);
+            this.btnSavePresenceChanges.TabIndex = 1;
+            this.btnSavePresenceChanges.Text = "Save changes";
+            this.btnSavePresenceChanges.UseVisualStyleBackColor = true;
+            this.btnSavePresenceChanges.Click += new System.EventHandler(this.btnSavePresenceChanges_Click);
+            // 
+            // btnNextRange
+            // 
+            this.btnNextRange.Location = new System.Drawing.Point(820, 12);
+            this.btnNextRange.Name = "btnNextRange";
+            this.btnNextRange.Size = new System.Drawing.Size(93, 23);
+            this.btnNextRange.TabIndex = 2;
+            this.btnNextRange.Text = "Next week";
+            this.btnNextRange.UseVisualStyleBackColor = true;
+            this.btnNextRange.Click += new System.EventHandler(this.btnNextRange_Click);
+            // 
+            // dgvPresenceMonthFormat
+            // 
+            this.dgvPresenceMonthFormat.AllowUserToAddRows = false;
+            this.dgvPresenceMonthFormat.AllowUserToDeleteRows = false;
+            this.dgvPresenceMonthFormat.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dgvPresenceMonthFormat.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.dataGridViewTextBoxColumn1,
+            this.dataGridViewTextBoxColumn2,
+            this.dataGridViewCheckBoxColumn1,
+            this.dataGridViewCheckBoxColumn2,
+            this.dataGridViewCheckBoxColumn3,
+            this.dataGridViewCheckBoxColumn4,
+            this.dataGridViewCheckBoxColumn5,
+            this.dataGridViewCheckBoxColumn6,
+            this.dataGridViewCheckBoxColumn7});
+            this.dgvPresenceMonthFormat.Location = new System.Drawing.Point(3, 41);
+            this.dgvPresenceMonthFormat.Name = "dgvPresenceMonthFormat";
+            this.dgvPresenceMonthFormat.Size = new System.Drawing.Size(910, 287);
+            this.dgvPresenceMonthFormat.TabIndex = 5;
+            this.dgvPresenceMonthFormat.Visible = false;
+            this.dgvPresenceMonthFormat.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvPresenceMonthFormat_CellClick);
+            this.dgvPresenceMonthFormat.CellMouseUp += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.dgvPresenceMonthFormat_CellMouseUp);
+            this.dgvPresenceMonthFormat.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvPresenceMonthFormat_CellValueChanged);
+            // 
+            // dataGridViewTextBoxColumn1
+            // 
+            this.dataGridViewTextBoxColumn1.HeaderText = "PersonID";
+            this.dataGridViewTextBoxColumn1.Name = "dataGridViewTextBoxColumn1";
+            this.dataGridViewTextBoxColumn1.Visible = false;
+            // 
+            // dataGridViewTextBoxColumn2
+            // 
+            this.dataGridViewTextBoxColumn2.HeaderText = "Person";
+            this.dataGridViewTextBoxColumn2.Name = "dataGridViewTextBoxColumn2";
+            this.dataGridViewTextBoxColumn2.Width = 200;
+            // 
+            // dataGridViewCheckBoxColumn1
+            // 
+            this.dataGridViewCheckBoxColumn1.HeaderText = "Monday";
+            this.dataGridViewCheckBoxColumn1.Name = "dataGridViewCheckBoxColumn1";
+            this.dataGridViewCheckBoxColumn1.Resizable = System.Windows.Forms.DataGridViewTriState.True;
+            this.dataGridViewCheckBoxColumn1.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic;
+            this.dataGridViewCheckBoxColumn1.Width = 75;
+            // 
+            // dataGridViewCheckBoxColumn2
+            // 
+            this.dataGridViewCheckBoxColumn2.HeaderText = "Tuesday";
+            this.dataGridViewCheckBoxColumn2.Name = "dataGridViewCheckBoxColumn2";
+            this.dataGridViewCheckBoxColumn2.Width = 75;
+            // 
+            // dataGridViewCheckBoxColumn3
+            // 
+            this.dataGridViewCheckBoxColumn3.HeaderText = "Wednesday";
+            this.dataGridViewCheckBoxColumn3.Name = "dataGridViewCheckBoxColumn3";
+            this.dataGridViewCheckBoxColumn3.Width = 75;
+            // 
+            // dataGridViewCheckBoxColumn4
+            // 
+            this.dataGridViewCheckBoxColumn4.HeaderText = "Thursday";
+            this.dataGridViewCheckBoxColumn4.Name = "dataGridViewCheckBoxColumn4";
+            this.dataGridViewCheckBoxColumn4.Width = 75;
+            // 
+            // dataGridViewCheckBoxColumn5
+            // 
+            this.dataGridViewCheckBoxColumn5.HeaderText = "Friday";
+            this.dataGridViewCheckBoxColumn5.Name = "dataGridViewCheckBoxColumn5";
+            this.dataGridViewCheckBoxColumn5.Width = 75;
+            // 
+            // dataGridViewCheckBoxColumn6
+            // 
+            this.dataGridViewCheckBoxColumn6.HeaderText = "Saturday";
+            this.dataGridViewCheckBoxColumn6.Name = "dataGridViewCheckBoxColumn6";
+            this.dataGridViewCheckBoxColumn6.Width = 75;
+            // 
+            // dataGridViewCheckBoxColumn7
+            // 
+            this.dataGridViewCheckBoxColumn7.HeaderText = "Sunday";
+            this.dataGridViewCheckBoxColumn7.Name = "dataGridViewCheckBoxColumn7";
+            this.dataGridViewCheckBoxColumn7.Width = 75;
+            // 
+            // dgvPresenceWeekFormat
+            // 
+            this.dgvPresenceWeekFormat.AllowUserToAddRows = false;
+            this.dgvPresenceWeekFormat.AllowUserToDeleteRows = false;
+            this.dgvPresenceWeekFormat.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dgvPresenceWeekFormat.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.colPresPersonID,
             this.colPerson,
             this.colMonday,
@@ -247,11 +412,11 @@
             this.colFriday,
             this.colSaturday,
             this.colSunday});
-            this.dgvPresence.Location = new System.Drawing.Point(3, 41);
-            this.dgvPresence.Name = "dgvPresence";
-            this.dgvPresence.Size = new System.Drawing.Size(766, 287);
-            this.dgvPresence.TabIndex = 0;
-            this.dgvPresence.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvPresence_CellClick);
+            this.dgvPresenceWeekFormat.Location = new System.Drawing.Point(3, 41);
+            this.dgvPresenceWeekFormat.Name = "dgvPresenceWeekFormat";
+            this.dgvPresenceWeekFormat.Size = new System.Drawing.Size(910, 287);
+            this.dgvPresenceWeekFormat.TabIndex = 0;
+            this.dgvPresenceWeekFormat.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvPresenceWeekFormat_CellClick);
             // 
             // colPresPersonID
             // 
@@ -309,66 +474,16 @@
             this.colSunday.Name = "colSunday";
             this.colSunday.Width = 75;
             // 
-            // btnPreviousWeek
-            // 
-            this.btnPreviousWeek.Location = new System.Drawing.Point(571, 12);
-            this.btnPreviousWeek.Name = "btnPreviousWeek";
-            this.btnPreviousWeek.Size = new System.Drawing.Size(93, 23);
-            this.btnPreviousWeek.TabIndex = 3;
-            this.btnPreviousWeek.Text = "Previous week";
-            this.btnPreviousWeek.UseVisualStyleBackColor = true;
-            this.btnPreviousWeek.Click += new System.EventHandler(this.btnPreviousWeek_Click);
-            // 
-            // btnSavePresenceChanges
-            // 
-            this.btnSavePresenceChanges.Location = new System.Drawing.Point(664, 332);
-            this.btnSavePresenceChanges.Name = "btnSavePresenceChanges";
-            this.btnSavePresenceChanges.Size = new System.Drawing.Size(99, 23);
-            this.btnSavePresenceChanges.TabIndex = 1;
-            this.btnSavePresenceChanges.Text = "Save changes";
-            this.btnSavePresenceChanges.UseVisualStyleBackColor = true;
-            this.btnSavePresenceChanges.Click += new System.EventHandler(this.btnSavePresenceChanges_Click);
-            // 
-            // btnNextWeek
-            // 
-            this.btnNextWeek.Location = new System.Drawing.Point(670, 12);
-            this.btnNextWeek.Name = "btnNextWeek";
-            this.btnNextWeek.Size = new System.Drawing.Size(93, 23);
-            this.btnNextWeek.TabIndex = 2;
-            this.btnNextWeek.Text = "Next week";
-            this.btnNextWeek.UseVisualStyleBackColor = true;
-            this.btnNextWeek.Click += new System.EventHandler(this.btnNextWeek_Click);
-            // 
             // notifyIcon1
             // 
             this.notifyIcon1.Text = "notifyIcon1";
             this.notifyIcon1.Visible = true;
             // 
-            // btnAddGroup
-            // 
-            this.btnAddGroup.Location = new System.Drawing.Point(204, 375);
-            this.btnAddGroup.Name = "btnAddGroup";
-            this.btnAddGroup.Size = new System.Drawing.Size(86, 29);
-            this.btnAddGroup.TabIndex = 14;
-            this.btnAddGroup.Text = "Add Group";
-            this.btnAddGroup.UseVisualStyleBackColor = true;
-            this.btnAddGroup.Click += new System.EventHandler(this.btnAddGroup_Click);
-            // 
-            // btnAddService
-            // 
-            this.btnAddService.Location = new System.Drawing.Point(112, 375);
-            this.btnAddService.Name = "btnAddService";
-            this.btnAddService.Size = new System.Drawing.Size(86, 29);
-            this.btnAddService.TabIndex = 15;
-            this.btnAddService.Text = "Add Service";
-            this.btnAddService.UseVisualStyleBackColor = true;
-            this.btnAddService.Click += new System.EventHandler(this.btnAddService_Click);
-            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 450);
+            this.ClientSize = new System.Drawing.Size(953, 440);
             this.Controls.Add(this.tabControl);
             this.Controls.Add(this.splitContainer1);
             this.Name = "MainForm";
@@ -382,7 +497,9 @@
             this.tabPresence.ResumeLayout(false);
             this.tabPresence.PerformLayout();
             this.gbPresence.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.dgvPresence)).EndInit();
+            this.gbPresence.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dgvPresenceMonthFormat)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dgvPresenceWeekFormat)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -398,10 +515,10 @@
         private System.Windows.Forms.TabPage tabPresence;
         private System.Windows.Forms.Button btnDeleteSelected;
         private System.ComponentModel.BackgroundWorker backgroundWorker1;
-        private System.Windows.Forms.DataGridView dgvPresence;
+        private System.Windows.Forms.DataGridView dgvPresenceWeekFormat;
         private System.Windows.Forms.Button btnSavePresenceChanges;
-        private System.Windows.Forms.Button btnPreviousWeek;
-        private System.Windows.Forms.Button btnNextWeek;
+        private System.Windows.Forms.Button btnPreviousRange;
+        private System.Windows.Forms.Button btnNextRange;
         private System.Windows.Forms.DataGridViewTextBoxColumn colPresPersonID;
         private System.Windows.Forms.DataGridViewTextBoxColumn colPerson;
         private System.Windows.Forms.DataGridViewCheckBoxColumn colMonday;
@@ -422,6 +539,18 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn colBirthday;
         private System.Windows.Forms.Button btnAddGroup;
         private System.Windows.Forms.Button btnAddService;
+        private System.Windows.Forms.Button btnViewRange;
+        private System.Windows.Forms.DataGridView dgvPresenceMonthFormat;
+        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn1;
+        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn2;
+        private System.Windows.Forms.DataGridViewCheckBoxColumn dataGridViewCheckBoxColumn1;
+        private System.Windows.Forms.DataGridViewCheckBoxColumn dataGridViewCheckBoxColumn2;
+        private System.Windows.Forms.DataGridViewCheckBoxColumn dataGridViewCheckBoxColumn3;
+        private System.Windows.Forms.DataGridViewCheckBoxColumn dataGridViewCheckBoxColumn4;
+        private System.Windows.Forms.DataGridViewCheckBoxColumn dataGridViewCheckBoxColumn5;
+        private System.Windows.Forms.DataGridViewCheckBoxColumn dataGridViewCheckBoxColumn6;
+        private System.Windows.Forms.DataGridViewCheckBoxColumn dataGridViewCheckBoxColumn7;
+        private System.Windows.Forms.Label lblRangeInfo;
     }
 }
 

@@ -14,9 +14,16 @@ namespace Lista_de_Presencia
     public partial class MainForm : Form
     {
         // Dates of the current week
-        private string[] m_Dates;
+        private string[] m_DatesWeekFormat;
         // To keep track of which week we are currently seeing (0 is the current one, -1 is last week and +1 next week)
         private int m_WeekDifference = 0;
+
+        // Dates of the current month
+        private string[] m_DatesMonthFormat;
+        // To keep track of which month we are currently seeing (1 is january, 12 december)
+        private int m_CurrentMonth;
+        // To keep track of the year
+        private int m_YearDifference = 0;
 
         // Keeps track of the cellIDs that were checked in the beginning
         private List<int> m_PresenceCheckedCells = new List<int>();
@@ -32,11 +39,19 @@ namespace Lista_de_Presencia
         // Program ID for the presence tab
         private int m_ProgramID = -1;
 
+        // Determines how the presence table is displayed
+        private enum RANGE { WEEK, MONTH };
+        private RANGE m_ViewRange;
+
         public MainForm()
         {
             InitializeComponent();
 
-            m_Dates = new string[7];
+            m_DatesWeekFormat = new string[7];
+            m_DatesMonthFormat = new string[31];
+
+            m_ViewRange = RANGE.WEEK;
+            m_CurrentMonth = DateTime.Today.Month;
             this.CenterToScreen();
         }
 
@@ -44,10 +59,10 @@ namespace Lista_de_Presencia
         {
             tabControl.SelectedIndexChanged += new EventHandler(tabControl_SelectedIndexChanged);
 
-            dgvPresence.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
-            dgvPresence.Columns["colPerson"].HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleLeft;
-            dgvPresence.CellValueChanged += dgvPresence_OnCellValueChanged;
-            dgvPresence.CellMouseUp += dgvPresence_OnCellMouseUp;
+            dgvPresenceWeekFormat.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+            dgvPresenceWeekFormat.Columns["colPerson"].HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleLeft;
+            dgvPresenceWeekFormat.CellValueChanged += dgvPresenceWeekFormat_OnCellValueChanged;
+            dgvPresenceWeekFormat.CellMouseUp += dgvPresenceWeekFormat_OnCellMouseUp;
 
             // Workaround so that the tab control index changed event gets called even on initialisation
             tabControl.SelectedIndex = 1;
@@ -104,14 +119,18 @@ namespace Lista_de_Presencia
             GetPersonData();
         }
 
-        private void UpdatePresenceGridInformation()
+        private void UpdatePresenceGridInformationWeekFormat()
         {
+            lblRangeInfo.Text = "";
+
+            dgvPresenceMonthFormat.Visible = false;
+            dgvPresenceWeekFormat.Visible = true;
             using (SqlConnection conn = new SqlConnection())
             {
                 DatabaseConnection.OpenConnection(conn);
 
                 m_Initialisation = true;
-                dgvPresence.Rows.Clear();
+                dgvPresenceWeekFormat.Rows.Clear();
                 m_PresenceCheckedCells.Clear();
 
                 // should be 1- for monday and 7- for sunday, for some reason it's one off today (18/09)
@@ -131,20 +150,20 @@ namespace Lista_de_Presencia
                 {
                     while (reader.Read())
                     {
-                        dgvPresence.Columns["colMonday"].HeaderText = "Mon\n" + reader[0].ToString();
-                        dgvPresence.Columns["colTuesday"].HeaderText = "Tue\n" + reader[1].ToString();
-                        dgvPresence.Columns["colWednesday"].HeaderText = "Wed\n" + reader[2].ToString();
-                        dgvPresence.Columns["colThursday"].HeaderText = "Thu\n" + reader[3].ToString();
-                        dgvPresence.Columns["colFriday"].HeaderText = "Fri\n" + reader[4].ToString();
-                        dgvPresence.Columns["colSaturday"].HeaderText = "Sat\n" + reader[5].ToString();
-                        dgvPresence.Columns["colSunday"].HeaderText = "Sun\n" + reader[6].ToString();
+                        dgvPresenceWeekFormat.Columns["colMonday"].HeaderText = "Mon\n" + reader[0].ToString();
+                        dgvPresenceWeekFormat.Columns["colTuesday"].HeaderText = "Tue\n" + reader[1].ToString();
+                        dgvPresenceWeekFormat.Columns["colWednesday"].HeaderText = "Wed\n" + reader[2].ToString();
+                        dgvPresenceWeekFormat.Columns["colThursday"].HeaderText = "Thu\n" + reader[3].ToString();
+                        dgvPresenceWeekFormat.Columns["colFriday"].HeaderText = "Fri\n" + reader[4].ToString();
+                        dgvPresenceWeekFormat.Columns["colSaturday"].HeaderText = "Sat\n" + reader[5].ToString();
+                        dgvPresenceWeekFormat.Columns["colSunday"].HeaderText = "Sun\n" + reader[6].ToString();
 
                         // Store the dates into the array to know which cell corresponds to which date
                         for (int i = 0; i < 7; i++)
                         {
                             // Convert it to the database format MM/DD/YYYY
                             string[] day = reader[i].ToString().Split('/');
-                            m_Dates[i] = day[1] + '/' + day[0] + '/' + day[2];
+                            m_DatesWeekFormat[i] = day[1] + '/' + day[0] + '/' + day[2];
                         }
                     }
                 }
@@ -159,7 +178,7 @@ namespace Lista_de_Presencia
                     while (reader.Read())
                     {
                         // colPresPersonID, colPerson
-                        dgvPresence.Rows.Add(reader["ID"], reader["NAME"]);
+                        dgvPresenceWeekFormat.Rows.Add(reader["ID"], reader["NAME"]);
                         personIDs.Add((int)reader["ID"]);
                     }
                 }
@@ -173,8 +192,8 @@ namespace Lista_de_Presencia
                                                     "AND CONVERT(VARCHAR(30), CAST(@week_end AS DATETIME), 102))" +
                                              "AS SUB_QUERY", conn);
                     command.Parameters.AddWithValue("id", id);
-                    command.Parameters.AddWithValue("week_start", m_Dates[0]);
-                    command.Parameters.AddWithValue("week_end", m_Dates[6]);
+                    command.Parameters.AddWithValue("week_start", m_DatesWeekFormat[0]);
+                    command.Parameters.AddWithValue("week_end", m_DatesWeekFormat[6]);
 
                     using (SqlDataReader reader = command.ExecuteReader())
                     {
@@ -183,9 +202,9 @@ namespace Lista_de_Presencia
                             int rowIndex = personIDs.IndexOf(id);
                             int colIndex = (int)reader["WEEKDAY"] + 2;
                             // We can do this since the index in the id table corresponds to the datagridview row indexes
-                            dgvPresence.Rows[rowIndex].Cells[colIndex].Value = true;
+                            dgvPresenceWeekFormat.Rows[rowIndex].Cells[colIndex].Value = true;
                             // We also add that cell id to the list so we can later only keep the changes
-                            m_PresenceCheckedCells.Add(rowIndex * dgvPresence.ColumnCount + colIndex);
+                            m_PresenceCheckedCells.Add(rowIndex * dgvPresenceWeekFormat.ColumnCount + colIndex);
 
                             //Console.WriteLine("Adding to checked cells row " + rowIndex + " and column " + colIndex +" cellIndex: "+(rowIndex * dgvPresence.ColumnCount + colIndex));
                         }
@@ -201,7 +220,7 @@ namespace Lista_de_Presencia
                         {
                             int rowIndex = personIDs.IndexOf(id);
                             int colIndex = (int)reader["WEEK_DAY"] + 1;
-                            dgvPresence.Rows[rowIndex].Cells[colIndex].Style.BackColor = Color.LightGreen;
+                            dgvPresenceWeekFormat.Rows[rowIndex].Cells[colIndex].Style.BackColor = Color.LightGreen;
                         }
                     }
                 }
@@ -211,8 +230,73 @@ namespace Lista_de_Presencia
                 
                 m_Initialisation = false;
                 gbPresence.Visible = true;
-                dgvPresence.ClearSelection();
+                dgvPresenceWeekFormat.ClearSelection();
             }
+        }
+
+        private List<DateTime> GetDatesInMonth(int year, int month)
+        {
+            return Enumerable.Range(1, DateTime.DaysInMonth(year, month))  // Days: 1, 2 ... 31 etc.
+                             .Select(day => new DateTime(year, month, day)) // Map each day to a date
+                             .ToList(); // Load dates into a list
+        }
+
+        private void UpdatePresenceGridInformationMonthFormat()
+        {
+            lblRangeInfo.Text = m_CurrentMonth.ToString("D2")+"/"+(DateTime.Today.Year + m_YearDifference).ToString();
+
+            dgvPresenceWeekFormat.Visible = false;
+            dgvPresenceMonthFormat.Visible = true;
+
+            dgvPresenceMonthFormat.Columns.Clear();
+            dgvPresenceMonthFormat.RowHeadersWidth = 24;
+
+            DataGridViewColumn personIDColumn = new DataGridViewTextBoxColumn();
+            personIDColumn.Name = "colPersonID";
+            personIDColumn.Visible = false;
+            dgvPresenceMonthFormat.Columns.Add(personIDColumn);
+
+            DataGridViewColumn personNameColumn = new DataGridViewTextBoxColumn();
+            personNameColumn.Name = "colPerson";
+            personNameColumn.HeaderText = "Person";
+            personNameColumn.Width = 200;
+            personNameColumn.ReadOnly = true;
+            dgvPresenceMonthFormat.Columns.Add(personNameColumn);
+
+            // Get the days in the give month
+            List<DateTime> days = GetDatesInMonth(DateTime.Today.Year + m_YearDifference, m_CurrentMonth);
+            foreach (DateTime day in days)
+            {
+                DataGridViewColumn column = new DataGridViewCheckBoxColumn();
+                column.Name = day.Day.ToString();
+                column.HeaderText = day.Day.ToString("D2");
+                column.Width = 22;
+                dgvPresenceMonthFormat.Columns.Add(column);
+
+                // Database format MM/DD/YYYY
+                m_DatesMonthFormat[day.Day-1] = day.Month.ToString()+"/"+day.Day.ToString()+"/"+day.Year.ToString();
+            }
+
+            using (SqlConnection conn = new SqlConnection())
+            {
+                DatabaseConnection.OpenConnection(conn);
+
+                // Get the people of the program
+                SqlCommand command = new SqlCommand("SELECT PERSON_ID AS ID, (FIRSTNAME + ' ' + LASTNAME) AS NAME FROM PERSON WHERE WORKER != 1 AND PERSON_ID IN (SELECT ID_PERSON FROM PERSON_PROGRAM WHERE ID_PROGRAM = @programID)", conn);
+                command.Parameters.AddWithValue("programID", m_ProgramID);
+
+                List<int> personIDs = new List<int>();
+
+                using (SqlDataReader reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        // colPresPersonID, colPerson
+                        dgvPresenceMonthFormat.Rows.Add(reader["ID"], reader["NAME"]);
+                        personIDs.Add((int)reader["ID"]);
+                    }
+                }
+            }                
         }
 
         private void btn_DeleteSelected(object sender, EventArgs e)
@@ -279,7 +363,7 @@ namespace Lista_de_Presencia
             }
         }
         
-        private void dgvPresence_OnCellValueChanged(object sender, DataGridViewCellEventArgs e)
+        private void dgvPresenceWeekFormat_OnCellValueChanged(object sender, DataGridViewCellEventArgs e)
         {
             // We only want to do something if we aren't in the initialisation step, only if the user is making changes
             if (m_Initialisation)
@@ -288,11 +372,11 @@ namespace Lista_de_Presencia
             if (e.RowIndex != -1)
             {
                 // We only want to keep track of the real changes (not the check then uncheck or vice-versa once)
-                if (((bool)dgvPresence.Rows[e.RowIndex].Cells[e.ColumnIndex].Value
-                     && !m_PresenceCheckedCells.Contains(e.RowIndex * dgvPresence.ColumnCount + e.ColumnIndex))
+                if (((bool)dgvPresenceWeekFormat.Rows[e.RowIndex].Cells[e.ColumnIndex].Value
+                     && !m_PresenceCheckedCells.Contains(e.RowIndex * dgvPresenceWeekFormat.ColumnCount + e.ColumnIndex))
                    ||
-                    (!(bool)dgvPresence.Rows[e.RowIndex].Cells[e.ColumnIndex].Value
-                     && m_PresenceCheckedCells.Contains(e.RowIndex * dgvPresence.ColumnCount + e.ColumnIndex)))
+                    (!(bool)dgvPresenceWeekFormat.Rows[e.RowIndex].Cells[e.ColumnIndex].Value
+                     && m_PresenceCheckedCells.Contains(e.RowIndex * dgvPresenceWeekFormat.ColumnCount + e.ColumnIndex)))
                 {
                     //Console.WriteLine("True change");
                     m_PresenceChanges.Add(e.RowIndex + " " + e.ColumnIndex);
@@ -306,12 +390,56 @@ namespace Lista_de_Presencia
         }
 
         // Ends the edition of the cell/checkbox when the user clicks instead of when the cell loses focus
-        private void dgvPresence_OnCellMouseUp(object sender, DataGridViewCellMouseEventArgs e)
+        private void dgvPresenceWeekFormat_OnCellMouseUp(object sender, DataGridViewCellMouseEventArgs e)
         {
             if (e.RowIndex != -1)
             {
-                dgvPresence.EndEdit();
+                dgvPresenceWeekFormat.EndEdit();
             }
+        }
+
+        private void dgvPresenceWeekFormat_CellClick(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.RowIndex == -1 || e.ColumnIndex < 2)
+                return;
+
+            // This works, but the problem is that the cell click event is not always called, if we click too fast.
+            if (dgvPresenceWeekFormat.Rows[e.RowIndex].Cells[e.ColumnIndex].Value == null || (bool)dgvPresenceWeekFormat.Rows[e.RowIndex].Cells[e.ColumnIndex].Value == false)
+                dgvPresenceWeekFormat.Rows[e.RowIndex].Cells[e.ColumnIndex].Value = true;
+            else
+                dgvPresenceWeekFormat.Rows[e.RowIndex].Cells[e.ColumnIndex].Value = false;
+        }
+
+        private void dgvPresenceMonthFormat_CellValueChanged(object sender, DataGridViewCellEventArgs e)
+        {
+            // We only want to do something if we aren't in the initialisation step, only if the user is making changes
+            if (m_Initialisation)
+                return;
+
+            if(e.RowIndex != -1)
+            {
+                Console.WriteLine("Day clicked: " + m_DatesMonthFormat[e.ColumnIndex-2]);
+            }
+        }
+
+        private void dgvPresenceMonthFormat_CellMouseUp(object sender, DataGridViewCellMouseEventArgs e)
+        {
+            if (e.RowIndex != -1)
+            {
+                dgvPresenceMonthFormat.EndEdit();
+            }
+        }
+
+        private void dgvPresenceMonthFormat_CellClick(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.RowIndex == -1 || e.ColumnIndex < 2)
+                return;
+
+            // This works, but the problem is that the cell click event is not always called, if we click too fast.
+            if (dgvPresenceMonthFormat.Rows[e.RowIndex].Cells[e.ColumnIndex].Value == null || (bool)dgvPresenceMonthFormat.Rows[e.RowIndex].Cells[e.ColumnIndex].Value == false)
+                dgvPresenceMonthFormat.Rows[e.RowIndex].Cells[e.ColumnIndex].Value = true;
+            else
+                dgvPresenceMonthFormat.Rows[e.RowIndex].Cells[e.ColumnIndex].Value = false;
         }
 
         private void btnSavePresenceChanges_Click(object sender, EventArgs e)
@@ -327,7 +455,7 @@ namespace Lista_de_Presencia
                  * Therefore we only insert and delete rows, no updates.
                 **/
                 
-                if ((bool) dgvPresence.Rows[changedCells[0]].Cells[changedCells[1]].Value)
+                if ((bool) dgvPresenceWeekFormat.Rows[changedCells[0]].Cells[changedCells[1]].Value)
                 {
                     /*
                      * The checkbox is checked, which means that the person was present on that day.
@@ -342,8 +470,8 @@ namespace Lista_de_Presencia
                         SqlCommand command = new SqlCommand("SELECT * FROM PRESENCE WHERE DIA = convert(varchar(30),cast(@day as datetime),102) AND ID_PERSON = @id " +
                                                             "IF @@ROWCOUNT = 0" +
                                                             "    INSERT INTO PRESENCE(DIA, ID_PERSON) VALUES(convert(varchar(30),cast(@day as datetime),102), @id)", conn);
-                        command.Parameters.Add(new SqlParameter("day", m_Dates[changedCells[1] - 2]));
-                        command.Parameters.Add(new SqlParameter("id", (int) (dgvPresence.Rows[changedCells[0]].Cells["colPresPersonID"]).Value));
+                        command.Parameters.Add(new SqlParameter("day", m_DatesWeekFormat[changedCells[1] - 2]));
+                        command.Parameters.Add(new SqlParameter("id", (int) (dgvPresenceWeekFormat.Rows[changedCells[0]].Cells["colPresPersonID"]).Value));
 
                         // We add the cell to the checked cells
                         m_PresenceCheckedCells.Add(changedCells[0] * changedCells[1] + changedCells[1]);
@@ -364,8 +492,8 @@ namespace Lista_de_Presencia
                         DatabaseConnection.OpenConnection(conn);
 
                         SqlCommand command = new SqlCommand("DELETE FROM PRESENCE WHERE DIA = CONVERT(VARCHAR(30), CAST(@day AS DATETIME), 102) AND ID_PERSON = @id", conn);
-                        command.Parameters.Add(new SqlParameter("day", m_Dates[changedCells[1] - 2]));
-                        command.Parameters.Add(new SqlParameter("id", (int)(dgvPresence.Rows[changedCells[0]].Cells["colPresPersonID"]).Value));
+                        command.Parameters.Add(new SqlParameter("day", m_DatesWeekFormat[changedCells[1] - 2]));
+                        command.Parameters.Add(new SqlParameter("id", (int)(dgvPresenceWeekFormat.Rows[changedCells[0]].Cells["colPresPersonID"]).Value));
 
                         // We remove the cell from the checked cells
                         m_PresenceCheckedCells.Remove(changedCells[0] * changedCells[1] + changedCells[1]);
@@ -379,23 +507,55 @@ namespace Lista_de_Presencia
             m_PresenceChanges.Clear();
 
             // Don't know if we keep that, makes an additional request to the database, but at least we see the state of the database right away
-            UpdatePresenceGridInformation();
+            UpdatePresenceGridInformationWeekFormat();
         }
 
-        private void btnNextWeek_Click(object sender, EventArgs e)
+        private int RealModulo(int a, int b)
+        {
+            return (Math.Abs(a * b) + a) % b;
+        }
+
+        private void btnNextRange_Click(object sender, EventArgs e)
         {
             if (!AllChangesSaved())
                 return;
-            m_WeekDifference++;
-            UpdatePresenceGridInformation();
+
+            if (m_ViewRange.Equals(RANGE.WEEK))
+            {
+                m_WeekDifference++;
+                UpdatePresenceGridInformationWeekFormat();
+            }
+            else if (m_ViewRange.Equals(RANGE.MONTH))
+            {
+                m_CurrentMonth = RealModulo(m_CurrentMonth + 1, 12);
+                if (m_CurrentMonth == 0)
+                    m_CurrentMonth = 12;
+                else if (m_CurrentMonth == 1)
+                    m_YearDifference++;
+                UpdatePresenceGridInformationMonthFormat();
+            }
         }
 
-        private void btnPreviousWeek_Click(object sender, EventArgs e)
+        private void btnPreviousRange_Click(object sender, EventArgs e)
         {
             if (!AllChangesSaved())
                 return;
-            m_WeekDifference--;
-            UpdatePresenceGridInformation();
+
+            if (m_ViewRange.Equals(RANGE.WEEK))
+            {
+                m_WeekDifference--;
+                UpdatePresenceGridInformationWeekFormat();
+            }
+            else if (m_ViewRange.Equals(RANGE.MONTH))
+            {
+                m_CurrentMonth = RealModulo(m_CurrentMonth - 1, 12);
+                if (m_CurrentMonth == 0)
+                {
+                    m_YearDifference--;
+                    m_CurrentMonth = 12;
+                }
+                UpdatePresenceGridInformationMonthFormat();
+            }
         }
 
         // If the user made changes without saving them we need to tell him so he can decide what to do
@@ -486,17 +646,8 @@ namespace Lista_de_Presencia
                 return;
 
             m_ProgramID = (int)((KeyValuePair<Object, Object>)cbbPrograms.SelectedItem).Key;
-            UpdatePresenceGridInformation();
+            UpdatePresenceGridInformationWeekFormat();
             gbPresence.Text = (String)((KeyValuePair<Object, Object>)cbbPrograms.SelectedItem).Value;
-        }
-
-        private void dgvPresence_CellClick(object sender, DataGridViewCellEventArgs e)
-        {
-            // This works, but the problem is that the cell click event is not always called, if we click too fast.
-            if (dgvPresence.Rows[e.RowIndex].Cells[e.ColumnIndex].Value == null || (bool)dgvPresence.Rows[e.RowIndex].Cells[e.ColumnIndex].Value == false)
-                dgvPresence.Rows[e.RowIndex].Cells[e.ColumnIndex].Value = true;
-            else
-                dgvPresence.Rows[e.RowIndex].Cells[e.ColumnIndex].Value = false;
         }
 
         private void btnAddGroup_Click(object sender, EventArgs e)
@@ -515,6 +666,26 @@ namespace Lista_de_Presencia
                 form.Show();
             else
                 form.BringToFront();
+        }
+
+        private void btnViewRange_Click(object sender, EventArgs e)
+        {
+            if (m_ViewRange.Equals(RANGE.WEEK))
+            {
+                btnViewRange.Text = "Weekly view";
+                m_ViewRange = RANGE.MONTH;
+                btnPreviousRange.Text = "Previous month";
+                btnNextRange.Text = "Next month";
+                UpdatePresenceGridInformationMonthFormat();
+            }
+            else if (m_ViewRange.Equals(RANGE.MONTH))
+            {
+                btnViewRange.Text = "Monthly view";
+                m_ViewRange = RANGE.WEEK;
+                btnPreviousRange.Text = "Previous week";
+                btnNextRange.Text = "Next week";
+                UpdatePresenceGridInformationWeekFormat();
+            }
         }
     }
 }
