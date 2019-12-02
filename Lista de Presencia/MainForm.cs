@@ -63,7 +63,7 @@ namespace Lista_de_Presencia
             dgvPresenceWeekFormat.Columns["colPerson"].HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleLeft;
             dgvPresenceWeekFormat.CellValueChanged += dgvPresenceWeekFormat_OnCellValueChanged;
             dgvPresenceWeekFormat.CellMouseUp += dgvPresenceWeekFormat_OnCellMouseUp;
-
+            
             // Workaround so that the tab control index changed event gets called even on initialisation
             tabControl.SelectedIndex = 1;
             tabControl.SelectedIndex = 0;
@@ -168,7 +168,10 @@ namespace Lista_de_Presencia
                     }
                 }
 
-                command = new SqlCommand("SELECT PERSON_ID AS ID, (FIRSTNAME + ' ' + LASTNAME) AS NAME FROM PERSON WHERE WORKER != 1 AND PERSON_ID IN (SELECT ID_PERSON FROM PERSON_PROGRAM WHERE ID_PROGRAM = @programID)", conn);
+                command = new SqlCommand("SELECT PERSON_ID AS ID, (FIRSTNAME + ' ' + LASTNAME) AS NAME FROM PERSON WHERE WORKER != 1 AND PERSON_ID IN "+
+                                            " (SELECT ID_PERSON FROM PERSON_GRUPO WHERE ID_GRUPO IN "+
+                                                " (SELECT GRUPO_ID FROM GRUPO WHERE ID_SERVICIO IN "+
+                                                    " (SELECT SERVICIO_ID FROM SERVICIO WHERE ID_PROGRAM = @programID)))", conn);
                 command.Parameters.AddWithValue("programID", m_ProgramID);
 
                 List<int> personIDs = new List<int>();
@@ -243,6 +246,8 @@ namespace Lista_de_Presencia
 
         private void UpdatePresenceGridInformationMonthFormat()
         {
+            m_Initialisation = true;
+
             lblRangeInfo.Text = m_CurrentMonth.ToString("D2")+"/"+(DateTime.Today.Year + m_YearDifference).ToString();
 
             dgvPresenceWeekFormat.Visible = false;
@@ -262,8 +267,11 @@ namespace Lista_de_Presencia
             personNameColumn.Width = 200;
             personNameColumn.ReadOnly = true;
             dgvPresenceMonthFormat.Columns.Add(personNameColumn);
+            dgvPresenceMonthFormat.Columns["colPerson"].HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleLeft;
 
-            // Get the days in the give month
+            dgvPresenceMonthFormat.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+
+            // Get the days in the given month
             List<DateTime> days = GetDatesInMonth(DateTime.Today.Year + m_YearDifference, m_CurrentMonth);
             foreach (DateTime day in days)
             {
@@ -272,6 +280,10 @@ namespace Lista_de_Presencia
                 column.HeaderText = day.Day.ToString("D2");
                 column.Width = 22;
                 dgvPresenceMonthFormat.Columns.Add(column);
+
+                // We show the weekends
+                if(day.DayOfWeek == DayOfWeek.Saturday || day.DayOfWeek == DayOfWeek.Sunday)
+                    dgvPresenceMonthFormat.Columns[dgvPresenceMonthFormat.ColumnCount-1].DefaultCellStyle.BackColor = Color.LightGray;
 
                 // Database format MM/DD/YYYY
                 m_DatesMonthFormat[day.Day-1] = day.Month.ToString()+"/"+day.Day.ToString()+"/"+day.Year.ToString();
@@ -282,7 +294,10 @@ namespace Lista_de_Presencia
                 DatabaseConnection.OpenConnection(conn);
 
                 // Get the people of the program
-                SqlCommand command = new SqlCommand("SELECT PERSON_ID AS ID, (FIRSTNAME + ' ' + LASTNAME) AS NAME FROM PERSON WHERE WORKER != 1 AND PERSON_ID IN (SELECT ID_PERSON FROM PERSON_PROGRAM WHERE ID_PROGRAM = @programID)", conn);
+                SqlCommand command = new SqlCommand("SELECT PERSON_ID AS ID, (FIRSTNAME + ' ' + LASTNAME) AS NAME FROM PERSON WHERE WORKER != 1 AND PERSON_ID IN " +
+                                                        " (SELECT ID_PERSON FROM PERSON_GRUPO WHERE ID_GRUPO IN " +
+                                                            " (SELECT GRUPO_ID FROM GRUPO WHERE ID_SERVICIO IN " +
+                                                                " (SELECT SERVICIO_ID FROM SERVICIO WHERE ID_PROGRAM = @programID)))", conn);
                 command.Parameters.AddWithValue("programID", m_ProgramID);
 
                 List<int> personIDs = new List<int>();
@@ -296,7 +311,67 @@ namespace Lista_de_Presencia
                         personIDs.Add((int)reader["ID"]);
                     }
                 }
-            }                
+
+                // Key = day of the week, value = list of persons that should be present
+                Dictionary<int, List<int>> weekdaysOfPresence = new Dictionary<int, List<int>>();
+
+                foreach (int id in personIDs)
+                {
+                    command = new SqlCommand("SELECT CONVERT(VARCHAR, DIA, 103) AS DIA, DATEDIFF(DAY, @month_start, DIA) AS MONTHDAY FROM (" +
+                                                    "SELECT DIA FROM PRESENCE " +
+                                                    "WHERE ID_PERSON = @id " +
+                                                    "AND DIA BETWEEN CONVERT(VARCHAR(30), CAST(@month_start AS DATETIME), 102)" +
+                                                    "AND CONVERT(VARCHAR(30), CAST(@month_end AS DATETIME), 102))" +
+                                             "AS SUB_QUERY", conn);
+                    command.Parameters.AddWithValue("id", id);
+                    command.Parameters.AddWithValue("month_start", days[0].ToString("MM/dd/yyyy"));
+                    command.Parameters.AddWithValue("month_end", days[days.Count-1].ToString("MM/dd/yyyy"));
+                                        
+                    using (SqlDataReader reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            int rowIndex = personIDs.IndexOf(id);
+                            int colIndex = (int)reader["MONTHDAY"] + 2;
+                            // We can do this since the index in the id table corresponds to the datagridview row indexes
+                            dgvPresenceMonthFormat.Rows[rowIndex].Cells[colIndex].Value = true;
+                            // We also add that cell id to the list so we can later only keep the changes
+                            //m_PresenceCheckedCells.Add(rowIndex * dgvPresenceWeekFormat.ColumnCount + colIndex);
+                        }
+                    }
+
+                    command = new SqlCommand("SELECT WEEK_DAY FROM WEEKLY_PRESENCE WHERE ID_PERSON = @id", conn);
+                    command.Parameters.AddWithValue("id", id);
+
+                    using (SqlDataReader reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            //int rowIndex = personIDs.IndexOf(id);
+                            //int colIndex = (int)reader["WEEK_DAY"] + 1;
+                            //dgvPresenceWeekFormat.Rows[rowIndex].Cells[colIndex].Style.BackColor = Color.LightGreen;
+
+                            if (weekdaysOfPresence.ContainsKey((int)reader["WEEK_DAY"]))
+                                weekdaysOfPresence[(int)reader["WEEK_DAY"]].Add(id);
+                            else
+                                weekdaysOfPresence.Add((int)reader["WEEK_DAY"], new List<int>{id});
+                        }
+                    }
+                }
+
+                foreach (DateTime day in days)
+                {
+                    if (weekdaysOfPresence.ContainsKey((int)day.DayOfWeek))
+                    {
+                        foreach(int personID in weekdaysOfPresence[(int)day.DayOfWeek])
+                        {
+                            dgvPresenceMonthFormat.Rows[personIDs.IndexOf(personID)].Cells[days.IndexOf(day)+2].Style.BackColor = Color.LightGreen;
+                        }
+                    }
+                }
+            }
+
+            m_Initialisation = false;
         }
 
         private void btn_DeleteSelected(object sender, EventArgs e)
