@@ -14,9 +14,11 @@ namespace Lista_de_Presencia
         [STAThread]
         static void Main()
         {
-            Application.EnableVisualStyles();
-            Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new MainForm());
+            PDFManager.CreateExample();
+
+            //Application.EnableVisualStyles();
+            //Application.SetCompatibleTextRenderingDefault(false);
+            //Application.Run(new MainForm());
         }
     }
 }
