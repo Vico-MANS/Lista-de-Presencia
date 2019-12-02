@@ -247,6 +247,7 @@ namespace Lista_de_Presencia
         private void UpdatePresenceGridInformationMonthFormat()
         {
             m_Initialisation = true;
+            m_PresenceChanges.Clear();
 
             lblRangeInfo.Text = m_CurrentMonth.ToString("D2")+"/"+(DateTime.Today.Year + m_YearDifference).ToString();
 
@@ -257,7 +258,7 @@ namespace Lista_de_Presencia
             dgvPresenceMonthFormat.RowHeadersWidth = 24;
 
             DataGridViewColumn personIDColumn = new DataGridViewTextBoxColumn();
-            personIDColumn.Name = "colPersonID";
+            personIDColumn.Name = "colPresPersonID";
             personIDColumn.Visible = false;
             dgvPresenceMonthFormat.Columns.Add(personIDColumn);
 
@@ -301,7 +302,6 @@ namespace Lista_de_Presencia
                 command.Parameters.AddWithValue("programID", m_ProgramID);
 
                 List<int> personIDs = new List<int>();
-
                 using (SqlDataReader reader = command.ExecuteReader())
                 {
                     while (reader.Read())
@@ -336,7 +336,7 @@ namespace Lista_de_Presencia
                             // We can do this since the index in the id table corresponds to the datagridview row indexes
                             dgvPresenceMonthFormat.Rows[rowIndex].Cells[colIndex].Value = true;
                             // We also add that cell id to the list so we can later only keep the changes
-                            //m_PresenceCheckedCells.Add(rowIndex * dgvPresenceWeekFormat.ColumnCount + colIndex);
+                            m_PresenceCheckedCells.Add(rowIndex * dgvPresenceMonthFormat.ColumnCount + colIndex);
                         }
                     }
 
@@ -347,10 +347,6 @@ namespace Lista_de_Presencia
                     {
                         while (reader.Read())
                         {
-                            //int rowIndex = personIDs.IndexOf(id);
-                            //int colIndex = (int)reader["WEEK_DAY"] + 1;
-                            //dgvPresenceWeekFormat.Rows[rowIndex].Cells[colIndex].Style.BackColor = Color.LightGreen;
-
                             if (weekdaysOfPresence.ContainsKey((int)reader["WEEK_DAY"]))
                                 weekdaysOfPresence[(int)reader["WEEK_DAY"]].Add(id);
                             else
@@ -493,7 +489,23 @@ namespace Lista_de_Presencia
 
             if(e.RowIndex != -1)
             {
-                Console.WriteLine("Day clicked: " + m_DatesMonthFormat[e.ColumnIndex-2]);
+                //Console.WriteLine("Day clicked: " + m_DatesMonthFormat[e.ColumnIndex-2]);
+
+                // We only want to keep track of the real changes (not the check then uncheck or vice-versa once)
+                if (((bool)dgvPresenceMonthFormat.Rows[e.RowIndex].Cells[e.ColumnIndex].Value
+                     && !m_PresenceCheckedCells.Contains(e.RowIndex * dgvPresenceMonthFormat.ColumnCount + e.ColumnIndex))
+                   ||
+                    (!(bool)dgvPresenceMonthFormat.Rows[e.RowIndex].Cells[e.ColumnIndex].Value
+                     && m_PresenceCheckedCells.Contains(e.RowIndex * dgvPresenceMonthFormat.ColumnCount + e.ColumnIndex)))
+                {
+                    //Console.WriteLine("True change");
+                    m_PresenceChanges.Add(e.RowIndex + " " + e.ColumnIndex);
+                }
+                else
+                {
+                    //Console.WriteLine("Not a true change");
+                    m_PresenceChanges.Remove(e.RowIndex + " " + e.ColumnIndex);
+                }
             }
         }
 
@@ -519,61 +531,125 @@ namespace Lista_de_Presencia
 
         private void btnSavePresenceChanges_Click(object sender, EventArgs e)
         {
-            foreach(String change in m_PresenceChanges)
+            if (m_ViewRange.Equals(RANGE.WEEK))
             {
-                String[] data = change.Split(' ');
-                int[] changedCells = Array.ConvertAll<string, int>(data, int.Parse);
-                
-                /*
-                 * If a row in the table corresponds to the person and the date then the person was present.
-                 * If the person wasn't present on the given date, then no row corresponds to it.
-                 * Therefore we only insert and delete rows, no updates.
-                **/
-                
-                if ((bool) dgvPresenceWeekFormat.Rows[changedCells[0]].Cells[changedCells[1]].Value)
+                foreach (String change in m_PresenceChanges)
                 {
+                    String[] data = change.Split(' ');
+                    int[] changedCells = Array.ConvertAll<string, int>(data, int.Parse);
+
                     /*
-                     * The checkbox is checked, which means that the person was present on that day.
-                     * We now have to check if the row already exists in the table. (in the case that the user unchecked and rechecked the checkbox)
-                     * If the row doesn't exist we insert it into the table.
-                     * */
+                     * If a row in the table corresponds to the person and the date then the person was present.
+                     * If the person wasn't present on the given date, then no row corresponds to it.
+                     * Therefore we only insert and delete rows, no updates.
+                    **/
 
-                    using (SqlConnection conn = new SqlConnection())
+                    if ((bool)dgvPresenceWeekFormat.Rows[changedCells[0]].Cells[changedCells[1]].Value)
                     {
-                        DatabaseConnection.OpenConnection(conn);
+                        /*
+                         * The checkbox is checked, which means that the person was present on that day.
+                         * We now have to check if the row already exists in the table. (in the case that the user unchecked and rechecked the checkbox)
+                         * If the row doesn't exist we insert it into the table.
+                         * */
 
-                        SqlCommand command = new SqlCommand("SELECT * FROM PRESENCE WHERE DIA = convert(varchar(30),cast(@day as datetime),102) AND ID_PERSON = @id " +
-                                                            "IF @@ROWCOUNT = 0" +
-                                                            "    INSERT INTO PRESENCE(DIA, ID_PERSON) VALUES(convert(varchar(30),cast(@day as datetime),102), @id)", conn);
-                        command.Parameters.Add(new SqlParameter("day", m_DatesWeekFormat[changedCells[1] - 2]));
-                        command.Parameters.Add(new SqlParameter("id", (int) (dgvPresenceWeekFormat.Rows[changedCells[0]].Cells["colPresPersonID"]).Value));
+                        using (SqlConnection conn = new SqlConnection())
+                        {
+                            DatabaseConnection.OpenConnection(conn);
 
-                        // We add the cell to the checked cells
-                        m_PresenceCheckedCells.Add(changedCells[0] * changedCells[1] + changedCells[1]);
+                            SqlCommand command = new SqlCommand("SELECT * FROM PRESENCE WHERE DIA = convert(varchar(30),cast(@day as datetime),102) AND ID_PERSON = @id " +
+                                                                "IF @@ROWCOUNT = 0" +
+                                                                "    INSERT INTO PRESENCE(DIA, ID_PERSON) VALUES(convert(varchar(30),cast(@day as datetime),102), @id)", conn);
+                            command.Parameters.Add(new SqlParameter("day", m_DatesWeekFormat[changedCells[1] - 2]));
+                            command.Parameters.Add(new SqlParameter("id", (int)(dgvPresenceWeekFormat.Rows[changedCells[0]].Cells["colPresPersonID"]).Value));
 
-                        Console.WriteLine("Insert affected " + command.ExecuteNonQuery() + " rows.");                        
+                            // We add the cell to the checked cells
+                            m_PresenceCheckedCells.Add(changedCells[0] * changedCells[1] + changedCells[1]);
+
+                            Console.WriteLine("Insert affected " + command.ExecuteNonQuery() + " rows.");
+                        }
+                    }
+                    else
+                    {
+                        /*
+                         * The checkbox is not checked, which means that the person wasn't present on that day.
+                         * We now have to check if the row exists in the table. (in the case that the user checked and unchecked the checkbox)
+                         * If the row exists we delete it.
+                         * */
+
+                        using (SqlConnection conn = new SqlConnection())
+                        {
+                            DatabaseConnection.OpenConnection(conn);
+
+                            SqlCommand command = new SqlCommand("DELETE FROM PRESENCE WHERE DIA = CONVERT(VARCHAR(30), CAST(@day AS DATETIME), 102) AND ID_PERSON = @id", conn);
+                            command.Parameters.Add(new SqlParameter("day", m_DatesWeekFormat[changedCells[1] - 2]));
+                            command.Parameters.Add(new SqlParameter("id", (int)(dgvPresenceWeekFormat.Rows[changedCells[0]].Cells["colPresPersonID"]).Value));
+
+                            // We remove the cell from the checked cells
+                            m_PresenceCheckedCells.Remove(changedCells[0] * changedCells[1] + changedCells[1]);
+
+                            Console.WriteLine("Deletion affected " + command.ExecuteNonQuery() + " rows.");
+                        }
                     }
                 }
-                else
+            }
+            else if (m_ViewRange.Equals(RANGE.MONTH))
+            {
+                foreach (String change in m_PresenceChanges)
                 {
+                    String[] data = change.Split(' ');
+                    int[] changedCells = Array.ConvertAll<string, int>(data, int.Parse);
+
                     /*
-                     * The checkbox is not checked, which means that the person wasn't present on that day.
-                     * We now have to check if the row exists in the table. (in the case that the user checked and unchecked the checkbox)
-                     * If the row exists we delete it.
-                     * */
+                     * If a row in the table corresponds to the person and the date then the person was present.
+                     * If the person wasn't present on the given date, then no row corresponds to it.
+                     * Therefore we only insert and delete rows, no updates.
+                    **/
 
-                    using (SqlConnection conn = new SqlConnection())
+                    if ((bool)dgvPresenceMonthFormat.Rows[changedCells[0]].Cells[changedCells[1]].Value)
                     {
-                        DatabaseConnection.OpenConnection(conn);
+                        /*
+                         * The checkbox is checked, which means that the person was present on that day.
+                         * We now have to check if the row already exists in the table. (in the case that the user unchecked and rechecked the checkbox)
+                         * If the row doesn't exist we insert it into the table.
+                         * */
 
-                        SqlCommand command = new SqlCommand("DELETE FROM PRESENCE WHERE DIA = CONVERT(VARCHAR(30), CAST(@day AS DATETIME), 102) AND ID_PERSON = @id", conn);
-                        command.Parameters.Add(new SqlParameter("day", m_DatesWeekFormat[changedCells[1] - 2]));
-                        command.Parameters.Add(new SqlParameter("id", (int)(dgvPresenceWeekFormat.Rows[changedCells[0]].Cells["colPresPersonID"]).Value));
+                        using (SqlConnection conn = new SqlConnection())
+                        {
+                            DatabaseConnection.OpenConnection(conn);
 
-                        // We remove the cell from the checked cells
-                        m_PresenceCheckedCells.Remove(changedCells[0] * changedCells[1] + changedCells[1]);
+                            SqlCommand command = new SqlCommand("SELECT * FROM PRESENCE WHERE DIA = convert(varchar(30),cast(@day as datetime),102) AND ID_PERSON = @id " +
+                                                                "IF @@ROWCOUNT = 0" +
+                                                                "    INSERT INTO PRESENCE(DIA, ID_PERSON) VALUES(convert(varchar(30),cast(@day as datetime),102), @id)", conn);
+                            command.Parameters.Add(new SqlParameter("day", m_DatesMonthFormat[changedCells[1] - 2]));
+                            command.Parameters.Add(new SqlParameter("id", (int)(dgvPresenceMonthFormat.Rows[changedCells[0]].Cells["colPresPersonID"]).Value));
 
-                        Console.WriteLine("Deletion affected " + command.ExecuteNonQuery() + " rows.");
+                            // We add the cell to the checked cells
+                            m_PresenceCheckedCells.Add(changedCells[0] * changedCells[1] + changedCells[1]);
+
+                            Console.WriteLine("Insert affected " + command.ExecuteNonQuery() + " rows.");
+                        }
+                    }
+                    else
+                    {
+                        /*
+                         * The checkbox is not checked, which means that the person wasn't present on that day.
+                         * We now have to check if the row exists in the table. (in the case that the user checked and unchecked the checkbox)
+                         * If the row exists we delete it.
+                         * */
+
+                        using (SqlConnection conn = new SqlConnection())
+                        {
+                            DatabaseConnection.OpenConnection(conn);
+
+                            SqlCommand command = new SqlCommand("DELETE FROM PRESENCE WHERE DIA = CONVERT(VARCHAR(30), CAST(@day AS DATETIME), 102) AND ID_PERSON = @id", conn);
+                            command.Parameters.Add(new SqlParameter("day", m_DatesMonthFormat[changedCells[1] - 2]));
+                            command.Parameters.Add(new SqlParameter("id", (int)(dgvPresenceMonthFormat.Rows[changedCells[0]].Cells["colPresPersonID"]).Value));
+
+                            // We remove the cell from the checked cells
+                            m_PresenceCheckedCells.Remove(changedCells[0] * changedCells[1] + changedCells[1]);
+
+                            Console.WriteLine("Deletion affected " + command.ExecuteNonQuery() + " rows.");
+                        }
                     }
                 }
             }
@@ -582,7 +658,11 @@ namespace Lista_de_Presencia
             m_PresenceChanges.Clear();
 
             // Don't know if we keep that, makes an additional request to the database, but at least we see the state of the database right away
-            UpdatePresenceGridInformationWeekFormat();
+            if (m_ViewRange.Equals(RANGE.WEEK))
+                UpdatePresenceGridInformationWeekFormat();
+            else
+                UpdatePresenceGridInformationMonthFormat();
+
         }
 
         private int RealModulo(int a, int b)
