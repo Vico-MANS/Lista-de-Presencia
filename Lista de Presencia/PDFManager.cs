@@ -227,6 +227,51 @@ namespace Lista_de_Presencia {
             paragraph.Format.Alignment = ParagraphAlignment.Right;
             paragraph.AddDateField("dd/MM/yyyy");
 
+            /**
+             * RETRIEVE ATTENDANCE INFORMATION FROM THE DATABASE
+             * */
+
+            //table.Rows[1].Cells[10].AddParagraph("X");
+
+            /**
+             * GET THE WEEKENDS
+             * */
+
+            using (SqlConnection conn = new SqlConnection())
+            {
+                DatabaseConnection.OpenConnection(conn);
+
+                SqlCommand command = new SqlCommand("SELECT DATE_ID AS DATE " +
+                                                    "FROM CALENDAR WHERE DATE_ID BETWEEN " +
+                                                    "CONVERT(VARCHAR(30), CAST(@start AS DATETIME), 102) AND CONVERT(VARCHAR(30), CAST(@end AS DATETIME), 102) " +
+                                                    "AND (WEEKDAY_ID = 7 OR WEEKDAY_ID = 1)", conn);
+                command.Parameters.AddWithValue("start", "09/01/2019");
+                command.Parameters.AddWithValue("end", "06/30/2020");
+
+                using (SqlDataReader reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        //Console.WriteLine("Date: " + reader["DATE"] + " Month: " + reader["DATE"].ToString().Split('/')[1]);
+                        // We start on September and end in June, therefore we go from 09 to 06.
+                        string[] dateSplit = reader["DATE"].ToString().Split('/');
+                        int day = int.Parse(dateSplit[0]);
+                        int month = int.Parse(dateSplit[1]);
+
+                        // We are in the next year. Jan - Jun
+                        if (month < 9)
+                        {
+                            table.Rows[4 + month].Cells[day].Shading.Color = new Color(100, 100, 100);
+                        }
+                        // Sep - Dec
+                        else
+                        {
+                            table.Rows[month - 8].Cells[day].Shading.Color = new Color(100, 100, 100);
+                        }
+                    }
+                }
+            }
+
             return document;
         }
 

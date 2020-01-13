@@ -62,8 +62,8 @@ CREATE TABLE PERSON_GRUPO (
 	CONSTRAINT FK_PersonGrupo_GrupoID FOREIGN KEY (ID_GRUPO) REFERENCES GRUPO(GRUPO_ID)
 	);
 
-declare @start_dt as date = '1/1/2009';		-- Date from which the calendar table will be created.
-declare @end_dt as date = '1/1/2012';		-- Calendar table will be created up to this date (not including).
+DECLARE @start_dt as DATE = '1/1/1990';		-- Date from which the calendar table will be created.
+DECLARE @end_dt as DATE = '1/1/2050';		-- Calendar table will be created up to this date (not including).
 
 CREATE TABLE CALENDAR (
  DATE_ID DATE PRIMARY KEY,
@@ -90,17 +90,15 @@ BEGIN
 		START_DTS, END_DTS
 	)	
 	VALUES(
-		@start_dt, year(@start_dt), month(@start_dt), day(@start_dt), 
-		datepart(WEEKDAY, @start_dt), datename(WEEKDAY, @start_dt), datename(month, @start_dt), datepart(dayofyear, @start_dt), datepart(quarter, @start_dt),
-		dateadd(day,-(day(@start_dt)-1),@start_dt), dateadd(day,-(day(dateadd(month,1,@start_dt))),dateadd(month,1,@start_dt)), 
-		cast(@start_dt as DATETIME), dateadd(second,-1,cast(dateadd(day, 1, @start_dt) as DATETIME))
+		@start_dt, YEAR(@start_dt), MONTH(@start_dt), DAY(@start_dt), 
+		DATEPART(WEEKDAY, @start_dt), DATENAME(WEEKDAY, @start_dt), DATENAME(MONTH, @start_dt), DATEPART(DAYOFYEAR, @start_dt), DATEPART(QUARTER, @start_dt),
+		DATEADD(DAY,-(DAY(@start_dt)-1),@start_dt), DATEADD(DAY,-(DAY(DATEADD(MONTH,1,@start_dt))),DATEADD(MONTH,1,@start_dt)), 
+		CAST(@start_dt as DATETIME), DATEADD(SECOND,-1,CAST(DATEADD(DAY, 1, @start_dt) as DATETIME))
 	)
-	SET @start_dt = dateadd(day, 1, @start_dt)
+	SET @start_dt = DATEADD(DAY, 1, @start_dt)
 END
 
-select top 50 *
-from @dates d
-order by newid()
+SELECT top 50 * FROM CALENDAR order by DATE_ID;
 
 SELECT p.LASTNAME+', '+p.FIRSTNAME as 'PERSON NAME', g.GRUPO_ID as 'GROUP ID', s.NAME as 'SERVICE NAME', (SELECT FIRSTNAME+' '+LASTNAME FROM PERSON WHERE PERSON_ID = g.ID_PERSON) as EDUCATOR
 FROM PERSON p, PERSON_GRUPO pg, GRUPO g, SERVICIO s 
@@ -113,13 +111,10 @@ SELECT CONVERT(VARCHAR, DIA, 103) AS DIA, DATEDIFF(DAY, '12/01/2019', DIA) AS WE
                                                     AND CONVERT(VARCHAR(30), CAST('12/31/2019' AS DATETIME), 102))
                                              AS SUB_QUERY
 
-DECLARE @MinDate DATE = '20140101',
-        @MaxDate DATE = '20140106';
-
-SELECT  Date
-FROM    dbo.Calendar
-WHERE   Date >= @MinDate
-AND     Date < @MaxDate;
+SELECT DATE_ID AS DATE
+    FROM CALENDAR WHERE DATE_ID BETWEEN
+    CONVERT(VARCHAR(30), CAST('09/01/2019' AS DATETIME), 102) AND CONVERT(VARCHAR(30), CAST('09/30/2019' AS DATETIME), 102)
+    AND (WEEKDAY_ID = 7 OR WEEKDAY_ID = 1)
 
 INSERT INTO PERSON (FIRSTNAME, LASTNAME) VALUES ('Jimmy', 'Feliber');
 
