@@ -62,9 +62,64 @@ CREATE TABLE PERSON_GRUPO (
 	CONSTRAINT FK_PersonGrupo_GrupoID FOREIGN KEY (ID_GRUPO) REFERENCES GRUPO(GRUPO_ID)
 	);
 
+declare @start_dt as date = '1/1/2009';		-- Date from which the calendar table will be created.
+declare @end_dt as date = '1/1/2012';		-- Calendar table will be created up to this date (not including).
+
+CREATE TABLE CALENDAR (
+ DATE_ID DATE PRIMARY KEY,
+ DATE_YEAR SMALLINT,
+ DATE_MONTH TINYINT,
+ DATE_DAY TINYINT,
+ WEEKDAY_ID TINYINT,
+ WEEKDAY_NAME VARCHAR(10),
+ MONTH_NAME VARCHAR(10),
+ DAY_OF_YEAR SMALLINT,
+ QUARTER_ID TINYINT,
+ FIRST_DAY_OF_MONTH DATE,
+ LAST_DAY_OF_MONTH DATE,
+ START_DTS DATETIME,
+ END_DTS DATETIME
+);
+
+WHILE @start_dt < @end_dt
+BEGIN
+	INSERT INTO CALENDAR(
+		DATE_ID, DATE_YEAR, DATE_MONTH, DATE_DAY, 
+		WEEKDAY_ID, WEEKDAY_NAME, MONTH_NAME, DAY_OF_YEAR, QUARTER_ID, 
+		FIRST_DAY_OF_MONTH, LAST_DAY_OF_MONTH, 
+		START_DTS, END_DTS
+	)	
+	VALUES(
+		@start_dt, year(@start_dt), month(@start_dt), day(@start_dt), 
+		datepart(WEEKDAY, @start_dt), datename(WEEKDAY, @start_dt), datename(month, @start_dt), datepart(dayofyear, @start_dt), datepart(quarter, @start_dt),
+		dateadd(day,-(day(@start_dt)-1),@start_dt), dateadd(day,-(day(dateadd(month,1,@start_dt))),dateadd(month,1,@start_dt)), 
+		cast(@start_dt as DATETIME), dateadd(second,-1,cast(dateadd(day, 1, @start_dt) as DATETIME))
+	)
+	SET @start_dt = dateadd(day, 1, @start_dt)
+END
+
+select top 50 *
+from @dates d
+order by newid()
+
 SELECT p.LASTNAME+', '+p.FIRSTNAME as 'PERSON NAME', g.GRUPO_ID as 'GROUP ID', s.NAME as 'SERVICE NAME', (SELECT FIRSTNAME+' '+LASTNAME FROM PERSON WHERE PERSON_ID = g.ID_PERSON) as EDUCATOR
 FROM PERSON p, PERSON_GRUPO pg, GRUPO g, SERVICIO s 
 WHERE p.PERSON_ID = 5 AND pg.ID_PERSON = p.PERSON_ID AND g.GRUPO_ID = pg.ID_GRUPO AND S.SERVICIO_ID = g.ID_SERVICIO;
+
+SELECT CONVERT(VARCHAR, DIA, 103) AS DIA, DATEDIFF(DAY, '12/01/2019', DIA) AS WEEKDAY FROM (
+                                                    SELECT DIA FROM PRESENCE
+                                                    WHERE ID_PERSON = 3
+                                                    AND DIA BETWEEN CONVERT(VARCHAR(30), CAST('12/01/2019' AS DATETIME), 102)
+                                                    AND CONVERT(VARCHAR(30), CAST('12/31/2019' AS DATETIME), 102))
+                                             AS SUB_QUERY
+
+DECLARE @MinDate DATE = '20140101',
+        @MaxDate DATE = '20140106';
+
+SELECT  Date
+FROM    dbo.Calendar
+WHERE   Date >= @MinDate
+AND     Date < @MaxDate;
 
 INSERT INTO PERSON (FIRSTNAME, LASTNAME) VALUES ('Jimmy', 'Feliber');
 
