@@ -14,7 +14,7 @@ namespace Lista_de_Presencia
         [STAThread]
         static void Main()
         {
-            PDFManager.CreateExample();
+            PDFManager.CreateAttendanceSheet(5);
 
             //Application.EnableVisualStyles();
             //Application.SetCompatibleTextRenderingDefault(false);

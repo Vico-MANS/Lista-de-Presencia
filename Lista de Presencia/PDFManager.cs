@@ -10,6 +10,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Data.SqlClient;
 
 namespace Lista_de_Presencia {
     class PDFManager 
@@ -20,9 +21,9 @@ namespace Lista_de_Presencia {
 
         private static readonly float s_BoldBorderWidth = 1.25f;
 
-        public static void CreateExample()
+        public static void CreateAttendanceSheet(int personID)
         {
-            Document document = CreateDocument();
+            Document document = CreateDocument(personID);
             // Create a renderer for the MigraDoc document.
             PdfDocumentRenderer pdfRenderer = new PdfDocumentRenderer();
 
@@ -33,14 +34,43 @@ namespace Lista_de_Presencia {
             pdfRenderer.RenderDocument();
 
             // Save the document
-            const string filename = "Example.pdf";
+            const string filename = "AttendanceSheet.pdf";
             pdfRenderer.PdfDocument.Save(filename);
             // Open it in a viewer
             Process.Start(filename);
         }
 
-        public static Document CreateDocument()
+        public static Document CreateDocument(int personID)
         {
+            /**
+             * RETRIEVE THE INFORMATION FROM THE DATABASE
+             * */
+            string personName, serviceName, groupID, educatorName;
+
+            using (SqlConnection conn = new SqlConnection())
+            {
+                DatabaseConnection.OpenConnection(conn);
+
+                SqlCommand command = new SqlCommand("SELECT p.LASTNAME+', '+p.FIRSTNAME as 'PERSON NAME', g.GRUPO_ID as 'GROUP ID', s.NAME as 'SERVICE NAME', (SELECT FIRSTNAME+' '+LASTNAME FROM PERSON WHERE PERSON_ID = g.ID_PERSON) as EDUCATOR "
+                                                        +"FROM PERSON p, PERSON_GRUPO pg, GRUPO g, SERVICIO s "
+                                                        +"WHERE p.PERSON_ID = @personID AND pg.ID_PERSON = p.PERSON_ID AND g.GRUPO_ID = pg.ID_GRUPO AND S.SERVICIO_ID = g.ID_SERVICIO", conn);
+                command.Parameters.AddWithValue("personID", personID);
+
+                using (SqlDataReader reader = command.ExecuteReader())
+                {
+                    reader.Read();
+
+                    personName = reader["PERSON NAME"].ToString();
+                    serviceName = reader["SERVICE NAME"].ToString();
+                    groupID = reader["GROUP ID"].ToString();
+                    educatorName = reader["EDUCATOR"].ToString();
+                }
+            }
+
+            /**
+             * CREATE THE PDF
+            * */
+
             Document document = new Document();            
             document.DefaultPageSetup.Orientation = Orientation.Landscape;
 
@@ -104,7 +134,7 @@ namespace Lista_de_Presencia {
 
             // Child's name
             table = section.AddTable();
-            table.AddColumn(Unit.FromCentimeter(s_PageWidthCM / 4f));
+            table.AddColumn(Unit.FromCentimeter(s_PageWidthCM / 2f));
             row = table.AddRow();
             paragraph = row.Cells[0].AddParagraph();
             paragraph.AddFormattedText("Nom infant:", TextFormat.Bold);
@@ -112,11 +142,11 @@ namespace Lista_de_Presencia {
             paragraph.Format.ClearAll();
             paragraph.Format.AddTabStop(Unit.FromCentimeter(4));
             paragraph.AddTab();
-            paragraph.AddText("Child's name");
+            paragraph.AddText(personName);
 
             // Service's name
             table = section.AddTable();
-            table.AddColumn(Unit.FromCentimeter(s_PageWidthCM / 4f));
+            table.AddColumn(Unit.FromCentimeter(s_PageWidthCM / 2f));
             row = table.AddRow();
             paragraph = row.Cells[0].AddParagraph();
             paragraph.AddFormattedText("Nom servei:", TextFormat.Bold);
@@ -124,11 +154,11 @@ namespace Lista_de_Presencia {
             paragraph.Format.ClearAll();
             paragraph.Format.AddTabStop(Unit.FromCentimeter(4));
             paragraph.AddTab();
-            paragraph.AddText("SERVICE'S NAME");
+            paragraph.AddText(serviceName);
 
             // Group's ID
             table = section.AddTable();
-            table.AddColumn(Unit.FromCentimeter(s_PageWidthCM / 4f));
+            table.AddColumn(Unit.FromCentimeter(s_PageWidthCM / 2f));
             row = table.AddRow();
             paragraph = row.Cells[0].AddParagraph();
             paragraph.AddFormattedText("Número grup:", TextFormat.Bold);
@@ -136,11 +166,11 @@ namespace Lista_de_Presencia {
             paragraph.Format.ClearAll();
             paragraph.Format.AddTabStop(Unit.FromCentimeter(4));
             paragraph.AddTab();
-            paragraph.AddText("Group's ID");
+            paragraph.AddText(groupID);
 
             // Educator's name
             table = section.AddTable();
-            table.AddColumn(Unit.FromCentimeter(s_PageWidthCM / 4f));
+            table.AddColumn(Unit.FromCentimeter(s_PageWidthCM / 2f));
             row = table.AddRow();
             paragraph = row.Cells[0].AddParagraph();
             paragraph.AddFormattedText("Nom professional:", TextFormat.Bold);
@@ -148,7 +178,7 @@ namespace Lista_de_Presencia {
             paragraph.Format.ClearAll();
             paragraph.Format.AddTabStop(Unit.FromCentimeter(4));
             paragraph.AddTab();
-            paragraph.AddText("Educator's name");
+            paragraph.AddText(educatorName);
             paragraph.Format.SpaceAfter = 5;
 
             // Create the item table
