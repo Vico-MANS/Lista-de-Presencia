@@ -40,7 +40,7 @@ namespace Lista_de_Presencia {
             Process.Start(filename);
         }
 
-        public static Document CreateDocument(int personID)
+        private static Document CreateDocument(int personID)
         {
             /**
              * RETRIEVE THE INFORMATION FROM THE DATABASE
@@ -133,52 +133,16 @@ namespace Lista_de_Presencia {
             table.Borders.Width = 1;
 
             // Child's name
-            table = section.AddTable();
-            table.AddColumn(Unit.FromCentimeter(s_PageWidthCM / 2f));
-            row = table.AddRow();
-            paragraph = row.Cells[0].AddParagraph();
-            paragraph.AddFormattedText("Nom infant:", TextFormat.Bold);
-            paragraph.Format.SpaceBefore = 12;
-            paragraph.Format.ClearAll();
-            paragraph.Format.AddTabStop(Unit.FromCentimeter(4));
-            paragraph.AddTab();
-            paragraph.AddText(personName);
+            AddInfoRow(section, "Nom infant:", personName);
 
             // Service's name
-            table = section.AddTable();
-            table.AddColumn(Unit.FromCentimeter(s_PageWidthCM / 2f));
-            row = table.AddRow();
-            paragraph = row.Cells[0].AddParagraph();
-            paragraph.AddFormattedText("Nom servei:", TextFormat.Bold);
-            paragraph.Format.SpaceBefore = 5;
-            paragraph.Format.ClearAll();
-            paragraph.Format.AddTabStop(Unit.FromCentimeter(4));
-            paragraph.AddTab();
-            paragraph.AddText(serviceName);
+            AddInfoRow(section, "Nom servei:", serviceName);
 
             // Group's ID
-            table = section.AddTable();
-            table.AddColumn(Unit.FromCentimeter(s_PageWidthCM / 2f));
-            row = table.AddRow();
-            paragraph = row.Cells[0].AddParagraph();
-            paragraph.AddFormattedText("Número grup:", TextFormat.Bold);
-            paragraph.Format.SpaceBefore = 5;
-            paragraph.Format.ClearAll();
-            paragraph.Format.AddTabStop(Unit.FromCentimeter(4));
-            paragraph.AddTab();
-            paragraph.AddText(groupID);
+            AddInfoRow(section, "Número grup:", groupID);
 
             // Educator's name
-            table = section.AddTable();
-            table.AddColumn(Unit.FromCentimeter(s_PageWidthCM / 2f));
-            row = table.AddRow();
-            paragraph = row.Cells[0].AddParagraph();
-            paragraph.AddFormattedText("Nom professional:", TextFormat.Bold);
-            paragraph.Format.SpaceBefore = 5;
-            paragraph.Format.ClearAll();
-            paragraph.Format.AddTabStop(Unit.FromCentimeter(4));
-            paragraph.AddTab();
-            paragraph.AddText(educatorName);
+            paragraph = AddInfoRow(section, "Nom professional:", educatorName);
             paragraph.Format.SpaceAfter = 5;
 
             // Create the item table
@@ -188,8 +152,6 @@ namespace Lista_de_Presencia {
             table.Rows.HeightRule = RowHeightRule.AtLeast;
             table.Rows.Height = 20;
             table.Borders.Width = 0.25;
-            //table.Borders.Left.Width = 0.5;
-            //table.Borders.Right.Width = 0.5;
             table.Rows.LeftIndent = 0;
                         
             // Month name
@@ -199,9 +161,7 @@ namespace Lista_de_Presencia {
 
             // Month days
             for(int j=1; j<=31; j++)
-            {
                 column = table.AddColumn("0.6cm");
-            }
             
             // Family's signature
             column = table.AddColumn("2.45cm");
@@ -268,6 +228,21 @@ namespace Lista_de_Presencia {
             paragraph.AddDateField("dd/MM/yyyy");
 
             return document;
+        }
+
+        private static Paragraph AddInfoRow(Section section, string infoName, string infoData)
+        {
+            Table table = section.AddTable();
+            table.AddColumn(Unit.FromCentimeter(s_PageWidthCM / 2f));
+            Row row = table.AddRow();
+            Paragraph paragraph = row.Cells[0].AddParagraph();
+            paragraph.AddFormattedText(infoName, TextFormat.Bold);
+            paragraph.Format.SpaceBefore = 5;
+            paragraph.Format.ClearAll();
+            paragraph.Format.AddTabStop(Unit.FromCentimeter(4));
+            paragraph.AddTab();
+            paragraph.AddText(infoData);
+            return paragraph;
         }
     }
 }
