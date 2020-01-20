@@ -52,8 +52,8 @@ namespace Lista_de_Presencia {
                 DatabaseConnection.OpenConnection(conn);
 
                 SqlCommand command = new SqlCommand("SELECT p.LASTNAME+', '+p.FIRSTNAME as 'PERSON NAME', g.GRUPO_ID as 'GROUP ID', s.NAME as 'SERVICE NAME', (SELECT FIRSTNAME+' '+LASTNAME FROM PERSON WHERE PERSON_ID = g.ID_PERSON) as EDUCATOR "
-                                                        +"FROM PERSON p, PERSON_GRUPO pg, GRUPO g, SERVICIO s "
-                                                        +"WHERE p.PERSON_ID = @personID AND pg.ID_PERSON = p.PERSON_ID AND g.GRUPO_ID = pg.ID_GRUPO AND S.SERVICIO_ID = g.ID_SERVICIO", conn);
+                                                    +"FROM PERSON p, PERSON_GRUPO pg, GRUPO g, SERVICIO s "
+                                                    +"WHERE p.PERSON_ID = @personID AND pg.ID_PERSON = p.PERSON_ID AND g.GRUPO_ID = pg.ID_GRUPO AND S.SERVICIO_ID = g.ID_SERVICIO", conn);
                 command.Parameters.AddWithValue("personID", personID);
 
                 using (SqlDataReader reader = command.ExecuteReader())
@@ -227,14 +227,23 @@ namespace Lista_de_Presencia {
             paragraph.Format.Alignment = ParagraphAlignment.Right;
             paragraph.AddDateField("dd/MM/yyyy");
 
-            /**
-             * RETRIEVE ATTENDANCE INFORMATION FROM THE DATABASE
-             * */
-
-            //table.Rows[1].Cells[10].AddParagraph("X");
-
             Color noWorkColor = new Color(100, 100, 100);
             Color holidayColor = new Color(150, 150, 150);
+
+            // Getting the start and end date of this school year (Sep - Jun)
+            DateTime startDate, endDate;
+            // The school year started the same year as we are in
+            if(DateTime.Now.Month >= 9)
+            {
+                startDate = new DateTime(DateTime.Now.Year, 09, 01);
+                endDate = new DateTime(DateTime.Now.Year + 1, 06, 30);
+            }
+            // The school year started last year
+            else
+            {
+                startDate = new DateTime(DateTime.Now.Year - 1, 09, 01);
+                endDate = new DateTime(DateTime.Now.Year, 06, 30);
+            }
 
             using (SqlConnection conn = new SqlConnection())
             {
@@ -247,8 +256,8 @@ namespace Lista_de_Presencia {
                 SqlCommand command = new SqlCommand("SELECT DATE_ID AS DATE, WEEKDAY_ID AS WEEKDAY " +
                                                     "FROM CALENDAR WHERE DATE_ID BETWEEN " +
                                                     "CONVERT(VARCHAR(30), CAST(@start AS DATETIME), 102) AND CONVERT(VARCHAR(30), CAST(@end AS DATETIME), 102)", conn);
-                command.Parameters.AddWithValue("start", "09/01/2019");
-                command.Parameters.AddWithValue("end", "06/30/2020");
+                command.Parameters.AddWithValue("start", startDate);
+                command.Parameters.AddWithValue("end", endDate);
 
                 using (SqlDataReader reader = command.ExecuteReader())
                 {
@@ -258,12 +267,12 @@ namespace Lista_de_Presencia {
                     while (reader.Read())
                     {
                         // We start on September and end in June, therefore we go from 09 to 06.
-                        string[] dateSplit = reader["DATE"].ToString().Split('/');
-                        int day = int.Parse(dateSplit[0]);
-                        int month = int.Parse(dateSplit[1]);
+                        DateTime date = reader.GetDateTime(reader.GetOrdinal("DATE"));
+                        int day = date.Day;
+                        int month = date.Month;
 
                         // We started a new month
-                        if(day == 1)
+                        if (day == 1)
                         {                            
                             // We gray out all the cells that weren't part of the previous month
                             /*
@@ -304,23 +313,51 @@ namespace Lista_de_Presencia {
                                         "FROM PUBLIC_HOLIDAY " +
                                         "WHERE DATE_DAY BETWEEN " +
                                         "CONVERT(VARCHAR(30), CAST(@start AS DATETIME), 102) AND CONVERT(VARCHAR(30), CAST(@end AS DATETIME), 102)", conn);
-                command.Parameters.AddWithValue("start", "09/01/2019");
-                command.Parameters.AddWithValue("end", "06/30/2020");
+                command.Parameters.AddWithValue("start", startDate);
+                command.Parameters.AddWithValue("end", endDate);
 
                 using (SqlDataReader reader = command.ExecuteReader())
                 {
                     while (reader.Read())
                     {
                         // We start on September and end in June, therefore we go from 09 to 06.
-                        string[] dateSplit = reader["DATE"].ToString().Split('/');
-                        int day = int.Parse(dateSplit[0]);
-                        int month = int.Parse(dateSplit[1]);
+                        DateTime date = reader.GetDateTime(reader.GetOrdinal("DATE"));
+                        int day = date.Day;
+                        int month = date.Month;
                         // We are in the next year. Jan - Jun
                         if (month < 9)
                             table.Rows[4 + month].Cells[day].Shading.Color = holidayColor;
                         // Sep - Dec
                         else
                             table.Rows[month - 8].Cells[day].Shading.Color = holidayColor;
+                    }
+                }
+
+                /**
+                 * RETRIEVE ATTENDANCE INFORMATION FROM THE DATABASE
+                 * */
+
+                command = new SqlCommand("SELECT DIA " +
+                    "FROM PRESENCE " +
+                    "WHERE ID_PERSON = @personID " +
+                    "AND DIA BETWEEN CONVERT(VARCHAR(30), CAST(@start AS DATETIME), 102) AND CONVERT(VARCHAR(30), CAST(@end AS DATETIME), 102)", conn);
+                command.Parameters.AddWithValue("personID", personID);
+                command.Parameters.AddWithValue("start", startDate);
+                command.Parameters.AddWithValue("end", endDate);
+
+                using (SqlDataReader reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        DateTime date = reader.GetDateTime(reader.GetOrdinal("DIA"));
+                        int day = date.Day;
+                        int month = date.Month;
+                        // We are in the next year. Jan - Jun
+                        if (month < 9)
+                            table.Rows[4 + month].Cells[day].AddParagraph("X");
+                        // Sep - Dec
+                        else
+                            table.Rows[month - 8].Cells[day].AddParagraph("X");
                     }
                 }
             }

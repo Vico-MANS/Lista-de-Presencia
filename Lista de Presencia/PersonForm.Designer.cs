@@ -56,6 +56,7 @@
             this.lblGroupDatesLegend = new System.Windows.Forms.Label();
             this.lblGroupIDLegend = new System.Windows.Forms.Label();
             this.lblGroupNameLegend = new System.Windows.Forms.Label();
+            this.btnPrintAttendanceSheet = new System.Windows.Forms.Button();
             this.gbWeeklyPresence.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvWeeklyDetail)).BeginInit();
             this.gbGroupInfo.SuspendLayout();
@@ -330,11 +331,22 @@
             this.lblGroupNameLegend.Tag = "Freeze";
             this.lblGroupNameLegend.Text = "Name";
             // 
+            // btnPrintAttendanceSheet
+            // 
+            this.btnPrintAttendanceSheet.Location = new System.Drawing.Point(32, 393);
+            this.btnPrintAttendanceSheet.Name = "btnPrintAttendanceSheet";
+            this.btnPrintAttendanceSheet.Size = new System.Drawing.Size(135, 29);
+            this.btnPrintAttendanceSheet.TabIndex = 25;
+            this.btnPrintAttendanceSheet.Text = "Print Attendance Sheet";
+            this.btnPrintAttendanceSheet.UseVisualStyleBackColor = true;
+            this.btnPrintAttendanceSheet.Click += new System.EventHandler(this.btnPrintAttendanceSheet_Click);
+            // 
             // PersonForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
+            this.Controls.Add(this.btnPrintAttendanceSheet);
             this.Controls.Add(this.gbGroupInfo);
             this.Controls.Add(this.btnAddGroup);
             this.Controls.Add(this.label5);
@@ -396,5 +408,6 @@
         private System.Windows.Forms.Label lblGroupDatesLegend;
         private System.Windows.Forms.Label lblGroupIDLegend;
         private System.Windows.Forms.Label lblGroupNameLegend;
+        private System.Windows.Forms.Button btnPrintAttendanceSheet;
     }
 }

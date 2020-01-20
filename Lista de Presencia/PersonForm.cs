@@ -140,6 +140,8 @@ namespace Lista_de_Presencia
 
                     cbWorker.Checked = m_IsWorker;
                     cbWorker.Enabled = false;
+
+                    btnPrintAttendanceSheet.Visible = !m_IsWorker;
                 }
             }
         }
@@ -850,6 +852,11 @@ namespace Lista_de_Presencia
         {
             cbbPrograms.SelectedItem = null;
             cbbProgramGroups.SelectedItem = null;
+        }
+
+        private void btnPrintAttendanceSheet_Click(object sender, EventArgs e)
+        {
+            PDFManager.CreateAttendanceSheet(m_PersonID);
         }
     }
 }
