@@ -52,7 +52,6 @@
             this.btnPreviousRange = new System.Windows.Forms.Button();
             this.btnSavePresenceChanges = new System.Windows.Forms.Button();
             this.btnNextRange = new System.Windows.Forms.Button();
-            this.dgvPresenceMonthFormat = new System.Windows.Forms.DataGridView();
             this.dgvPresenceWeekFormat = new System.Windows.Forms.DataGridView();
             this.colPresPersonID = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colPerson = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -63,10 +62,12 @@
             this.colFriday = new System.Windows.Forms.DataGridViewCheckBoxColumn();
             this.colSaturday = new System.Windows.Forms.DataGridViewCheckBoxColumn();
             this.colSunday = new System.Windows.Forms.DataGridViewCheckBoxColumn();
-            this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
-            this.notifyIcon1 = new System.Windows.Forms.NotifyIcon(this.components);
+            this.dgvPresenceMonthFormat = new System.Windows.Forms.DataGridView();
             this.dataGridViewTextBoxColumn1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dataGridViewTextBoxColumn2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
+            this.notifyIcon1 = new System.Windows.Forms.NotifyIcon(this.components);
+            this.btnPublicHolidays = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.dgvOverview)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.SuspendLayout();
@@ -74,8 +75,8 @@
             this.tabOverview.SuspendLayout();
             this.tabPresence.SuspendLayout();
             this.gbPresence.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.dgvPresenceMonthFormat)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dgvPresenceWeekFormat)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dgvPresenceMonthFormat)).BeginInit();
             this.SuspendLayout();
             // 
             // contextMenuStrip1
@@ -159,6 +160,7 @@
             // 
             // tabOverview
             // 
+            this.tabOverview.Controls.Add(this.btnPublicHolidays);
             this.tabOverview.Controls.Add(this.btnAddService);
             this.tabOverview.Controls.Add(this.btnAddGroup);
             this.tabOverview.Controls.Add(this.btnAddProgram);
@@ -310,23 +312,6 @@
             this.btnNextRange.UseVisualStyleBackColor = true;
             this.btnNextRange.Click += new System.EventHandler(this.btnNextRange_Click);
             // 
-            // dgvPresenceMonthFormat
-            // 
-            this.dgvPresenceMonthFormat.AllowUserToAddRows = false;
-            this.dgvPresenceMonthFormat.AllowUserToDeleteRows = false;
-            this.dgvPresenceMonthFormat.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dgvPresenceMonthFormat.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
-            this.dataGridViewTextBoxColumn1,
-            this.dataGridViewTextBoxColumn2});
-            this.dgvPresenceMonthFormat.Location = new System.Drawing.Point(3, 41);
-            this.dgvPresenceMonthFormat.Name = "dgvPresenceMonthFormat";
-            this.dgvPresenceMonthFormat.Size = new System.Drawing.Size(910, 287);
-            this.dgvPresenceMonthFormat.TabIndex = 5;
-            this.dgvPresenceMonthFormat.Visible = false;
-            this.dgvPresenceMonthFormat.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvPresenceMonthFormat_CellClick);
-            this.dgvPresenceMonthFormat.CellMouseUp += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.dgvPresenceMonthFormat_CellMouseUp);
-            this.dgvPresenceMonthFormat.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvPresenceMonthFormat_CellValueChanged);
-            // 
             // dgvPresenceWeekFormat
             // 
             this.dgvPresenceWeekFormat.AllowUserToAddRows = false;
@@ -404,10 +389,22 @@
             this.colSunday.Name = "colSunday";
             this.colSunday.Width = 75;
             // 
-            // notifyIcon1
+            // dgvPresenceMonthFormat
             // 
-            this.notifyIcon1.Text = "notifyIcon1";
-            this.notifyIcon1.Visible = true;
+            this.dgvPresenceMonthFormat.AllowUserToAddRows = false;
+            this.dgvPresenceMonthFormat.AllowUserToDeleteRows = false;
+            this.dgvPresenceMonthFormat.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dgvPresenceMonthFormat.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.dataGridViewTextBoxColumn1,
+            this.dataGridViewTextBoxColumn2});
+            this.dgvPresenceMonthFormat.Location = new System.Drawing.Point(3, 41);
+            this.dgvPresenceMonthFormat.Name = "dgvPresenceMonthFormat";
+            this.dgvPresenceMonthFormat.Size = new System.Drawing.Size(910, 287);
+            this.dgvPresenceMonthFormat.TabIndex = 5;
+            this.dgvPresenceMonthFormat.Visible = false;
+            this.dgvPresenceMonthFormat.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvPresenceMonthFormat_CellClick);
+            this.dgvPresenceMonthFormat.CellMouseUp += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.dgvPresenceMonthFormat_CellMouseUp);
+            this.dgvPresenceMonthFormat.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvPresenceMonthFormat_CellValueChanged);
             // 
             // dataGridViewTextBoxColumn1
             // 
@@ -420,6 +417,21 @@
             this.dataGridViewTextBoxColumn2.HeaderText = "Person";
             this.dataGridViewTextBoxColumn2.Name = "dataGridViewTextBoxColumn2";
             this.dataGridViewTextBoxColumn2.Width = 200;
+            // 
+            // notifyIcon1
+            // 
+            this.notifyIcon1.Text = "notifyIcon1";
+            this.notifyIcon1.Visible = true;
+            // 
+            // btnPublicHolidays
+            // 
+            this.btnPublicHolidays.Location = new System.Drawing.Point(420, 375);
+            this.btnPublicHolidays.Name = "btnPublicHolidays";
+            this.btnPublicHolidays.Size = new System.Drawing.Size(92, 29);
+            this.btnPublicHolidays.TabIndex = 16;
+            this.btnPublicHolidays.Text = "Public Holidays";
+            this.btnPublicHolidays.UseVisualStyleBackColor = true;
+            this.btnPublicHolidays.Click += new System.EventHandler(this.btnPublicHolidays_Click);
             // 
             // MainForm
             // 
@@ -440,8 +452,8 @@
             this.tabPresence.PerformLayout();
             this.gbPresence.ResumeLayout(false);
             this.gbPresence.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.dgvPresenceMonthFormat)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.dgvPresenceWeekFormat)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dgvPresenceMonthFormat)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -486,6 +498,7 @@
         private System.Windows.Forms.Label lblRangeInfo;
         private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn1;
         private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn2;
+        private System.Windows.Forms.Button btnPublicHolidays;
     }
 }
 

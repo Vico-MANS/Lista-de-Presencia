@@ -842,5 +842,14 @@ namespace Lista_de_Presencia
                 UpdatePresenceGridInformationWeekFormat();
             }
         }
+
+        private void btnPublicHolidays_Click(object sender, EventArgs e)
+        {
+            HolidayManagerForm form = HolidayManagerForm.GetInstance();
+            if (!form.Visible)
+                form.Show();
+            else
+                form.BringToFront();
+        }
     }
 }
