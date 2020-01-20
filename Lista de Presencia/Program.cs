@@ -14,11 +14,11 @@ namespace Lista_de_Presencia
         [STAThread]
         static void Main()
         {
-            //PDFManager.CreateAttendanceSheet(5);
+            PDFManager.CreateAttendanceSheet(5);
 
-            Application.EnableVisualStyles();
-            Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new MainForm());
+            //Application.EnableVisualStyles();
+            //Application.SetCompatibleTextRenderingDefault(false);
+            //Application.Run(new MainForm());
         }
     }
 }

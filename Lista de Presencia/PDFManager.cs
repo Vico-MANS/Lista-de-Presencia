@@ -234,14 +234,15 @@ namespace Lista_de_Presencia {
             //table.Rows[1].Cells[10].AddParagraph("X");
 
             Color noWorkColor = new Color(100, 100, 100);
-
-            /**
-             * GET THE WEEKENDS
-             * */
+            Color holidayColor = new Color(150, 150, 150);
 
             using (SqlConnection conn = new SqlConnection())
             {
                 DatabaseConnection.OpenConnection(conn);
+
+                /**
+                 * SHOW THE WEEKENDS AND DAYS OUTSIDE OF THE MONTHS
+                 * */
 
                 SqlCommand command = new SqlCommand("SELECT DATE_ID AS DATE, WEEKDAY_ID AS WEEKDAY " +
                                                     "FROM CALENDAR WHERE DATE_ID BETWEEN " +
@@ -292,6 +293,34 @@ namespace Lista_de_Presencia {
 
                         lastDay = day;
                         monthOfLastDay = month;
+                    }
+                }
+
+                /**
+                 * SHOW THE HOLIDAYS (TODO: Find a way to join the query with the weekends one?)
+                 * */
+
+                command = new SqlCommand("SELECT DATE_DAY AS DATE " +
+                                        "FROM PUBLIC_HOLIDAY " +
+                                        "WHERE DATE_DAY BETWEEN " +
+                                        "CONVERT(VARCHAR(30), CAST(@start AS DATETIME), 102) AND CONVERT(VARCHAR(30), CAST(@end AS DATETIME), 102)", conn);
+                command.Parameters.AddWithValue("start", "09/01/2019");
+                command.Parameters.AddWithValue("end", "06/30/2020");
+
+                using (SqlDataReader reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        // We start on September and end in June, therefore we go from 09 to 06.
+                        string[] dateSplit = reader["DATE"].ToString().Split('/');
+                        int day = int.Parse(dateSplit[0]);
+                        int month = int.Parse(dateSplit[1]);
+                        // We are in the next year. Jan - Jun
+                        if (month < 9)
+                            table.Rows[4 + month].Cells[day].Shading.Color = holidayColor;
+                        // Sep - Dec
+                        else
+                            table.Rows[month - 8].Cells[day].Shading.Color = holidayColor;
                     }
                 }
             }
