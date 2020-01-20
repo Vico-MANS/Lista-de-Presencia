@@ -233,6 +233,8 @@ namespace Lista_de_Presencia {
 
             //table.Rows[1].Cells[10].AddParagraph("X");
 
+            Color noWorkColor = new Color(100, 100, 100);
+
             /**
              * GET THE WEEKENDS
              * */
@@ -241,37 +243,58 @@ namespace Lista_de_Presencia {
             {
                 DatabaseConnection.OpenConnection(conn);
 
-                SqlCommand command = new SqlCommand("SELECT DATE_ID AS DATE " +
+                SqlCommand command = new SqlCommand("SELECT DATE_ID AS DATE, WEEKDAY_ID AS WEEKDAY " +
                                                     "FROM CALENDAR WHERE DATE_ID BETWEEN " +
-                                                    "CONVERT(VARCHAR(30), CAST(@start AS DATETIME), 102) AND CONVERT(VARCHAR(30), CAST(@end AS DATETIME), 102) " +
-                                                    "AND (WEEKDAY_ID = 7 OR WEEKDAY_ID = 1)", conn);
+                                                    "CONVERT(VARCHAR(30), CAST(@start AS DATETIME), 102) AND CONVERT(VARCHAR(30), CAST(@end AS DATETIME), 102)", conn);
                 command.Parameters.AddWithValue("start", "09/01/2019");
                 command.Parameters.AddWithValue("end", "06/30/2020");
 
                 using (SqlDataReader reader = command.ExecuteReader())
                 {
+                    // When we switch to the next month we gray out all the cells that weren't in the previous month
+                    int lastDay = 31;
+                    int monthOfLastDay = -1;
                     while (reader.Read())
                     {
-                        //Console.WriteLine("Date: " + reader["DATE"] + " Month: " + reader["DATE"].ToString().Split('/')[1]);
                         // We start on September and end in June, therefore we go from 09 to 06.
                         string[] dateSplit = reader["DATE"].ToString().Split('/');
                         int day = int.Parse(dateSplit[0]);
                         int month = int.Parse(dateSplit[1]);
 
-                        // We are in the next year. Jan - Jun
-                        if (month < 9)
-                        {
-                            table.Rows[4 + month].Cells[day].Shading.Color = new Color(100, 100, 100);
+                        // We started a new month
+                        if(day == 1)
+                        {                            
+                            // We gray out all the cells that weren't part of the previous month
+                            /*
+                             * This is not the most optimal solution
+                             * It is very costly because we had to retrieve all the days for the given range to be able to do that
+                             * Normally we would've only retrieved the weekend days and therefore the query wouldn't have been that huge
+                             * */
+                            while(lastDay < 31)
+                            {
+                                lastDay++;
+                                if(monthOfLastDay < 9)
+                                    table.Rows[4 + monthOfLastDay].Cells[lastDay].Shading.Color = noWorkColor;
+                                else
+                                    table.Rows[monthOfLastDay - 8].Cells[lastDay].Shading.Color = noWorkColor;
+                            }
                         }
-                        // Sep - Dec
-                        else
+                        
+                        if(reader.GetByte(reader.GetOrdinal("WEEKDAY")) == 7 || reader.GetByte(reader.GetOrdinal("WEEKDAY")) == 1)
                         {
-                            table.Rows[month - 8].Cells[day].Shading.Color = new Color(100, 100, 100);
+                            // We are in the next year. Jan - Jun
+                            if (month < 9)
+                                table.Rows[4 + month].Cells[day].Shading.Color = noWorkColor;
+                            // Sep - Dec
+                            else
+                                table.Rows[month - 8].Cells[day].Shading.Color = noWorkColor;
                         }
+
+                        lastDay = day;
+                        monthOfLastDay = month;
                     }
                 }
             }
-
             return document;
         }
 
