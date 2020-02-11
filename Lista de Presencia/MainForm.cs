@@ -92,7 +92,8 @@ namespace Lista_de_Presencia
 
         private void tabControl_SelectedIndexChanged(object sender, EventArgs e)
         {
-            switch((sender as TabControl).SelectedIndex){
+            m_Initialisation = true;
+            switch ((sender as TabControl).SelectedIndex){
                 // Overview tab
                 case 0:
                     InitOverviewTab();
@@ -104,19 +105,53 @@ namespace Lista_de_Presencia
                     InitPresenceTab();
                     break;
             }
+            m_Initialisation = false;
         }
 
         private void InitPresenceTab()
         {
-            m_Initialisation = true;
             GetPrograms();
             gbPresence.Visible = false;
-            m_Initialisation = false;
         }
 
         private void InitOverviewTab()
         {
             GetPersonData();
+            // Used to get all the kids from a group
+            GetGroups();
+        }
+
+        private void GetGroups()
+        {
+            using (SqlConnection conn = new SqlConnection())
+            {
+                DatabaseConnection.OpenConnection(conn);
+
+                SqlCommand command = new SqlCommand("SELECT GRUPO_ID AS ID, NAME FROM GRUPO", conn);
+
+                cbbGroupIDs.DisplayMember = "Text";
+                cbbGroupIDs.ValueMember = "Value";
+
+                Dictionary<Object, Object> comboSource = new Dictionary<Object, Object>();
+
+                bool empty = true;
+                using (SqlDataReader reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        comboSource.Add(reader["ID"], reader["NAME"]);
+                        empty = false;
+                    }
+                }
+
+                if (!empty)
+                {
+                    cbbGroupIDs.DataSource = new BindingSource(comboSource, null);
+                    cbbGroupIDs.DisplayMember = "Value";
+                    cbbGroupIDs.ValueMember = "Key";
+                    cbbGroupIDs.SelectedItem = null;
+                }
+            }
         }
 
         private void UpdatePresenceGridInformationWeekFormat()
@@ -850,6 +885,88 @@ namespace Lista_de_Presencia
                 form.Show();
             else
                 form.BringToFront();
+        }
+
+        // Search by first name and last name
+        private void txtSearchBox_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode.Equals(Keys.Enter) && txtSearchBox.Text != "")
+            {
+                cbbGroupIDs.SelectedIndex = -1;
+                dgvOverview.Rows.Clear();
+
+                using (SqlConnection conn = new SqlConnection())
+                {
+                    DatabaseConnection.OpenConnection(conn);
+
+                    SqlCommand command = new SqlCommand("SELECT PERSON_ID, FIRSTNAME, LASTNAME, (SELECT CONVERT(varchar(10), BIRTHDAY, 103) AS [DD/MM/YYYY]) AS BIRTHDAY " +
+                                                        "FROM PERSON " +
+                                                        "WHERE FIRSTNAME LIKE @search OR LASTNAME LIKE @search", conn);
+                    command.Parameters.AddWithValue("search", "%"+txtSearchBox.Text+"%");
+
+                    using (SqlDataReader reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            dgvOverview.Rows.Add(reader["PERSON_ID"], reader["FIRSTNAME"], reader["LASTNAME"], reader["BIRTHDAY"]);
+                        }
+                    }
+                }
+            }
+            // Reset
+            else if(e.KeyCode.Equals(Keys.Enter) && txtSearchBox.Text == "")
+            {
+                GetPersonData();
+            }
+        }
+
+        private void cbbGroupIDs_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (m_Initialisation || cbbGroupIDs.SelectedIndex == -1)
+                return;
+
+            txtSearchBox.Text = "";
+            dgvOverview.Rows.Clear();
+            int groupID = (int)((KeyValuePair<Object, Object>)cbbGroupIDs.SelectedItem).Key;
+
+            using (SqlConnection conn = new SqlConnection())
+            {
+                DatabaseConnection.OpenConnection(conn);
+
+                SqlCommand command = new SqlCommand("SELECT p.PERSON_ID, p.FIRSTNAME, p.LASTNAME, (SELECT CONVERT(varchar(10), p.BIRTHDAY, 103) AS [DD/MM/YYYY]) AS BIRTHDAY " +
+                                                    "FROM PERSON p, PERSON_GRUPO pg " +
+                                                    "WHERE p.PERSON_ID = pg.ID_PERSON AND pg.ID_GRUPO = @groupID", conn);
+                command.Parameters.AddWithValue("groupID", groupID);
+
+                using (SqlDataReader reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        dgvOverview.Rows.Add(reader["PERSON_ID"], reader["FIRSTNAME"], reader["LASTNAME"], reader["BIRTHDAY"]);
+                    }
+                }
+            }
+        }
+
+        private void btnClear_Click(object sender, EventArgs e)
+        {
+            txtSearchBox.Text = "";
+            cbbGroupIDs.SelectedIndex = -1;
+            GetPersonData();
+        }
+
+        private void btnCreateAttendanceSheets_Click(object sender, EventArgs e)
+        {
+            DialogResult res = MessageBox.Show("You are going to create a pdf document with everyone in it!\nAre you sure you want to proceed?", "Attention", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+            if (res.Equals(DialogResult.Yes))
+            {
+                // Get the list of person IDs
+                List<int> personIDs = new List<int>();
+                foreach (DataRow row in dgvOverview.Rows)
+                {
+                    personIDs.Add((int)row["colOverPersonID"]);
+                }
+            }
         }
     }
 }

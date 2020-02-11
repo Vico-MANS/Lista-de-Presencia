@@ -39,6 +39,13 @@
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.tabControl = new System.Windows.Forms.TabControl();
             this.tabOverview = new System.Windows.Forms.TabPage();
+            this.btnCreateAttendanceSheets = new System.Windows.Forms.Button();
+            this.btnClear = new System.Windows.Forms.Button();
+            this.cbbGroupIDs = new System.Windows.Forms.ComboBox();
+            this.label3 = new System.Windows.Forms.Label();
+            this.txtSearchBox = new System.Windows.Forms.TextBox();
+            this.label2 = new System.Windows.Forms.Label();
+            this.btnPublicHolidays = new System.Windows.Forms.Button();
             this.btnAddService = new System.Windows.Forms.Button();
             this.btnAddGroup = new System.Windows.Forms.Button();
             this.btnAddProgram = new System.Windows.Forms.Button();
@@ -67,7 +74,6 @@
             this.dataGridViewTextBoxColumn2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
             this.notifyIcon1 = new System.Windows.Forms.NotifyIcon(this.components);
-            this.btnPublicHolidays = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.dgvOverview)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.SuspendLayout();
@@ -94,7 +100,7 @@
             this.colFirstName,
             this.colLastName,
             this.colBirthday});
-            this.dgvOverview.Location = new System.Drawing.Point(20, 9);
+            this.dgvOverview.Location = new System.Drawing.Point(20, 34);
             this.dgvOverview.Name = "dgvOverview";
             this.dgvOverview.ReadOnly = true;
             this.dgvOverview.Size = new System.Drawing.Size(722, 301);
@@ -132,7 +138,7 @@
             // 
             // btnAddPerson
             // 
-            this.btnAddPerson.Location = new System.Drawing.Point(656, 375);
+            this.btnAddPerson.Location = new System.Drawing.Point(794, 171);
             this.btnAddPerson.Name = "btnAddPerson";
             this.btnAddPerson.Size = new System.Drawing.Size(86, 29);
             this.btnAddPerson.TabIndex = 2;
@@ -160,6 +166,12 @@
             // 
             // tabOverview
             // 
+            this.tabOverview.Controls.Add(this.btnCreateAttendanceSheets);
+            this.tabOverview.Controls.Add(this.btnClear);
+            this.tabOverview.Controls.Add(this.cbbGroupIDs);
+            this.tabOverview.Controls.Add(this.label3);
+            this.tabOverview.Controls.Add(this.txtSearchBox);
+            this.tabOverview.Controls.Add(this.label2);
             this.tabOverview.Controls.Add(this.btnPublicHolidays);
             this.tabOverview.Controls.Add(this.btnAddService);
             this.tabOverview.Controls.Add(this.btnAddGroup);
@@ -175,9 +187,75 @@
             this.tabOverview.Text = "Overview";
             this.tabOverview.UseVisualStyleBackColor = true;
             // 
+            // btnCreateAttendanceSheets
+            // 
+            this.btnCreateAttendanceSheets.Location = new System.Drawing.Point(20, 341);
+            this.btnCreateAttendanceSheets.Name = "btnCreateAttendanceSheets";
+            this.btnCreateAttendanceSheets.Size = new System.Drawing.Size(142, 23);
+            this.btnCreateAttendanceSheets.TabIndex = 22;
+            this.btnCreateAttendanceSheets.Text = "Create Attendance Sheets";
+            this.btnCreateAttendanceSheets.UseVisualStyleBackColor = true;
+            this.btnCreateAttendanceSheets.Click += new System.EventHandler(this.btnCreateAttendanceSheets_Click);
+            // 
+            // btnClear
+            // 
+            this.btnClear.Location = new System.Drawing.Point(662, 7);
+            this.btnClear.Name = "btnClear";
+            this.btnClear.Size = new System.Drawing.Size(80, 23);
+            this.btnClear.TabIndex = 21;
+            this.btnClear.Text = "Clear Filters";
+            this.btnClear.UseVisualStyleBackColor = true;
+            this.btnClear.Click += new System.EventHandler(this.btnClear_Click);
+            // 
+            // cbbGroupIDs
+            // 
+            this.cbbGroupIDs.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cbbGroupIDs.FormattingEnabled = true;
+            this.cbbGroupIDs.Location = new System.Drawing.Point(330, 7);
+            this.cbbGroupIDs.Name = "cbbGroupIDs";
+            this.cbbGroupIDs.Size = new System.Drawing.Size(121, 21);
+            this.cbbGroupIDs.TabIndex = 20;
+            this.cbbGroupIDs.SelectedIndexChanged += new System.EventHandler(this.cbbGroupIDs_SelectedIndexChanged);
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(288, 11);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(36, 13);
+            this.label3.TabIndex = 19;
+            this.label3.Text = "Group";
+            // 
+            // txtSearchBox
+            // 
+            this.txtSearchBox.Location = new System.Drawing.Point(112, 8);
+            this.txtSearchBox.Name = "txtSearchBox";
+            this.txtSearchBox.Size = new System.Drawing.Size(155, 20);
+            this.txtSearchBox.TabIndex = 18;
+            this.txtSearchBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.txtSearchBox_KeyDown);
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(62, 11);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(44, 13);
+            this.label2.TabIndex = 17;
+            this.label2.Text = "Search:";
+            // 
+            // btnPublicHolidays
+            // 
+            this.btnPublicHolidays.Location = new System.Drawing.Point(791, 306);
+            this.btnPublicHolidays.Name = "btnPublicHolidays";
+            this.btnPublicHolidays.Size = new System.Drawing.Size(92, 29);
+            this.btnPublicHolidays.TabIndex = 16;
+            this.btnPublicHolidays.Text = "Public Holidays";
+            this.btnPublicHolidays.UseVisualStyleBackColor = true;
+            this.btnPublicHolidays.Click += new System.EventHandler(this.btnPublicHolidays_Click);
+            // 
             // btnAddService
             // 
-            this.btnAddService.Location = new System.Drawing.Point(112, 375);
+            this.btnAddService.Location = new System.Drawing.Point(794, 79);
             this.btnAddService.Name = "btnAddService";
             this.btnAddService.Size = new System.Drawing.Size(86, 29);
             this.btnAddService.TabIndex = 15;
@@ -187,7 +265,7 @@
             // 
             // btnAddGroup
             // 
-            this.btnAddGroup.Location = new System.Drawing.Point(204, 375);
+            this.btnAddGroup.Location = new System.Drawing.Point(794, 125);
             this.btnAddGroup.Name = "btnAddGroup";
             this.btnAddGroup.Size = new System.Drawing.Size(86, 29);
             this.btnAddGroup.TabIndex = 14;
@@ -197,7 +275,7 @@
             // 
             // btnAddProgram
             // 
-            this.btnAddProgram.Location = new System.Drawing.Point(20, 375);
+            this.btnAddProgram.Location = new System.Drawing.Point(794, 34);
             this.btnAddProgram.Name = "btnAddProgram";
             this.btnAddProgram.Size = new System.Drawing.Size(86, 29);
             this.btnAddProgram.TabIndex = 13;
@@ -207,7 +285,7 @@
             // 
             // btnDeleteSelected
             // 
-            this.btnDeleteSelected.Location = new System.Drawing.Point(608, 316);
+            this.btnDeleteSelected.Location = new System.Drawing.Point(608, 341);
             this.btnDeleteSelected.Name = "btnDeleteSelected";
             this.btnDeleteSelected.Size = new System.Drawing.Size(134, 23);
             this.btnDeleteSelected.TabIndex = 9;
@@ -423,16 +501,6 @@
             this.notifyIcon1.Text = "notifyIcon1";
             this.notifyIcon1.Visible = true;
             // 
-            // btnPublicHolidays
-            // 
-            this.btnPublicHolidays.Location = new System.Drawing.Point(420, 375);
-            this.btnPublicHolidays.Name = "btnPublicHolidays";
-            this.btnPublicHolidays.Size = new System.Drawing.Size(92, 29);
-            this.btnPublicHolidays.TabIndex = 16;
-            this.btnPublicHolidays.Text = "Public Holidays";
-            this.btnPublicHolidays.UseVisualStyleBackColor = true;
-            this.btnPublicHolidays.Click += new System.EventHandler(this.btnPublicHolidays_Click);
-            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -448,6 +516,7 @@
             this.splitContainer1.ResumeLayout(false);
             this.tabControl.ResumeLayout(false);
             this.tabOverview.ResumeLayout(false);
+            this.tabOverview.PerformLayout();
             this.tabPresence.ResumeLayout(false);
             this.tabPresence.PerformLayout();
             this.gbPresence.ResumeLayout(false);
@@ -499,6 +568,12 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn1;
         private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn2;
         private System.Windows.Forms.Button btnPublicHolidays;
+        private System.Windows.Forms.TextBox txtSearchBox;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.ComboBox cbbGroupIDs;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.Button btnClear;
+        private System.Windows.Forms.Button btnCreateAttendanceSheets;
     }
 }
 

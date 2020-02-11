@@ -856,7 +856,7 @@ namespace Lista_de_Presencia
 
         private void btnPrintAttendanceSheet_Click(object sender, EventArgs e)
         {
-            PDFManager.CreateAttendanceSheet(m_PersonID);
+            PDFManager.CreateSingleAttendanceSheet(m_PersonID);
         }
     }
 }

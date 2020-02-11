@@ -21,7 +21,8 @@ namespace Lista_de_Presencia {
 
         private static readonly float s_BoldBorderWidth = 1.25f;
 
-        public static void CreateAttendanceSheet(int personID)
+        // Creates and displays the attendance sheet for one child
+        public static void CreateSingleAttendanceSheet(int personID)
         {
             Document document = CreateDocument(personID);
             // Create a renderer for the MigraDoc document.
@@ -38,6 +39,15 @@ namespace Lista_de_Presencia {
             pdfRenderer.PdfDocument.Save(filename);
             // Open it in a viewer
             Process.Start(filename);
+        }
+
+        // Creates a PDF containing the attendance sheet of every person
+        public static void CreateMultipleAttendanceSheets(List<int> personIDs)
+        {
+            foreach (int personID in personIDs)
+            {
+                Document doc = CreateDocument(personID);
+            }
         }
 
         private static Document CreateDocument(int personID)
