@@ -199,11 +199,11 @@
             // 
             // btnClear
             // 
-            this.btnClear.Location = new System.Drawing.Point(662, 7);
+            this.btnClear.Location = new System.Drawing.Point(671, 7);
             this.btnClear.Name = "btnClear";
-            this.btnClear.Size = new System.Drawing.Size(80, 23);
+            this.btnClear.Size = new System.Drawing.Size(71, 23);
             this.btnClear.TabIndex = 21;
-            this.btnClear.Text = "Clear Filters";
+            this.btnClear.Text = "Refresh";
             this.btnClear.UseVisualStyleBackColor = true;
             this.btnClear.Click += new System.EventHandler(this.btnClear_Click);
             // 

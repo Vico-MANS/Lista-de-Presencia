@@ -785,7 +785,7 @@ namespace Lista_de_Presencia
         
         public void OnFormClosing(object sender, FormClosingEventArgs e)
         {
-            GetPersonData();
+            //GetPersonData();
         }
 
         private void btnAddProgram_Click(object sender, EventArgs e)
@@ -962,10 +962,11 @@ namespace Lista_de_Presencia
             {
                 // Get the list of person IDs
                 List<int> personIDs = new List<int>();
-                foreach (DataRow row in dgvOverview.Rows)
+                foreach (DataGridViewRow row in dgvOverview.Rows)
                 {
-                    personIDs.Add((int)row["colOverPersonID"]);
+                    personIDs.Add((int)row.Cells[0].Value);
                 }
+                PDFManager.CreateMultipleAttendanceSheets(personIDs);
             }
         }
     }

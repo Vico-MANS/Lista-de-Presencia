@@ -11,6 +11,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Data.SqlClient;
+using PdfSharp.Pdf.IO;
+using System.IO;
 
 namespace Lista_de_Presencia {
     class PDFManager 
@@ -33,7 +35,7 @@ namespace Lista_de_Presencia {
 
             // Layout and render document to PDF
             pdfRenderer.RenderDocument();
-
+            
             // Save the document
             const string filename = "AttendanceSheet.pdf";
             pdfRenderer.PdfDocument.Save(filename);
@@ -44,10 +46,23 @@ namespace Lista_de_Presencia {
         // Creates a PDF containing the attendance sheet of every person
         public static void CreateMultipleAttendanceSheets(List<int> personIDs)
         {
+            PdfDocumentRenderer pdfFinalRenderer = new PdfDocumentRenderer();
+            pdfFinalRenderer.PdfDocument = new PdfDocument();
+            string tmpFile = "tmp.pdf";
             foreach (int personID in personIDs)
             {
                 Document doc = CreateDocument(personID);
+                PdfDocumentRenderer pdfTempRenderer = new PdfDocumentRenderer();
+                pdfTempRenderer.Document = doc;
+                pdfTempRenderer.RenderDocument();
+                // This seems weird but I don't know any way around it
+                pdfTempRenderer.PdfDocument.Save(tmpFile);
+                PdfDocument pdf = PdfReader.Open(tmpFile, PdfDocumentOpenMode.Import);
+                pdfFinalRenderer.PdfDocument.AddPage(pdf.Pages[0]);
             }
+            File.Delete(tmpFile);
+            pdfFinalRenderer.PdfDocument.Save("AttendanceSheets.pdf");
+            Process.Start("AttendanceSheets.pdf");
         }
 
         private static Document CreateDocument(int personID)
