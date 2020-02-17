@@ -78,6 +78,9 @@
             this.Controls.Add(this.btnCreateProgram);
             this.Controls.Add(this.txtProgramName);
             this.Controls.Add(this.label1);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
+            this.MaximizeBox = false;
+            this.MinimizeBox = false;
             this.Name = "ProgramAdditionForm";
             this.Text = "Program Addition";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.ProgramAdditionForm_FormClosing);

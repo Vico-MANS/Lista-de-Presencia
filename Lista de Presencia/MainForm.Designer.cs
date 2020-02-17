@@ -39,6 +39,7 @@
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.tabControl = new System.Windows.Forms.TabControl();
             this.tabOverview = new System.Windows.Forms.TabPage();
+            this.cbbShowWorkers = new System.Windows.Forms.CheckBox();
             this.btnCreateAttendanceSheets = new System.Windows.Forms.Button();
             this.btnClear = new System.Windows.Forms.Button();
             this.cbbGroupIDs = new System.Windows.Forms.ComboBox();
@@ -74,7 +75,6 @@
             this.dataGridViewTextBoxColumn2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
             this.notifyIcon1 = new System.Windows.Forms.NotifyIcon(this.components);
-            this.cbbShowWorkers = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.dgvOverview)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.SuspendLayout();
@@ -188,6 +188,17 @@
             this.tabOverview.TabIndex = 0;
             this.tabOverview.Text = "Overview";
             this.tabOverview.UseVisualStyleBackColor = true;
+            // 
+            // cbbShowWorkers
+            // 
+            this.cbbShowWorkers.AutoSize = true;
+            this.cbbShowWorkers.Location = new System.Drawing.Point(514, 9);
+            this.cbbShowWorkers.Name = "cbbShowWorkers";
+            this.cbbShowWorkers.Size = new System.Drawing.Size(96, 17);
+            this.cbbShowWorkers.TabIndex = 23;
+            this.cbbShowWorkers.Text = "Show Workers";
+            this.cbbShowWorkers.UseVisualStyleBackColor = true;
+            this.cbbShowWorkers.CheckedChanged += new System.EventHandler(this.cbbShowWorkers_CheckedChanged);
             // 
             // btnCreateAttendanceSheets
             // 
@@ -503,17 +514,6 @@
             this.notifyIcon1.Text = "notifyIcon1";
             this.notifyIcon1.Visible = true;
             // 
-            // cbbShowWorkers
-            // 
-            this.cbbShowWorkers.AutoSize = true;
-            this.cbbShowWorkers.Location = new System.Drawing.Point(514, 9);
-            this.cbbShowWorkers.Name = "cbbShowWorkers";
-            this.cbbShowWorkers.Size = new System.Drawing.Size(96, 17);
-            this.cbbShowWorkers.TabIndex = 23;
-            this.cbbShowWorkers.Text = "Show Workers";
-            this.cbbShowWorkers.UseVisualStyleBackColor = true;
-            this.cbbShowWorkers.CheckedChanged += new System.EventHandler(this.cbbShowWorkers_CheckedChanged);
-            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -521,6 +521,9 @@
             this.ClientSize = new System.Drawing.Size(953, 440);
             this.Controls.Add(this.tabControl);
             this.Controls.Add(this.splitContainer1);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
+            this.MaximizeBox = false;
+            this.MinimizeBox = false;
             this.Name = "MainForm";
             this.Text = "Main";
             this.Load += new System.EventHandler(this.Form1_Load);

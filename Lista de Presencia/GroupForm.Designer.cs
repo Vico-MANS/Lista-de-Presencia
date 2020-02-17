@@ -40,11 +40,11 @@
             this.txtGroupName = new System.Windows.Forms.TextBox();
             this.label6 = new System.Windows.Forms.Label();
             this.gbExistingGroups = new System.Windows.Forms.GroupBox();
-            this.lblGroupIDLegend = new System.Windows.Forms.Label();
-            this.lblGroupNameLegend = new System.Windows.Forms.Label();
-            this.lblGroupServiceLegend = new System.Windows.Forms.Label();
-            this.lblGroupDatesLegend = new System.Windows.Forms.Label();
             this.lblGroupSupervisorLegend = new System.Windows.Forms.Label();
+            this.lblGroupDatesLegend = new System.Windows.Forms.Label();
+            this.lblGroupServiceLegend = new System.Windows.Forms.Label();
+            this.lblGroupNameLegend = new System.Windows.Forms.Label();
+            this.lblGroupIDLegend = new System.Windows.Forms.Label();
             this.pnlExistingGroups = new System.Windows.Forms.Panel();
             this.gbExistingGroups.SuspendLayout();
             this.SuspendLayout();
@@ -176,38 +176,16 @@
             this.gbExistingGroups.TabStop = false;
             this.gbExistingGroups.Text = "Existing groups";
             // 
-            // lblGroupIDLegend
+            // lblGroupSupervisorLegend
             // 
-            this.lblGroupIDLegend.AutoSize = true;
-            this.lblGroupIDLegend.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblGroupIDLegend.Location = new System.Drawing.Point(15, 20);
-            this.lblGroupIDLegend.Name = "lblGroupIDLegend";
-            this.lblGroupIDLegend.Size = new System.Drawing.Size(18, 13);
-            this.lblGroupIDLegend.TabIndex = 1;
-            this.lblGroupIDLegend.Tag = "Freeze";
-            this.lblGroupIDLegend.Text = "ID";
-            // 
-            // lblGroupNameLegend
-            // 
-            this.lblGroupNameLegend.AutoSize = true;
-            this.lblGroupNameLegend.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblGroupNameLegend.Location = new System.Drawing.Point(75, 20);
-            this.lblGroupNameLegend.Name = "lblGroupNameLegend";
-            this.lblGroupNameLegend.Size = new System.Drawing.Size(35, 13);
-            this.lblGroupNameLegend.TabIndex = 2;
-            this.lblGroupNameLegend.Tag = "Freeze";
-            this.lblGroupNameLegend.Text = "Name";
-            // 
-            // lblGroupServiceLegend
-            // 
-            this.lblGroupServiceLegend.AutoSize = true;
-            this.lblGroupServiceLegend.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblGroupServiceLegend.Location = new System.Drawing.Point(175, 20);
-            this.lblGroupServiceLegend.Name = "lblGroupServiceLegend";
-            this.lblGroupServiceLegend.Size = new System.Drawing.Size(43, 13);
-            this.lblGroupServiceLegend.TabIndex = 3;
-            this.lblGroupServiceLegend.Tag = "Freeze";
-            this.lblGroupServiceLegend.Text = "Service";
+            this.lblGroupSupervisorLegend.AutoSize = true;
+            this.lblGroupSupervisorLegend.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblGroupSupervisorLegend.Location = new System.Drawing.Point(450, 20);
+            this.lblGroupSupervisorLegend.Name = "lblGroupSupervisorLegend";
+            this.lblGroupSupervisorLegend.Size = new System.Drawing.Size(57, 13);
+            this.lblGroupSupervisorLegend.TabIndex = 5;
+            this.lblGroupSupervisorLegend.Tag = "Freeze";
+            this.lblGroupSupervisorLegend.Text = "Supervisor";
             // 
             // lblGroupDatesLegend
             // 
@@ -220,16 +198,38 @@
             this.lblGroupDatesLegend.Tag = "Freeze";
             this.lblGroupDatesLegend.Text = "Dates";
             // 
-            // lblGroupSupervisorLegend
+            // lblGroupServiceLegend
             // 
-            this.lblGroupSupervisorLegend.AutoSize = true;
-            this.lblGroupSupervisorLegend.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblGroupSupervisorLegend.Location = new System.Drawing.Point(450, 20);
-            this.lblGroupSupervisorLegend.Name = "lblGroupSupervisorLegend";
-            this.lblGroupSupervisorLegend.Size = new System.Drawing.Size(57, 13);
-            this.lblGroupSupervisorLegend.TabIndex = 5;
-            this.lblGroupSupervisorLegend.Tag = "Freeze";
-            this.lblGroupSupervisorLegend.Text = "Supervisor";
+            this.lblGroupServiceLegend.AutoSize = true;
+            this.lblGroupServiceLegend.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblGroupServiceLegend.Location = new System.Drawing.Point(175, 20);
+            this.lblGroupServiceLegend.Name = "lblGroupServiceLegend";
+            this.lblGroupServiceLegend.Size = new System.Drawing.Size(43, 13);
+            this.lblGroupServiceLegend.TabIndex = 3;
+            this.lblGroupServiceLegend.Tag = "Freeze";
+            this.lblGroupServiceLegend.Text = "Service";
+            // 
+            // lblGroupNameLegend
+            // 
+            this.lblGroupNameLegend.AutoSize = true;
+            this.lblGroupNameLegend.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblGroupNameLegend.Location = new System.Drawing.Point(75, 20);
+            this.lblGroupNameLegend.Name = "lblGroupNameLegend";
+            this.lblGroupNameLegend.Size = new System.Drawing.Size(35, 13);
+            this.lblGroupNameLegend.TabIndex = 2;
+            this.lblGroupNameLegend.Tag = "Freeze";
+            this.lblGroupNameLegend.Text = "Name";
+            // 
+            // lblGroupIDLegend
+            // 
+            this.lblGroupIDLegend.AutoSize = true;
+            this.lblGroupIDLegend.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblGroupIDLegend.Location = new System.Drawing.Point(15, 20);
+            this.lblGroupIDLegend.Name = "lblGroupIDLegend";
+            this.lblGroupIDLegend.Size = new System.Drawing.Size(18, 13);
+            this.lblGroupIDLegend.TabIndex = 1;
+            this.lblGroupIDLegend.Tag = "Freeze";
+            this.lblGroupIDLegend.Text = "ID";
             // 
             // pnlExistingGroups
             // 
@@ -259,6 +259,9 @@
             this.Controls.Add(this.label2);
             this.Controls.Add(this.txtGroupID);
             this.Controls.Add(this.label1);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
+            this.MaximizeBox = false;
+            this.MinimizeBox = false;
             this.Name = "GroupForm";
             this.Text = "GroupForm";
             this.Load += new System.EventHandler(this.GroupForm_Load);

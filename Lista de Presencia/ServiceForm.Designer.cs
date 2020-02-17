@@ -98,6 +98,9 @@
             this.Controls.Add(this.label2);
             this.Controls.Add(this.txtServiceName);
             this.Controls.Add(this.label1);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
+            this.MaximizeBox = false;
+            this.MinimizeBox = false;
             this.Name = "ServiceForm";
             this.Text = "ServiceForm";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.ServiceForm_FormClosing);

@@ -132,6 +132,9 @@
             this.Controls.Add(this.btnPreviousSchoolYear);
             this.Controls.Add(this.lblSchoolYear);
             this.Controls.Add(this.gbPublicHolidays);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
+            this.MaximizeBox = false;
+            this.MinimizeBox = false;
             this.Name = "HolidayManagerForm";
             this.Text = "Public Holidays";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.HolidayManagerForm_FormClosing);

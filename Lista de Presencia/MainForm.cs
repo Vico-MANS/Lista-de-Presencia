@@ -113,6 +113,11 @@ namespace Lista_de_Presencia
 
         private void InitPresenceTab()
         {
+            btnViewRange.Text = "Monthly view";
+            m_ViewRange = RANGE.WEEK;
+            btnPreviousRange.Text = "Previous week";
+            btnNextRange.Text = "Next week";
+            m_CurrentMonth = DateTime.Today.Month;
             GetPrograms();
             gbPresence.Visible = false;
         }
