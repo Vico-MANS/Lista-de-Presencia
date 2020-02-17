@@ -81,6 +81,7 @@ namespace Lista_de_Presencia
             if (type.Equals(FormType.ADDITION))
             {
                 btnValidateForm.Text = "Add Person";
+                btnPrintAttendanceSheet.Hide();
             }
             else if (type.Equals(FormType.MODIFICATION))
             {
@@ -310,6 +311,12 @@ namespace Lista_de_Presencia
                     }
                 }
 
+                if (comboSource.Count == 0)
+                {
+                    cbbProgramGroups.DataSource = new BindingSource(null, null);
+                    return;
+                }
+
                 cbbProgramGroups.DataSource = new BindingSource(comboSource, null);
                 cbbProgramGroups.DisplayMember = "Value";
                 cbbProgramGroups.ValueMember = "Key";
@@ -323,10 +330,9 @@ namespace Lista_de_Presencia
             txtLastname.Clear();
             dtpBirthday.Value = DateTime.Now;
 
-            //foreach(CheckBox cb in gbPrograms.Controls.OfType<CheckBox>())
-            //    cb.Checked = false;
-
             cbWorker.Checked = false;
+
+            m_GroupIDs.Clear();
 
             dgvWeeklyDetail.Rows.Clear();
             dgvWeeklyDetail.Rows.Add();

@@ -69,6 +69,24 @@ namespace Lista_de_Presencia
             tabControl.SelectedIndex = 0;
         }
 
+        private void tabControl_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            m_Initialisation = true;
+            switch ((sender as TabControl).SelectedIndex){
+                // Overview tab
+                case 0:
+                    InitOverviewTab();
+                    // We get rid of the focus
+                    dgvOverview.ClearSelection();
+                    break;
+                // Presence tab
+                case 1:
+                    InitPresenceTab();
+                    break;
+            }
+            m_Initialisation = false;
+        }
+
         private void GetPersonData(bool showWorkers = false)
         {
             dgvOverview.Rows.Clear();
@@ -91,24 +109,6 @@ namespace Lista_de_Presencia
                     }
                 }
             }
-        }
-
-        private void tabControl_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            m_Initialisation = true;
-            switch ((sender as TabControl).SelectedIndex){
-                // Overview tab
-                case 0:
-                    InitOverviewTab();
-                    // We get rid of the focus
-                    dgvOverview.ClearSelection();
-                    break;
-                // Presence tab
-                case 1:
-                    InitPresenceTab();
-                    break;
-            }
-            m_Initialisation = false;
         }
 
         private void InitPresenceTab()
@@ -142,7 +142,7 @@ namespace Lista_de_Presencia
                 {
                     while (reader.Read())
                     {
-                        comboSource.Add(reader["ID"], reader["NAME"]);
+                        comboSource.Add(reader["ID"], reader["NAME"] + " ("+reader["ID"]+")");
                         empty = false;
                     }
                 }
@@ -917,6 +917,7 @@ namespace Lista_de_Presencia
             if (e.KeyCode.Equals(Keys.Enter) && txtSearchBox.Text != "")
             {
                 cbbGroupIDs.SelectedIndex = -1;
+                cbbShowWorkers.Checked = false;
                 dgvOverview.Rows.Clear();
 
                 using (SqlConnection conn = new SqlConnection())
@@ -976,6 +977,7 @@ namespace Lista_de_Presencia
         {
             txtSearchBox.Text = "";
             cbbGroupIDs.SelectedIndex = -1;
+            cbbShowWorkers.Checked = false;
             GetPersonData();
         }
 
@@ -996,6 +998,8 @@ namespace Lista_de_Presencia
 
         private void cbbShowWorkers_CheckedChanged(object sender, EventArgs e)
         {
+            txtSearchBox.Text = "";
+            cbbGroupIDs.SelectedIndex = -1;
             GetPersonData(cbbShowWorkers.Checked);
         }
     }
