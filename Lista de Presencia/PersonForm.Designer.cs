@@ -35,7 +35,6 @@
             this.txtFirstname = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
             this.btnValidateForm = new System.Windows.Forms.Button();
-            this.gbPrograms = new System.Windows.Forms.GroupBox();
             this.cbWorker = new System.Windows.Forms.CheckBox();
             this.gbWeeklyPresence = new System.Windows.Forms.GroupBox();
             this.dgvWeeklyDetail = new System.Windows.Forms.DataGridView();
@@ -120,16 +119,6 @@
             this.btnValidateForm.Text = "Validate";
             this.btnValidateForm.UseVisualStyleBackColor = true;
             this.btnValidateForm.Click += new System.EventHandler(this.btnAddPerson_Click);
-            // 
-            // gbPrograms
-            // 
-            this.gbPrograms.Location = new System.Drawing.Point(35, 337);
-            this.gbPrograms.Name = "gbPrograms";
-            this.gbPrograms.Size = new System.Drawing.Size(680, 50);
-            this.gbPrograms.TabIndex = 16;
-            this.gbPrograms.TabStop = false;
-            this.gbPrograms.Text = "Programs";
-            this.gbPrograms.Visible = false;
             // 
             // cbWorker
             // 
@@ -356,7 +345,6 @@
             this.Controls.Add(this.btnCancel);
             this.Controls.Add(this.gbWeeklyPresence);
             this.Controls.Add(this.cbWorker);
-            this.Controls.Add(this.gbPrograms);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.dtpBirthday);
             this.Controls.Add(this.txtLastname);
@@ -390,7 +378,6 @@
         private System.Windows.Forms.TextBox txtFirstname;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Button btnValidateForm;
-        private System.Windows.Forms.GroupBox gbPrograms;
         private System.Windows.Forms.CheckBox cbWorker;
         private System.Windows.Forms.GroupBox gbWeeklyPresence;
         private System.Windows.Forms.DataGridView dgvWeeklyDetail;
