@@ -74,6 +74,7 @@
             this.dataGridViewTextBoxColumn2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
             this.notifyIcon1 = new System.Windows.Forms.NotifyIcon(this.components);
+            this.cbbShowWorkers = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.dgvOverview)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.SuspendLayout();
@@ -166,6 +167,7 @@
             // 
             // tabOverview
             // 
+            this.tabOverview.Controls.Add(this.cbbShowWorkers);
             this.tabOverview.Controls.Add(this.btnCreateAttendanceSheets);
             this.tabOverview.Controls.Add(this.btnClear);
             this.tabOverview.Controls.Add(this.cbbGroupIDs);
@@ -501,6 +503,17 @@
             this.notifyIcon1.Text = "notifyIcon1";
             this.notifyIcon1.Visible = true;
             // 
+            // cbbShowWorkers
+            // 
+            this.cbbShowWorkers.AutoSize = true;
+            this.cbbShowWorkers.Location = new System.Drawing.Point(514, 9);
+            this.cbbShowWorkers.Name = "cbbShowWorkers";
+            this.cbbShowWorkers.Size = new System.Drawing.Size(96, 17);
+            this.cbbShowWorkers.TabIndex = 23;
+            this.cbbShowWorkers.Text = "Show Workers";
+            this.cbbShowWorkers.UseVisualStyleBackColor = true;
+            this.cbbShowWorkers.CheckedChanged += new System.EventHandler(this.cbbShowWorkers_CheckedChanged);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -574,6 +587,7 @@
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Button btnClear;
         private System.Windows.Forms.Button btnCreateAttendanceSheets;
+        private System.Windows.Forms.CheckBox cbbShowWorkers;
     }
 }
 

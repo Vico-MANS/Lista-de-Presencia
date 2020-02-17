@@ -69,7 +69,7 @@ namespace Lista_de_Presencia
             tabControl.SelectedIndex = 0;
         }
 
-        private void GetPersonData()
+        private void GetPersonData(bool showWorkers = false)
         {
             dgvOverview.Rows.Clear();
 
@@ -77,7 +77,10 @@ namespace Lista_de_Presencia
             {
                 DatabaseConnection.OpenConnection(conn);
 
-                SqlCommand command = new SqlCommand("SELECT PERSON_ID, FIRSTNAME, LASTNAME, (SELECT CONVERT(varchar(10), BIRTHDAY, 103) AS [DD/MM/YYYY]) AS BIRTHDAY FROM PERSON", conn);
+                SqlCommand command = new SqlCommand("SELECT PERSON_ID, FIRSTNAME, LASTNAME, (SELECT CONVERT(varchar(10), BIRTHDAY, 103) AS [DD/MM/YYYY]) AS BIRTHDAY " +
+                                                    "FROM PERSON", conn);
+                if (!showWorkers)
+                    command.CommandText += " WHERE WORKER = 0";
 
                 using (SqlDataReader reader = command.ExecuteReader())
                 {
@@ -426,29 +429,50 @@ namespace Lista_de_Presencia
                         SqlTransaction transaction = conn.BeginTransaction();
                         try
                             {
+                            int personID = (int)row.Cells["colOverPersonID"].Value;
                             // We first have to delete all the content related to that individual in the Presence table
                             SqlCommand command = new SqlCommand("DELETE FROM PRESENCE WHERE ID_PERSON = @id", conn, transaction);
-                            command.Parameters.Add(new SqlParameter("id", row.Cells["colOverPersonID"].Value.ToString()));
+                            command.Parameters.AddWithValue("id", personID);
                             command.ExecuteNonQuery();
 
-                            // And all the content in the Person_Program table
+                            // And all the content in the Person_Program table (not useful anymore)
                             command = new SqlCommand("DELETE FROM PERSON_PROGRAM WHERE ID_PERSON = @id", conn, transaction);
-                            command.Parameters.Add(new SqlParameter("id", row.Cells["colOverPersonID"].Value.ToString()));
+                            command.Parameters.AddWithValue("id", personID);
                             command.ExecuteNonQuery();
 
-                            // And all the content in the Program table
-                            command = new SqlCommand("DELETE FROM PROGRAM WHERE ID_EDUCATOR = @id", conn, transaction);
-                            command.Parameters.Add(new SqlParameter("id", row.Cells["colOverPersonID"].Value.ToString()));
-                            command.ExecuteNonQuery();
+                            // If the person is a worker we have to delete the groups and connections to the person
+                            command = new SqlCommand("SELECT g.GRUPO_ID AS GROUP_ID FROM GRUPO g, PERSON p " +
+                                                    "WHERE p.PERSON_ID = @id AND g.ID_PERSON = p.PERSON_ID AND WORKER = 1", conn, transaction);
+                            command.Parameters.AddWithValue("id", personID);
+
+                            List<int> groupIDs = new List<int>();
+                            using (SqlDataReader reader = command.ExecuteReader())
+                                while (reader.Read())
+                                    groupIDs.Add((int)reader["GROUP_ID"]);
+
+                            foreach(int groupID in groupIDs)
+                            {
+                                SqlCommand deleteGroupConnections = new SqlCommand("DELETE FROM PERSON_GRUPO WHERE ID_GRUPO = @groupID", conn, transaction);
+                                deleteGroupConnections.Parameters.AddWithValue("groupID", groupID);
+                                deleteGroupConnections.ExecuteNonQuery();
+                            }
+
+                            // If we found a group associated to that person we delete it
+                            if (groupIDs.Count > 0)
+                            {
+                                command = new SqlCommand("DELETE FROM GRUPO WHERE ID_PERSON = @id", conn, transaction);
+                                command.Parameters.AddWithValue("id", personID);
+                                Console.WriteLine("GRUPO got deleted: " + command.ExecuteNonQuery() + " line");
+                            }
 
                             // And all the content in the Weekly_Presence table
                             command = new SqlCommand("DELETE FROM WEEKLY_PRESENCE WHERE ID_PERSON = @id", conn, transaction);
-                            command.Parameters.Add(new SqlParameter("id", row.Cells["colOverPersonID"].Value.ToString()));
+                            command.Parameters.AddWithValue("id", personID);
                             command.ExecuteNonQuery();
 
                             // Then we can safely delete the individual from the Person table
                             command = new SqlCommand("DELETE FROM PERSON WHERE PERSON_ID = @id", conn, transaction);
-                            command.Parameters.Add(new SqlParameter("id", row.Cells["colOverPersonID"].Value.ToString()));
+                            command.Parameters.AddWithValue("id", personID);
 
                             deletionCounter += command.ExecuteNonQuery();
 
@@ -968,6 +992,11 @@ namespace Lista_de_Presencia
                 }
                 PDFManager.CreateMultipleAttendanceSheets(personIDs);
             }
+        }
+
+        private void cbbShowWorkers_CheckedChanged(object sender, EventArgs e)
+        {
+            GetPersonData(cbbShowWorkers.Checked);
         }
     }
 }
