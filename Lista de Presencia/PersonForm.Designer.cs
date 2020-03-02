@@ -57,7 +57,7 @@
             this.lblGroupNameLegend = new System.Windows.Forms.Label();
             this.btnPrintAttendanceSheet = new System.Windows.Forms.Button();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.txtNameDate = new System.Windows.Forms.TextBox();
+            this.txtNameDay = new System.Windows.Forms.TextBox();
             this.cbDataRights = new System.Windows.Forms.CheckBox();
             this.cbImageRights = new System.Windows.Forms.CheckBox();
             this.cbbGender = new System.Windows.Forms.ComboBox();
@@ -187,6 +187,8 @@
             this.label68 = new System.Windows.Forms.Label();
             this.txtFatherID = new System.Windows.Forms.TextBox();
             this.txtMotherID = new System.Windows.Forms.TextBox();
+            this.label69 = new System.Windows.Forms.Label();
+            this.txtProfession = new System.Windows.Forms.TextBox();
             this.gbWeeklyPresence.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvWeeklyDetail)).BeginInit();
             this.gbGroupInfo.SuspendLayout();
@@ -471,7 +473,7 @@
             // groupBox1
             // 
             this.groupBox1.Controls.Add(this.label66);
-            this.groupBox1.Controls.Add(this.txtNameDate);
+            this.groupBox1.Controls.Add(this.txtNameDay);
             this.groupBox1.Controls.Add(this.cbDataRights);
             this.groupBox1.Controls.Add(this.cbImageRights);
             this.groupBox1.Controls.Add(this.cbbGender);
@@ -496,12 +498,12 @@
             this.groupBox1.TabIndex = 26;
             this.groupBox1.TabStop = false;
             // 
-            // txtNameDate
+            // txtNameDay
             // 
-            this.txtNameDate.Location = new System.Drawing.Point(284, 72);
-            this.txtNameDate.Name = "txtNameDate";
-            this.txtNameDate.Size = new System.Drawing.Size(77, 20);
-            this.txtNameDate.TabIndex = 35;
+            this.txtNameDay.Location = new System.Drawing.Point(284, 72);
+            this.txtNameDay.Name = "txtNameDay";
+            this.txtNameDay.Size = new System.Drawing.Size(77, 20);
+            this.txtNameDay.TabIndex = 35;
             // 
             // cbDataRights
             // 
@@ -933,6 +935,8 @@
             // 
             // groupBox4
             // 
+            this.groupBox4.Controls.Add(this.txtProfession);
+            this.groupBox4.Controls.Add(this.label69);
             this.groupBox4.Controls.Add(this.txtEmail);
             this.groupBox4.Controls.Add(this.label31);
             this.groupBox4.Controls.Add(this.txtCellphoneNumber);
@@ -1672,6 +1676,22 @@
             this.txtMotherID.TabIndex = 98;
             this.txtMotherID.Visible = false;
             // 
+            // label69
+            // 
+            this.label69.AutoSize = true;
+            this.label69.Location = new System.Drawing.Point(604, 16);
+            this.label69.Name = "label69";
+            this.label69.Size = new System.Drawing.Size(56, 13);
+            this.label69.TabIndex = 63;
+            this.label69.Text = "Profession";
+            // 
+            // txtProfession
+            // 
+            this.txtProfession.Location = new System.Drawing.Point(675, 13);
+            this.txtProfession.Name = "txtProfession";
+            this.txtProfession.Size = new System.Drawing.Size(115, 20);
+            this.txtProfession.TabIndex = 64;
+            // 
             // txtOccupiedPlace
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1885,7 +1905,7 @@
         private System.Windows.Forms.Label label65;
         private System.Windows.Forms.TextBox textBox48;
         private System.Windows.Forms.Label label64;
-        private System.Windows.Forms.TextBox txtNameDate;
+        private System.Windows.Forms.TextBox txtNameDay;
         private System.Windows.Forms.Label label66;
         private System.Windows.Forms.TextBox txtMotherEmail;
         private System.Windows.Forms.TextBox txtMotherPhone;
@@ -1894,5 +1914,7 @@
         private System.Windows.Forms.TextBox txtFatherID;
         private System.Windows.Forms.Label label68;
         private System.Windows.Forms.Label label67;
+        private System.Windows.Forms.TextBox txtProfession;
+        private System.Windows.Forms.Label label69;
     }
 }
