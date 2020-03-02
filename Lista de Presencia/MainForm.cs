@@ -440,11 +440,6 @@ namespace Lista_de_Presencia
                             command.Parameters.AddWithValue("id", personID);
                             command.ExecuteNonQuery();
 
-                            // And all the content in the Person_Program table (not useful anymore)
-                            command = new SqlCommand("DELETE FROM PERSON_PROGRAM WHERE ID_PERSON = @id", conn, transaction);
-                            command.Parameters.AddWithValue("id", personID);
-                            command.ExecuteNonQuery();
-
                             // If the person is a worker we have to delete the groups and connections to the person
                             command = new SqlCommand("SELECT g.GRUPO_ID AS GROUP_ID FROM GRUPO g, PERSON p " +
                                                     "WHERE p.PERSON_ID = @id AND g.ID_PERSON = p.PERSON_ID AND WORKER = 1", conn, transaction);
@@ -493,6 +488,7 @@ namespace Lista_de_Presencia
                     }
 
                     Console.WriteLine(deletionCounter + " rows where deleted.");
+                    MessageBox.Show(deletionCounter+" people were successfully deleted!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     GetPersonData();
                 }              
             }
@@ -792,7 +788,7 @@ namespace Lista_de_Presencia
 
         private void dgvOverview_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
         {
-            txtOccupiedPlace form = txtOccupiedPlace.GetInstance(txtOccupiedPlace.FormType.MODIFICATION, int.Parse(dgvOverview.Rows[e.RowIndex].Cells["colOverPersonID"].Value.ToString()));
+            PersonForm form = PersonForm.GetInstance(PersonForm.FormType.MODIFICATION, int.Parse(dgvOverview.Rows[e.RowIndex].Cells["colOverPersonID"].Value.ToString()));
             form.FormClosing += OnFormClosing;
 
             if (!form.Visible)
@@ -803,7 +799,7 @@ namespace Lista_de_Presencia
 
         private void btnAddPerson_Click(object sender, EventArgs e)
         {
-            txtOccupiedPlace form = txtOccupiedPlace.GetInstance(txtOccupiedPlace.FormType.ADDITION);
+            PersonForm form = PersonForm.GetInstance(PersonForm.FormType.ADDITION);
             form.FormClosing += OnFormClosing;
 
             if (!form.Visible)

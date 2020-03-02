@@ -11,19 +11,19 @@ using System.Data.SqlClient;
 
 namespace Lista_de_Presencia
 {
-    public partial class txtOccupiedPlace : Form
+    public partial class PersonForm : Form
     {
         public enum FormType { ADDITION, MODIFICATION };
 
-        private static txtOccupiedPlace s_Instance;
+        private static PersonForm s_Instance;
 
-        public static txtOccupiedPlace GetInstance(FormType type, int personID = -1)
+        public static PersonForm GetInstance(FormType type, int personID = -1)
         {
             if (type.Equals(FormType.ADDITION))
             {
                 if (s_Instance == null)
                 {
-                    s_Instance = new txtOccupiedPlace(type, personID);
+                    s_Instance = new PersonForm(type, personID);
                 }
             }
             else if (type.Equals(FormType.MODIFICATION))
@@ -35,7 +35,7 @@ namespace Lista_de_Presencia
                     // We close the last form
                     if (s_Instance != null)
                         s_Instance.Close();
-                    s_Instance = new txtOccupiedPlace(type, personID);
+                    s_Instance = new PersonForm(type, personID);
                 }
             }
             return s_Instance;
@@ -68,7 +68,7 @@ namespace Lista_de_Presencia
         private string m_InitLastname;
         private string m_InitBirthday;        
         
-        public txtOccupiedPlace(FormType type, int personID)
+        public PersonForm(FormType type, int personID)
         {            
             InitializeComponent();
             this.CenterToScreen();
@@ -130,14 +130,14 @@ namespace Lista_de_Presencia
                     // Should only be one retrieved row
                     reader.Read();
                     
-                    txtFirstname_1.Text = reader["FIRSTNAME"].ToString();
-                    txtLastname_1.Text = reader["LASTNAME"].ToString();
-                    dtpBirthday_1.Value = Convert.ToDateTime(reader["BIRTHDAY"]);
+                    txtFirstName.Text = reader["FIRSTNAME"].ToString();
+                    txtLastName.Text = reader["LASTNAME"].ToString();
+                    dtpBirthday.Value = Convert.ToDateTime(reader["BIRTHDAY"]);
                     m_IsWorker = (bool)reader["WORKER"];
 
-                    m_InitFirstname = txtFirstname_1.Text;
-                    m_InitLastname = txtLastname_1.Text;
-                    m_InitBirthday = dtpBirthday_1.Value.ToString();
+                    m_InitFirstname = txtFirstName.Text;
+                    m_InitLastname = txtLastName.Text;
+                    m_InitBirthday = dtpBirthday.Value.ToString();
 
                     cbWorker.Checked = m_IsWorker;
                     cbWorker.Enabled = false;
@@ -146,24 +146,6 @@ namespace Lista_de_Presencia
                 }
             }
         }
-
-        //private void RetrievePersonProgramInformation()
-        //{
-        //    using (SqlConnection conn = new SqlConnection())
-        //    {
-        //        DatabaseConnection.OpenConnection(conn);
-
-        //        SqlCommand command = new SqlCommand("SELECT * FROM PERSON_PROGRAM WHERE ID_PERSON = @id", conn);
-        //        command.Parameters.AddWithValue("id", m_PersonID);
-
-        //        m_InitPersonPrograms = new List<int>();
-        //        using (SqlDataReader reader = command.ExecuteReader())
-        //        {
-        //            while (reader.Read())
-        //                m_InitPersonPrograms.Add((int)reader["ID_PROGRAM"]);
-        //        }
-        //    }
-        //}
 
         private void RetrievePersonGroupInformation()
         {
@@ -280,9 +262,9 @@ namespace Lista_de_Presencia
 
         private void ClearPersonAdditionFields()
         {
-            txtFirstname_1.Clear();
-            txtLastname_1.Clear();
-            dtpBirthday_1.Value = DateTime.Now;
+            txtFirstName.Clear();
+            txtLastName.Clear();
+            dtpBirthday.Value = DateTime.Now;
 
             cbWorker.Checked = false;
 
@@ -301,16 +283,16 @@ namespace Lista_de_Presencia
         private bool IsPersonAdditionValid()
         {
             // The person has to have a first and last name
-            if (txtFirstname_1.Text == "" || txtLastname_1.Text == "")
+            if (txtFirstName.Text == "" || txtLastName.Text == "")
                 return false;
 
             // TODO: What about parents? (there aren't part of any program)
             // If the person isn't working here, it has to be part of a program
-            if(!cbWorker.Checked)
-            {
-                // If this is true it means that the person is part of at least one group
-                return gbGroupInfo.Controls.Count > 3;
-            }
+            //if(!cbWorker.Checked)
+            //{
+            //    // If this is true it means that the person is part of at least one group
+            //    return gbGroupInfo.Controls.Count > 3;
+            //}
             return true;
         }
 
@@ -398,16 +380,16 @@ namespace Lista_de_Presencia
                     /*
                      * UPDATE PERSON TABLE
                      * */
-                    SqlCommand commandUpdatePerson = new SqlCommand("UPDATE PERSON SET FIRSTNAME = @firstname, LASTNAME = @lastname, BIRTHDAY = @birthday WHERE PERSON_ID = @id", conn, transaction);
-                    commandUpdatePerson.Parameters.AddWithValue("firstname", txtFirstname_1.Text);
-                    commandUpdatePerson.Parameters.AddWithValue("lastname", txtLastname_1.Text);
-                    commandUpdatePerson.Parameters.AddWithValue("birthday", dtpBirthday_1.Value);
+                    SqlCommand commandUpdatePerson = new SqlCommand("UPDATE PERSON SET FIRSTNAME = @firstName, LASTNAME = @lastName, BIRTHDAY = @birthday WHERE PERSON_ID = @id", conn, transaction);
+                    commandUpdatePerson.Parameters.AddWithValue("firstName", txtFirstName.Text);
+                    commandUpdatePerson.Parameters.AddWithValue("lastName", txtLastName.Text);
+                    commandUpdatePerson.Parameters.AddWithValue("birthday", dtpBirthday.Value);
                     commandUpdatePerson.Parameters.AddWithValue("id", m_PersonID);
                     commandUpdatePerson.ExecuteNonQuery();
 
-                    m_InitFirstname = txtFirstname_1.Text;
-                    m_InitLastname = txtLastname_1.Text;
-                    m_InitBirthday = dtpBirthday_1.Value.ToString();
+                    m_InitFirstname = txtFirstName.Text;
+                    m_InitLastname = txtLastName.Text;
+                    m_InitBirthday = dtpBirthday.Value.ToString();
 
                     Console.WriteLine("Person table UPDATED");                    
 
@@ -493,11 +475,15 @@ namespace Lista_de_Presencia
                      * INSERT PERSON
                      * */
 
-                    SqlCommand commandInsertPerson = new SqlCommand("INSERT INTO PERSON (FIRSTNAME, LASTNAME, BIRTHDAY, WORKER) VALUES (@firstname, @lastname, @birthday, @worker)", conn, transaction);
-                    commandInsertPerson.Parameters.AddWithValue("firstname", txtFirstname_1.Text);
-                    commandInsertPerson.Parameters.AddWithValue("lastname", txtLastname_1.Text);
-                    commandInsertPerson.Parameters.AddWithValue("birthday", dtpBirthday_1.Value);
+                    SqlCommand commandInsertPerson = new SqlCommand("INSERT INTO PERSON (FIRSTNAME, LASTNAME, BIRTHDAY, WORKER, PERSON_TYPE, EMAIL, CELLPHONE_NUMBER) " +
+                                                                    "VALUES (@firstName, @lastName, @birthday, @worker, @personType, @email, @cellphone)", conn, transaction);
+                    commandInsertPerson.Parameters.AddWithValue("firstName", txtFirstName.Text);
+                    commandInsertPerson.Parameters.AddWithValue("lastName", txtLastName.Text);
+                    commandInsertPerson.Parameters.AddWithValue("birthday", dtpBirthday.Value);
                     commandInsertPerson.Parameters.AddWithValue("worker", cbWorker.Checked ? 1 : 0);
+                    commandInsertPerson.Parameters.AddWithValue("personType", txtPersonType.Text);
+                    commandInsertPerson.Parameters.AddWithValue("email", txtEmail.Text);
+                    commandInsertPerson.Parameters.AddWithValue("cellphone", txtCellphoneNumber.Text);
 
                     commandInsertPerson.ExecuteNonQuery();
                     Console.WriteLine("Person inserted");
@@ -506,9 +492,9 @@ namespace Lista_de_Presencia
                      * RETRIEVE PERSON ID
                      * */
 
-                    SqlCommand commandGetPersonID = new SqlCommand("SELECT MAX(PERSON_ID) AS LAST_ID FROM PERSON WHERE FIRSTNAME = @firstname AND LASTNAME = @lastname", conn, transaction);
-                    commandGetPersonID.Parameters.Add(new SqlParameter("firstname", txtFirstname_1.Text));
-                    commandGetPersonID.Parameters.Add(new SqlParameter("lastname", txtLastname_1.Text));
+                    SqlCommand commandGetPersonID = new SqlCommand("SELECT MAX(PERSON_ID) AS LAST_ID FROM PERSON WHERE FIRSTNAME = @firstName AND LASTNAME = @lastName", conn, transaction);
+                    commandGetPersonID.Parameters.Add(new SqlParameter("firstName", txtFirstName.Text));
+                    commandGetPersonID.Parameters.Add(new SqlParameter("lastName", txtLastName.Text));
 
                     int personID;
                     using (SqlDataReader reader = commandGetPersonID.ExecuteReader())
@@ -600,7 +586,7 @@ namespace Lista_de_Presencia
             // Only for modification!?
             if (m_FormType.Equals(FormType.MODIFICATION))
             {
-                if (m_InitFirstname != txtFirstname_1.Text || m_InitLastname != txtLastname_1.Text || m_InitBirthday != dtpBirthday_1.Value.ToString() || /*modificationInPrograms ||*/ m_WeeklyPresenceChanges.Count > 0)
+                if (m_InitFirstname != txtFirstName.Text || m_InitLastname != txtLastName.Text || m_InitBirthday != dtpBirthday.Value.ToString() || /*modificationInPrograms ||*/ m_WeeklyPresenceChanges.Count > 0)
                 {
                     DialogResult res = MessageBox.Show("If you have made changes, these won't be saved!", "Information", MessageBoxButtons.OKCancel, MessageBoxIcon.Exclamation);
                     e.Cancel = res.Equals(DialogResult.Cancel);
@@ -730,6 +716,64 @@ namespace Lista_de_Presencia
         private void btnPrintAttendanceSheet_Click(object sender, EventArgs e)
         {
             PDFManager.CreateSingleAttendanceSheet(m_PersonID);
+        }
+
+        private void btnSearchFather_Click(object sender, EventArgs e)
+        {
+            OpenSearchParentForm(SearchParentForm.PARENT_TYPE.FATHER);
+        }
+
+        private void btnSearchMother_Click(object sender, EventArgs e)
+        {
+            OpenSearchParentForm(SearchParentForm.PARENT_TYPE.MOTHER);
+        }
+
+        private void OpenSearchParentForm(SearchParentForm.PARENT_TYPE parentType)
+        {
+            SearchParentForm form = SearchParentForm.GetInstance(parentType);
+            form.FormClosing += OnFormClosing;
+
+            if (!form.Visible)
+                form.ShowDialog();
+            else
+                form.BringToFront();
+        }
+        
+        // The only form we have is the search parent one, therefore this event is only called when that form gets closed
+        public void OnFormClosing(object sender, FormClosingEventArgs e)
+        {
+            SearchParentForm form = SearchParentForm.GetInstance();
+            if (form.Valid)
+                GetParentInformation(form.ParentType, form.ParentID);
+        }
+
+        private void GetParentInformation(SearchParentForm.PARENT_TYPE parentType, int personID)
+        {
+            using (SqlConnection conn = new SqlConnection())
+            {
+                DatabaseConnection.OpenConnection(conn);
+
+                SqlCommand command = new SqlCommand("SELECT FIRSTNAME+' '+LASTNAME AS NAME, CELLPHONE_NUMBER, EMAIL, DOCUMENT_TYPE, DOCUMENT, NATIONALITY, CONVERT(varchar(10), BIRTHDAY, 103) AS BIRTHDAY, PROFESSION " +
+                                                    "FROM PERSON " +
+                                                    "WHERE PERSON_ID = @personID", conn);
+                command.Parameters.AddWithValue("personID", personID);
+
+                using (SqlDataReader reader = command.ExecuteReader())
+                {
+                    reader.Read();
+
+                    string parent = char.ToUpper(parentType.ToString()[0]) + parentType.ToString().ToLower().Substring(1);
+                    Controls.Find("txt"+parent+"Name", true)[0].Text = reader["NAME"].ToString();
+                    Controls.Find("txt" + parent + "Phone", true)[0].Text = reader["CELLPHONE_NUMBER"].ToString();
+                    Controls.Find("txt" + parent + "Email", true)[0].Text = reader["EMAIL"].ToString();
+                    Controls.Find("txt" + parent + "DocumentType", true)[0].Text = reader["DOCUMENT_TYPE"].ToString();
+                    Controls.Find("txt" + parent + "Document", true)[0].Text = reader["DOCUMENT"].ToString();
+                    Controls.Find("txt" + parent + "Nationality", true)[0].Text = reader["NATIONALITY"].ToString();
+                    Controls.Find("txt" + parent + "Birthday", true)[0].Text = reader["BIRTHDAY"].ToString();
+                    Controls.Find("txt" + parent + "Profession", true)[0].Text = reader["PROFESSION"].ToString();
+                    Controls.Find("txt" + parent + "ID", true)[0].Text = personID.ToString();
+                }
+            }
         }
     }
 }
