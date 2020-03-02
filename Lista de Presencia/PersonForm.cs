@@ -475,15 +475,76 @@ namespace Lista_de_Presencia
                      * INSERT PERSON
                      * */
 
-                    SqlCommand commandInsertPerson = new SqlCommand("INSERT INTO PERSON (FIRSTNAME, LASTNAME, BIRTHDAY, WORKER, PERSON_TYPE, EMAIL, CELLPHONE_NUMBER) " +
-                                                                    "VALUES (@firstName, @lastName, @birthday, @worker, @personType, @email, @cellphone)", conn, transaction);
+                    SqlCommand commandInsertPerson = new SqlCommand("INSERT INTO PERSON (PERSON_TYPE, FIRSTNAME, LASTNAME, DOCUMENT_TYPE, DOCUMENT, " +
+                                                                        "BIRTHDAY, GENDER, NAME_DAY, IMAGE_RIGHTS, DATA_RIGHTS, WORKER, NATIONALITY," +
+                                                                        "YEARS_IN_COUNTRY, SCHOOL_NAME, SCHOOL_YEAR, STREET_TYPE, ADDRESS, HOME_NUMBER, " +
+                                                                        "HOME_STAIRS, HOME_STOREY, HOME_DOOR, HOME_ZIP_CODE, HOME_POPULATION, " +
+                                                                        "HOME_REGION, HOME_PROVINCE, HOME_COUNTRY, HOME_LANDLINE_NUMBER, CELLPHONE_NUMBER, " +
+                                                                        "EMAIL, ID_FATHER, ID_MOTHER, FAMILY_EMAIL, OTHER_CONTACT_RELATION," +
+                                                                        "OTHER_CONTACT_NAME, OTHER_CONTACT_EMAIL, NUMBER_OF_BROTHERS, NUMBER_OF_SISTERS, " +
+                                                                        "SIBLING_RANK, PICK_OFF_PEOPLE, PROFESSION, BANK_IBAN, BANK_ACCOUNT_OWNER, OBSERVATIONS, " +
+                                                                        "FOOD_ALLERGY_CHRONIC_DISEASES, MEMBER_NUMBER, HEALTH_CARD_NUMBER) " +
+                                                                    "VALUES (@personType, @firstName, @lastName, @documentType, @document, " +
+                                                                        "@birthday, @gender, @nameDay, @imageRights, @dataRights, @worker, @nationality," +
+                                                                        "@yearsInCountry, @schoolName, @schoolYear, @streetType, @address, @homeNumber, " +
+                                                                        "@homeStairs, @homeStorey, @homeDoor, @ZIPCode, @population, " +
+                                                                        "@region, @province, @country, @landline, @cellphone, " +
+                                                                        "@email, @fatherID, @motherID, @familyEmail, @otherContactRelation," +
+                                                                        "@otherContactName, @otherContactPhone, @numberBrothers, @numberSisters, " +
+                                                                        "@siblingRank, @pickOffPeople, @profession, @IBAN, @bankAccountOwner, @observations, " +
+                                                                        "@foodAndDisease, @memberNumber, @healthCardNumber) ", conn, transaction);
+                    commandInsertPerson.Parameters.AddWithValue("personType", txtPersonType.Text);
                     commandInsertPerson.Parameters.AddWithValue("firstName", txtFirstName.Text);
                     commandInsertPerson.Parameters.AddWithValue("lastName", txtLastName.Text);
+                    commandInsertPerson.Parameters.AddWithValue("documentType", txtDocumentType.Text);
+                    commandInsertPerson.Parameters.AddWithValue("document", txtDocument.Text);
+                    commandInsertPerson.Parameters.AddWithValue("gender", cbbGender.SelectedItem.ToString());
                     commandInsertPerson.Parameters.AddWithValue("birthday", dtpBirthday.Value);
                     commandInsertPerson.Parameters.AddWithValue("worker", cbWorker.Checked ? 1 : 0);
-                    commandInsertPerson.Parameters.AddWithValue("personType", txtPersonType.Text);
-                    commandInsertPerson.Parameters.AddWithValue("email", txtEmail.Text);
+                    commandInsertPerson.Parameters.AddWithValue("nameDay", txtNameDay.Text);
+                    commandInsertPerson.Parameters.AddWithValue("imageRights", cbImageRights.Checked ? 1 : 0);
+                    commandInsertPerson.Parameters.AddWithValue("dataRights", cbDataRights.Checked ? 1 : 0);
+                    commandInsertPerson.Parameters.AddWithValue("nationality", txtNationality.Text);
+                    commandInsertPerson.Parameters.AddWithValue("yearsInCountry", txtYearsInCountry.Text);
+                    commandInsertPerson.Parameters.AddWithValue("schoolName", txtSchoolName.Text);
+                    commandInsertPerson.Parameters.AddWithValue("schoolYear", txtSchoolYear.Text);
+                    commandInsertPerson.Parameters.AddWithValue("streetType", txtStreetType.Text);
+                    commandInsertPerson.Parameters.AddWithValue("address", txtAddress.Text);
+                    commandInsertPerson.Parameters.AddWithValue("homeNumber", txtHomeNumber.Text);
+                    commandInsertPerson.Parameters.AddWithValue("homeStairs", txtHomeStairs.Text);
+                    commandInsertPerson.Parameters.AddWithValue("homeStorey", txtHomeStorey.Text);
+                    commandInsertPerson.Parameters.AddWithValue("homeDoor", txtHomeDoor.Text);
+                    commandInsertPerson.Parameters.AddWithValue("ZIPCode", txtZIPCode.Text);
+                    commandInsertPerson.Parameters.AddWithValue("population", txtPopulation.Text);
+                    commandInsertPerson.Parameters.AddWithValue("region", txtRegion.Text);
+                    commandInsertPerson.Parameters.AddWithValue("province", txtProvince.Text);
+                    commandInsertPerson.Parameters.AddWithValue("country", txtCountry.Text);
+                    commandInsertPerson.Parameters.AddWithValue("landline", txtLandlineNumber.Text);
                     commandInsertPerson.Parameters.AddWithValue("cellphone", txtCellphoneNumber.Text);
+                    commandInsertPerson.Parameters.AddWithValue("email", txtEmail.Text);
+                    commandInsertPerson.Parameters.AddWithValue("profession", txtProfession.Text);
+                    if (string.IsNullOrEmpty(txtFatherID.Text))
+                        commandInsertPerson.Parameters.AddWithValue("fatherID", DBNull.Value);
+                    else
+                        commandInsertPerson.Parameters.AddWithValue("fatherID", txtFatherID.Text);
+                    if (string.IsNullOrEmpty(txtMotherID.Text))
+                        commandInsertPerson.Parameters.AddWithValue("motherID", DBNull.Value);
+                    else
+                        commandInsertPerson.Parameters.AddWithValue("motherID", txtMotherID.Text);
+                    commandInsertPerson.Parameters.AddWithValue("familyEmail", txtFamilyEmail.Text);
+                    commandInsertPerson.Parameters.AddWithValue("otherContactRelation", txtOtherContactRelation.Text);
+                    commandInsertPerson.Parameters.AddWithValue("otherContactName", txtOtherContactName.Text);
+                    commandInsertPerson.Parameters.AddWithValue("otherContactPhone", txtOtherContactPhone.Text);
+                    commandInsertPerson.Parameters.AddWithValue("numberBrothers", txtNumberOfBrothers.Text);
+                    commandInsertPerson.Parameters.AddWithValue("numberSisters", txtNumberOfSisters.Text);
+                    commandInsertPerson.Parameters.AddWithValue("siblingRank", txtSiblingRank.Text);
+                    commandInsertPerson.Parameters.AddWithValue("pickOffPeople", rtxtPeopleAllowedToPickOff.Text);
+                    commandInsertPerson.Parameters.AddWithValue("IBAN", txtIBAN.Text);
+                    commandInsertPerson.Parameters.AddWithValue("bankAccountOwner", txtBankAccountOwner.Text);
+                    commandInsertPerson.Parameters.AddWithValue("observations", rtxtObservations.Text);
+                    commandInsertPerson.Parameters.AddWithValue("foodAndDisease", rtxtFoodAndDisease.Text);
+                    commandInsertPerson.Parameters.AddWithValue("memberNumber", txtMemberNumber.Text);
+                    commandInsertPerson.Parameters.AddWithValue("healthCardNumber", txtHealthCardNumber.Text);
 
                     commandInsertPerson.ExecuteNonQuery();
                     Console.WriteLine("Person inserted");

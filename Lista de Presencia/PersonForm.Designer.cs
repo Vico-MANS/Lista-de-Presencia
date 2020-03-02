@@ -118,6 +118,8 @@
             this.txtLandlineNumber = new System.Windows.Forms.TextBox();
             this.label29 = new System.Windows.Forms.Label();
             this.groupBox5 = new System.Windows.Forms.GroupBox();
+            this.btnSearchMother = new System.Windows.Forms.Button();
+            this.btnSearchFather = new System.Windows.Forms.Button();
             this.txtMotherID = new System.Windows.Forms.TextBox();
             this.txtFatherID = new System.Windows.Forms.TextBox();
             this.label68 = new System.Windows.Forms.Label();
@@ -151,6 +153,8 @@
             this.txtFatherName = new System.Windows.Forms.TextBox();
             this.label32 = new System.Windows.Forms.Label();
             this.groupBox6 = new System.Windows.Forms.GroupBox();
+            this.txtMotherBirthday = new System.Windows.Forms.TextBox();
+            this.txtFatherBirthday = new System.Windows.Forms.TextBox();
             this.label52 = new System.Windows.Forms.Label();
             this.label53 = new System.Windows.Forms.Label();
             this.txtMotherProfession = new System.Windows.Forms.TextBox();
@@ -180,7 +184,7 @@
             this.label63 = new System.Windows.Forms.Label();
             this.txtMemberNumber = new System.Windows.Forms.TextBox();
             this.label62 = new System.Windows.Forms.Label();
-            this.rtxtFoodAllergyAndChronicDiseases = new System.Windows.Forms.RichTextBox();
+            this.rtxtFoodAndDisease = new System.Windows.Forms.RichTextBox();
             this.label61 = new System.Windows.Forms.Label();
             this.rtxtObservations = new System.Windows.Forms.RichTextBox();
             this.label60 = new System.Windows.Forms.Label();
@@ -188,10 +192,6 @@
             this.txtIBAN = new System.Windows.Forms.TextBox();
             this.label59 = new System.Windows.Forms.Label();
             this.label58 = new System.Windows.Forms.Label();
-            this.txtFatherBirthday = new System.Windows.Forms.TextBox();
-            this.txtMotherBirthday = new System.Windows.Forms.TextBox();
-            this.btnSearchFather = new System.Windows.Forms.Button();
-            this.btnSearchMother = new System.Windows.Forms.Button();
             this.gbWeeklyPresence.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvWeeklyDetail)).BeginInit();
             this.gbGroupInfo.SuspendLayout();
@@ -1076,6 +1076,26 @@
             this.groupBox5.TabIndex = 30;
             this.groupBox5.TabStop = false;
             // 
+            // btnSearchMother
+            // 
+            this.btnSearchMother.Location = new System.Drawing.Point(416, 28);
+            this.btnSearchMother.Name = "btnSearchMother";
+            this.btnSearchMother.Size = new System.Drawing.Size(102, 23);
+            this.btnSearchMother.TabIndex = 100;
+            this.btnSearchMother.Text = "Search Mother";
+            this.btnSearchMother.UseVisualStyleBackColor = true;
+            this.btnSearchMother.Click += new System.EventHandler(this.btnSearchMother_Click);
+            // 
+            // btnSearchFather
+            // 
+            this.btnSearchFather.Location = new System.Drawing.Point(129, 28);
+            this.btnSearchFather.Name = "btnSearchFather";
+            this.btnSearchFather.Size = new System.Drawing.Size(102, 23);
+            this.btnSearchFather.TabIndex = 99;
+            this.btnSearchFather.Text = "Search Father";
+            this.btnSearchFather.UseVisualStyleBackColor = true;
+            this.btnSearchFather.Click += new System.EventHandler(this.btnSearchFather_Click);
+            // 
             // txtMotherID
             // 
             this.txtMotherID.Location = new System.Drawing.Point(355, 29);
@@ -1382,6 +1402,24 @@
             this.groupBox6.TabIndex = 31;
             this.groupBox6.TabStop = false;
             // 
+            // txtMotherBirthday
+            // 
+            this.txtMotherBirthday.BackColor = System.Drawing.SystemColors.Window;
+            this.txtMotherBirthday.Location = new System.Drawing.Point(554, 117);
+            this.txtMotherBirthday.Name = "txtMotherBirthday";
+            this.txtMotherBirthday.ReadOnly = true;
+            this.txtMotherBirthday.Size = new System.Drawing.Size(100, 20);
+            this.txtMotherBirthday.TabIndex = 115;
+            // 
+            // txtFatherBirthday
+            // 
+            this.txtFatherBirthday.BackColor = System.Drawing.SystemColors.Window;
+            this.txtFatherBirthday.Location = new System.Drawing.Point(277, 117);
+            this.txtFatherBirthday.Name = "txtFatherBirthday";
+            this.txtFatherBirthday.ReadOnly = true;
+            this.txtFatherBirthday.Size = new System.Drawing.Size(100, 20);
+            this.txtFatherBirthday.TabIndex = 114;
+            // 
             // label52
             // 
             this.label52.AutoSize = true;
@@ -1574,7 +1612,7 @@
             this.groupBox7.Controls.Add(this.label63);
             this.groupBox7.Controls.Add(this.txtMemberNumber);
             this.groupBox7.Controls.Add(this.label62);
-            this.groupBox7.Controls.Add(this.rtxtFoodAllergyAndChronicDiseases);
+            this.groupBox7.Controls.Add(this.rtxtFoodAndDisease);
             this.groupBox7.Controls.Add(this.label61);
             this.groupBox7.Controls.Add(this.rtxtObservations);
             this.groupBox7.Controls.Add(this.label60);
@@ -1654,13 +1692,13 @@
             this.label62.TabIndex = 118;
             this.label62.Text = "Member number";
             // 
-            // rtxtFoodAllergyAndChronicDiseases
+            // rtxtFoodAndDisease
             // 
-            this.rtxtFoodAllergyAndChronicDiseases.Location = new System.Drawing.Point(183, 107);
-            this.rtxtFoodAllergyAndChronicDiseases.Name = "rtxtFoodAllergyAndChronicDiseases";
-            this.rtxtFoodAllergyAndChronicDiseases.Size = new System.Drawing.Size(443, 37);
-            this.rtxtFoodAllergyAndChronicDiseases.TabIndex = 117;
-            this.rtxtFoodAllergyAndChronicDiseases.Text = "";
+            this.rtxtFoodAndDisease.Location = new System.Drawing.Point(183, 107);
+            this.rtxtFoodAndDisease.Name = "rtxtFoodAndDisease";
+            this.rtxtFoodAndDisease.Size = new System.Drawing.Size(443, 37);
+            this.rtxtFoodAndDisease.TabIndex = 117;
+            this.rtxtFoodAndDisease.Text = "";
             // 
             // label61
             // 
@@ -1720,50 +1758,12 @@
             this.label58.TabIndex = 0;
             this.label58.Text = "IBAN";
             // 
-            // txtFatherBirthday
-            // 
-            this.txtFatherBirthday.BackColor = System.Drawing.SystemColors.Window;
-            this.txtFatherBirthday.Location = new System.Drawing.Point(277, 117);
-            this.txtFatherBirthday.Name = "txtFatherBirthday";
-            this.txtFatherBirthday.ReadOnly = true;
-            this.txtFatherBirthday.Size = new System.Drawing.Size(100, 20);
-            this.txtFatherBirthday.TabIndex = 114;
-            // 
-            // txtMotherBirthday
-            // 
-            this.txtMotherBirthday.BackColor = System.Drawing.SystemColors.Window;
-            this.txtMotherBirthday.Location = new System.Drawing.Point(554, 117);
-            this.txtMotherBirthday.Name = "txtMotherBirthday";
-            this.txtMotherBirthday.ReadOnly = true;
-            this.txtMotherBirthday.Size = new System.Drawing.Size(100, 20);
-            this.txtMotherBirthday.TabIndex = 115;
-            // 
-            // btnSearchFather
-            // 
-            this.btnSearchFather.Location = new System.Drawing.Point(129, 28);
-            this.btnSearchFather.Name = "btnSearchFather";
-            this.btnSearchFather.Size = new System.Drawing.Size(102, 23);
-            this.btnSearchFather.TabIndex = 99;
-            this.btnSearchFather.Text = "Search Father";
-            this.btnSearchFather.UseVisualStyleBackColor = true;
-            this.btnSearchFather.Click += new System.EventHandler(this.btnSearchFather_Click);
-            // 
-            // btnSearchMother
-            // 
-            this.btnSearchMother.Location = new System.Drawing.Point(416, 28);
-            this.btnSearchMother.Name = "btnSearchMother";
-            this.btnSearchMother.Size = new System.Drawing.Size(102, 23);
-            this.btnSearchMother.TabIndex = 100;
-            this.btnSearchMother.Text = "Search Mother";
-            this.btnSearchMother.UseVisualStyleBackColor = true;
-            this.btnSearchMother.Click += new System.EventHandler(this.btnSearchMother_Click);
-            // 
-            // txtOccupiedPlace
+            // PersonForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoScroll = true;
-            this.ClientSize = new System.Drawing.Size(930, 727);
+            this.ClientSize = new System.Drawing.Size(947, 727);
             this.Controls.Add(this.groupBox7);
             this.Controls.Add(this.groupBox6);
             this.Controls.Add(this.groupBox5);
@@ -1790,7 +1790,7 @@
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
-            this.Name = "txtOccupiedPlace";
+            this.Name = "PersonForm";
             this.Text = "Person";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.PersonForm_FormClosing);
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.PersonForm_FormClosed);
@@ -1948,7 +1948,7 @@
         private System.Windows.Forms.Label label58;
         private System.Windows.Forms.RichTextBox rtxtObservations;
         private System.Windows.Forms.Label label60;
-        private System.Windows.Forms.RichTextBox rtxtFoodAllergyAndChronicDiseases;
+        private System.Windows.Forms.RichTextBox rtxtFoodAndDisease;
         private System.Windows.Forms.Label label61;
         private System.Windows.Forms.TextBox txtMemberNumber;
         private System.Windows.Forms.Label label62;
