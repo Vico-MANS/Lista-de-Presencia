@@ -792,7 +792,7 @@ namespace Lista_de_Presencia
 
         private void dgvOverview_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
         {
-            PersonForm form = PersonForm.GetInstance(PersonForm.FormType.MODIFICATION, int.Parse(dgvOverview.Rows[e.RowIndex].Cells["colOverPersonID"].Value.ToString()));
+            txtOccupiedPlace form = txtOccupiedPlace.GetInstance(txtOccupiedPlace.FormType.MODIFICATION, int.Parse(dgvOverview.Rows[e.RowIndex].Cells["colOverPersonID"].Value.ToString()));
             form.FormClosing += OnFormClosing;
 
             if (!form.Visible)
@@ -803,7 +803,7 @@ namespace Lista_de_Presencia
 
         private void btnAddPerson_Click(object sender, EventArgs e)
         {
-            PersonForm form = PersonForm.GetInstance(PersonForm.FormType.ADDITION);
+            txtOccupiedPlace form = txtOccupiedPlace.GetInstance(txtOccupiedPlace.FormType.ADDITION);
             form.FormClosing += OnFormClosing;
 
             if (!form.Visible)
