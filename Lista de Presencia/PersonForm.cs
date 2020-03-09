@@ -66,7 +66,9 @@ namespace Lista_de_Presencia
          * */
         private string m_InitFirstname;
         private string m_InitLastname;
-        private string m_InitBirthday;        
+        private string m_InitBirthday;
+        // Do a dictionary with the control id as key and it's value as value. On control changed check if the current value is different from the dictionary one!
+        private Dictionary<string, object> m_InitialValuesDictionary;
         
         public PersonForm(FormType type, int personID)
         {            
@@ -124,18 +126,76 @@ namespace Lista_de_Presencia
             {
                 DatabaseConnection.OpenConnection(conn);
 
-                SqlCommand command = new SqlCommand("SELECT * FROM PERSON WHERE PERSON_ID = @id", conn);
+                SqlCommand command = new SqlCommand("SELECT PERSON_TYPE, FIRSTNAME, LASTNAME, DOCUMENT_TYPE, DOCUMENT, " +
+                                                        "BIRTHDAY, GENDER, NAME_DAY, IMAGE_RIGHTS, DATA_RIGHTS, WORKER, NATIONALITY," +
+                                                        "YEARS_IN_COUNTRY, SCHOOL_NAME, SCHOOL_YEAR, STREET_TYPE, ADDRESS, HOME_NUMBER, " +
+                                                        "HOME_STAIRS, HOME_STOREY, HOME_DOOR, HOME_ZIP_CODE, HOME_POPULATION, " +
+                                                        "HOME_REGION, HOME_PROVINCE, HOME_COUNTRY, HOME_LANDLINE_NUMBER, CELLPHONE_NUMBER, " +
+                                                        "EMAIL, ID_FATHER, ID_MOTHER, FAMILY_EMAIL, OTHER_CONTACT_RELATION," +
+                                                        "OTHER_CONTACT_NAME, OTHER_CONTACT_EMAIL, NUMBER_OF_BROTHERS, NUMBER_OF_SISTERS, " +
+                                                        "SIBLING_RANK, PICK_OFF_PEOPLE, PROFESSION, BANK_IBAN, BANK_ACCOUNT_OWNER, OBSERVATIONS, " +
+                                                        "FOOD_ALLERGY_CHRONIC_DISEASES, MEMBER_NUMBER, HEALTH_CARD_NUMBER " +
+                                                    "FROM PERSON " +
+                                                    "WHERE PERSON_ID = @id", conn);
                 command.Parameters.AddWithValue("id", m_PersonID);
 
+                // Dictionary used to check if the user modified some values in the form or not
+                m_InitialValuesDictionary = new Dictionary<string, object>();
                 using (SqlDataReader reader = command.ExecuteReader())
                 {
                     // Should only be one retrieved row
                     reader.Read();
-                    
+
+                    txtPersonType.Text = reader["PERSON_TYPE"].ToString();
                     txtFirstName.Text = reader["FIRSTNAME"].ToString();
                     txtLastName.Text = reader["LASTNAME"].ToString();
+                    txtDocumentType.Text = reader["DOCUMENT_TYPE"].ToString();
+                    txtDocument.Text = reader["DOCUMENT"].ToString();
                     dtpBirthday.Value = Convert.ToDateTime(reader["BIRTHDAY"]);
+                    cbbGender.SelectedItem = reader["GENDER"].ToString();
+                    txtNameDay.Text = reader["NAME_DAY"].ToString();
+                    cbImageRights.Checked = (bool)reader["IMAGE_RIGHTS"];
+                    cbDataRights.Checked = (bool)reader["DATA_RIGHTS"];
                     m_IsWorker = (bool)reader["WORKER"];
+                    txtNationality.Text = reader["NATIONALITY"].ToString();
+                    txtYearsInCountry.Text = reader["YEARS_IN_COUNTRY"].ToString();
+                    txtSchoolName.Text = reader["SCHOOL_NAME"].ToString();
+                    txtSchoolYear.Text = reader["SCHOOL_YEAR"].ToString();
+                    txtStreetType.Text = reader["STREET_TYPE"].ToString();
+                    txtAddress.Text = reader["ADDRESS"].ToString();
+                    txtHomeNumber.Text = reader["HOME_NUMBER"].ToString();
+                    txtHomeStairs.Text = reader["HOME_STAIRS"].ToString();
+                    txtHomeStorey.Text = reader["HOME_STOREY"].ToString();
+                    txtHomeDoor.Text = reader["HOME_DOOR"].ToString();
+                    txtZIPCode.Text = reader["HOME_ZIP_CODE"].ToString();
+                    txtPopulation.Text = reader["HOME_POPULATION"].ToString();
+                    txtRegion.Text = reader["HOME_REGION"].ToString();
+                    txtProvince.Text = reader["HOME_PROVINCE"].ToString();
+                    txtCountry.Text = reader["HOME_COUNTRY"].ToString();
+                    txtLandlineNumber.Text = reader["HOME_LANDLINE_NUMBER"].ToString();
+                    txtCellphoneNumber.Text = reader["CELLPHONE_NUMBER"].ToString();
+                    txtEmail.Text = reader["EMAIL"].ToString();
+                    txtFatherID.Text = reader["ID_FATHER"].ToString();
+                    if(txtFatherID.Text != "")
+                        GetParentInformation(SearchParentForm.PARENT_TYPE.FATHER, int.Parse(txtFatherID.Text));
+                    txtMotherID.Text = reader["ID_MOTHER"].ToString();
+                    if(txtMotherID.Text != "")
+                        GetParentInformation(SearchParentForm.PARENT_TYPE.MOTHER, int.Parse(txtMotherID.Text));
+                    txtFatherEmail.Text = reader["FAMILY_EMAIL"].ToString();
+                    txtOtherContactRelation.Text = reader["OTHER_CONTACT_RELATION"].ToString();
+                    txtOtherContactName.Text = reader["OTHER_CONTACT_NAME"].ToString();
+                    txtOtherContactPhone.Text = reader["OTHER_CONTACT_EMAIL"].ToString();
+                    txtNumberOfBrothers.Text = reader["NUMBER_OF_BROTHERS"].ToString();
+                    txtNumberOfSisters.Text = reader["NUMBER_OF_SISTERS"].ToString();
+                    txtSiblingRank.Text = reader["SIBLING_RANK"].ToString();
+                    rtxtPeopleAllowedToPickOff.Text = reader["PICK_OFF_PEOPLE"].ToString();
+                    txtProfession.Text = reader["PROFESSION"].ToString();
+                    txtIBAN.Text = reader["BANK_IBAN"].ToString();
+                    txtBankAccountOwner.Text = reader["BANK_ACCOUNT_OWNER"].ToString();
+                    rtxtObservations.Text = reader["OBSERVATIONS"].ToString();
+                    rtxtFoodAndDisease.Text = reader["FOOD_ALLERGY_CHRONIC_DISEASES"].ToString();
+                    txtMemberNumber.Text = reader["MEMBER_NUMBER"].ToString();
+                    txtHealthCardNumber.Text = reader["HEALTH_CARD_NUMBER"].ToString();
 
                     m_InitFirstname = txtFirstName.Text;
                     m_InitLastname = txtLastName.Text;
