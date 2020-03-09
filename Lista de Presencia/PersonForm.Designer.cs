@@ -534,7 +534,7 @@
             // dtpBirthday
             // 
             this.dtpBirthday.Format = System.Windows.Forms.DateTimePickerFormat.Short;
-            this.dtpBirthday.Location = new System.Drawing.Point(642, 14);
+            this.dtpBirthday.Location = new System.Drawing.Point(645, 17);
             this.dtpBirthday.Name = "dtpBirthday";
             this.dtpBirthday.Size = new System.Drawing.Size(99, 20);
             this.dtpBirthday.TabIndex = 4;

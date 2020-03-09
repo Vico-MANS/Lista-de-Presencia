@@ -69,6 +69,8 @@ namespace Lista_de_Presencia
         private string m_InitBirthday;
         // Do a dictionary with the control id as key and it's value as value. On control changed check if the current value is different from the dictionary one!
         private Dictionary<string, object> m_InitialValuesDictionary;
+        // Holds the updated values
+        private Dictionary<string, object> m_UpdatedValuesDictionary;
         
         public PersonForm(FormType type, int personID)
         {            
@@ -107,6 +109,8 @@ namespace Lista_de_Presencia
 
         public void LoadPersonInformation()
         {
+            m_Initialisation = true;
+
             RetrievePersonInformation();
 
             if (!m_IsWorker)
@@ -118,6 +122,8 @@ namespace Lista_de_Presencia
             {
                 gbWeeklyPresence.Visible = false;
             }
+
+            m_Initialisation = false;
         }
 
         private void RetrievePersonInformation()
@@ -201,12 +207,116 @@ namespace Lista_de_Presencia
                     m_InitLastname = txtLastName.Text;
                     m_InitBirthday = dtpBirthday.Value.ToString();
 
+                    List<Control> controlList = new List<Control>();
+                    GetAllControlsOfType(this, controlList, typeof(TextBox));
+                    foreach(TextBox tb in controlList)
+                    {
+                        tb.TextChanged += new EventHandler(OnContentChanged);
+                        m_InitialValuesDictionary.Add(tb.Name, tb.Text);
+                    }
+                    controlList = new List<Control>();
+                    GetAllControlsOfType(this, controlList, typeof(CheckBox));
+                    foreach(CheckBox cb in controlList)
+                    {
+                        cb.CheckedChanged += new EventHandler(OnContentChanged);
+                        m_InitialValuesDictionary.Add(cb.Name, cb.Checked);
+                    }
+                    controlList = new List<Control>();
+                    GetAllControlsOfType(this, controlList, typeof(RichTextBox));
+                    foreach(RichTextBox rtb in controlList)
+                    {
+                        rtb.TextChanged += new EventHandler(OnContentChanged);
+                        m_InitialValuesDictionary.Add(rtb.Name, rtb.Text);
+                    }
+                    controlList = new List<Control>();
+                    GetAllControlsOfType(this, controlList, typeof(ComboBox));
+                    foreach(ComboBox cbb in controlList)
+                    {
+                        cbb.SelectedIndexChanged += new EventHandler(OnContentChanged);
+                        m_InitialValuesDictionary.Add(cbb.Name, (cbb.SelectedItem == null ? "" : cbb.SelectedItem.ToString()));
+                    }
+                    controlList = new List<Control>();
+                    GetAllControlsOfType(this, controlList, typeof(DateTimePicker));
+                    foreach(DateTimePicker dtp in controlList)
+                    {
+                        dtp.ValueChanged += new EventHandler(OnContentChanged);
+                        m_InitialValuesDictionary.Add(dtp.Name, dtp.Value);
+                    }
+
+                    m_UpdatedValuesDictionary = new Dictionary<string, object>(m_InitialValuesDictionary);
+
                     cbWorker.Checked = m_IsWorker;
                     cbWorker.Enabled = false;
 
                     btnPrintAttendanceSheet.Visible = !m_IsWorker;
                 }
             }
+        }
+
+        private void GetAllControlsOfType(Control container, List<Control> list, Type type)
+        {
+            foreach(Control c in container.Controls)
+            {
+                if (!c.GetType().Equals(typeof(TextBox)) || (c.GetType().Equals(typeof(TextBox)) && !((TextBox)c).ReadOnly))
+                {
+                    if (c.GetType().Equals(type))
+                        list.Add(c);
+                    if (c.HasChildren)
+                        GetAllControlsOfType(c, list, type);
+                }
+            }
+        }
+
+        private void OnContentChanged(object sender, EventArgs e)
+        {
+            if (m_Initialisation)
+                return;
+
+            switch (sender)
+            {
+                case TextBox tb:
+                    Console.WriteLine(((TextBox)sender).Name);
+                    m_UpdatedValuesDictionary[((TextBox)sender).Name] = ((TextBox)sender).Text;
+                    if (m_InitialValuesDictionary[((TextBox)sender).Name].ToString() != ((TextBox)sender).Text)
+                        Console.WriteLine(((TextBox)sender).Name + " has changed value");
+                    else
+                        Console.WriteLine(((TextBox)sender).Name + " has the init value");
+                    break;
+                case RichTextBox rtb:
+                    Console.WriteLine(((RichTextBox)sender).Name);
+                    m_UpdatedValuesDictionary[((RichTextBox)sender).Name] = ((RichTextBox)sender).Text;
+                    if (m_InitialValuesDictionary[((RichTextBox)sender).Name].ToString() != ((RichTextBox)sender).Text)
+                        Console.WriteLine(((RichTextBox)sender).Name + " has changed value");
+                    else
+                        Console.WriteLine(((RichTextBox)sender).Name + " has the init value");
+                    break;
+                case ComboBox cbb:
+                    Console.WriteLine(((ComboBox)sender).Name);
+                    m_UpdatedValuesDictionary[((ComboBox)sender).Name] = (cbb.SelectedItem == null ? "" : cbb.SelectedItem.ToString());
+                    if (m_InitialValuesDictionary[((ComboBox)sender).Name].ToString() != (((ComboBox)sender).SelectedItem == null ? "" : ((ComboBox)sender).SelectedItem.ToString()))
+                        Console.WriteLine(((ComboBox)sender).Name + " has changed value");
+                    else
+                        Console.WriteLine(((ComboBox)sender).Name + " has the init value");
+                    break;
+                case CheckBox cb:
+                    Console.WriteLine(((CheckBox)sender).Name);
+                    m_UpdatedValuesDictionary[((CheckBox)sender).Name] = cb.Checked;
+                    if (m_InitialValuesDictionary[((CheckBox)sender).Name].ToString() != ((CheckBox)sender).Checked.ToString())
+                        Console.WriteLine(((CheckBox)sender).Name + " has changed value");
+                    else
+                        Console.WriteLine(((CheckBox)sender).Name + " has the init value");
+                    break;
+                case DateTimePicker dtp:
+                    Console.WriteLine(((DateTimePicker)sender).Name);
+                    m_UpdatedValuesDictionary[((DateTimePicker)sender).Name] = dtp.Value;
+                    if (m_InitialValuesDictionary[((DateTimePicker)sender).Name].ToString() != ((DateTimePicker)sender).Value.ToString())
+                        Console.WriteLine(((DateTimePicker)sender).Name + " has changed value");
+                    else
+                        Console.WriteLine(((DateTimePicker)sender).Name + " has the init value");
+                    break;
+            }
+            // If the dictionaries are the same it means that the user didn't change any value concerning the person, therefore we disable the update button
+            btnValidateForm.Enabled = !m_UpdatedValuesDictionary.Keys.All(k => m_InitialValuesDictionary[k].Equals(m_UpdatedValuesDictionary[k]));
         }
 
         private void RetrievePersonGroupInformation()
@@ -709,7 +819,7 @@ namespace Lista_de_Presencia
             // Only for modification!?
             if (m_FormType.Equals(FormType.MODIFICATION))
             {
-                if (m_InitFirstname != txtFirstName.Text || m_InitLastname != txtLastName.Text || m_InitBirthday != dtpBirthday.Value.ToString() || /*modificationInPrograms ||*/ m_WeeklyPresenceChanges.Count > 0)
+                if (m_FormType.Equals(FormType.MODIFICATION) && btnValidateForm.Enabled)
                 {
                     DialogResult res = MessageBox.Show("If you have made changes, these won't be saved!", "Information", MessageBoxButtons.OKCancel, MessageBoxIcon.Exclamation);
                     e.Cancel = res.Equals(DialogResult.Cancel);
