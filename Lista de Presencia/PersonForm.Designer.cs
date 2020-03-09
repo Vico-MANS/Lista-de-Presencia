@@ -28,12 +28,6 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.label3 = new System.Windows.Forms.Label();
-            this.dtpBirthday_1 = new System.Windows.Forms.DateTimePicker();
-            this.txtLastname_1 = new System.Windows.Forms.TextBox();
-            this.label2 = new System.Windows.Forms.Label();
-            this.txtFirstname_1 = new System.Windows.Forms.TextBox();
-            this.label1 = new System.Windows.Forms.Label();
             this.btnValidateForm = new System.Windows.Forms.Button();
             this.cbWorker = new System.Windows.Forms.CheckBox();
             this.gbWeeklyPresence = new System.Windows.Forms.GroupBox();
@@ -204,61 +198,12 @@
             this.groupBox7.SuspendLayout();
             this.SuspendLayout();
             // 
-            // label3
-            // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(375, 27);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(45, 13);
-            this.label3.TabIndex = 15;
-            this.label3.Text = "Birthday";
-            // 
-            // dtpBirthday_1
-            // 
-            this.dtpBirthday_1.Format = System.Windows.Forms.DateTimePickerFormat.Short;
-            this.dtpBirthday_1.Location = new System.Drawing.Point(426, 24);
-            this.dtpBirthday_1.Name = "dtpBirthday_1";
-            this.dtpBirthday_1.Size = new System.Drawing.Size(99, 20);
-            this.dtpBirthday_1.TabIndex = 3;
-            // 
-            // txtLastname_1
-            // 
-            this.txtLastname_1.Location = new System.Drawing.Point(253, 24);
-            this.txtLastname_1.Name = "txtLastname_1";
-            this.txtLastname_1.Size = new System.Drawing.Size(99, 20);
-            this.txtLastname_1.TabIndex = 2;
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(191, 27);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(56, 13);
-            this.label2.TabIndex = 12;
-            this.label2.Text = "Last name";
-            // 
-            // txtFirstname_1
-            // 
-            this.txtFirstname_1.Location = new System.Drawing.Point(90, 24);
-            this.txtFirstname_1.Name = "txtFirstname_1";
-            this.txtFirstname_1.Size = new System.Drawing.Size(77, 20);
-            this.txtFirstname_1.TabIndex = 1;
-            // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(29, 27);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(55, 13);
-            this.label1.TabIndex = 10;
-            this.label1.Text = "First name";
-            // 
             // btnValidateForm
             // 
-            this.btnValidateForm.Location = new System.Drawing.Point(543, 1347);
+            this.btnValidateForm.Location = new System.Drawing.Point(543, 1284);
             this.btnValidateForm.Name = "btnValidateForm";
             this.btnValidateForm.Size = new System.Drawing.Size(86, 29);
-            this.btnValidateForm.TabIndex = 9;
+            this.btnValidateForm.TabIndex = 53;
             this.btnValidateForm.Text = "Validate";
             this.btnValidateForm.UseVisualStyleBackColor = true;
             this.btnValidateForm.Click += new System.EventHandler(this.btnAddPerson_Click);
@@ -266,10 +211,10 @@
             // cbWorker
             // 
             this.cbWorker.AutoSize = true;
-            this.cbWorker.Location = new System.Drawing.Point(383, 69);
+            this.cbWorker.Location = new System.Drawing.Point(575, 69);
             this.cbWorker.Name = "cbWorker";
             this.cbWorker.Size = new System.Drawing.Size(61, 17);
-            this.cbWorker.TabIndex = 4;
+            this.cbWorker.TabIndex = 11;
             this.cbWorker.Text = "Worker";
             this.cbWorker.UseVisualStyleBackColor = true;
             this.cbWorker.CheckedChanged += new System.EventHandler(this.cbWorker_CheckedChanged);
@@ -277,12 +222,12 @@
             // gbWeeklyPresence
             // 
             this.gbWeeklyPresence.Controls.Add(this.dgvWeeklyDetail);
-            this.gbWeeklyPresence.Location = new System.Drawing.Point(33, 1241);
+            this.gbWeeklyPresence.Location = new System.Drawing.Point(33, 1178);
             this.gbWeeklyPresence.Name = "gbWeeklyPresence";
             this.gbWeeklyPresence.Size = new System.Drawing.Size(680, 86);
             this.gbWeeklyPresence.TabIndex = 17;
             this.gbWeeklyPresence.TabStop = false;
-            this.gbWeeklyPresence.Text = "Weekly Presence";
+            this.gbWeeklyPresence.Text = "Weekdays of attendance";
             // 
             // dgvWeeklyDetail
             // 
@@ -300,7 +245,7 @@
             this.dgvWeeklyDetail.Location = new System.Drawing.Point(3, 35);
             this.dgvWeeklyDetail.Name = "dgvWeeklyDetail";
             this.dgvWeeklyDetail.Size = new System.Drawing.Size(671, 45);
-            this.dgvWeeklyDetail.TabIndex = 10;
+            this.dgvWeeklyDetail.TabIndex = 52;
             this.dgvWeeklyDetail.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvWeeklyDetail_CellClick);
             this.dgvWeeklyDetail.CellMouseUp += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.dgvWeeklyDetail_CellMouseUp);
             this.dgvWeeklyDetail.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvWeeklyDetail_CellValueChanged);
@@ -363,10 +308,10 @@
             // 
             // btnCancel
             // 
-            this.btnCancel.Location = new System.Drawing.Point(645, 1347);
+            this.btnCancel.Location = new System.Drawing.Point(645, 1284);
             this.btnCancel.Name = "btnCancel";
             this.btnCancel.Size = new System.Drawing.Size(75, 29);
-            this.btnCancel.TabIndex = 18;
+            this.btnCancel.TabIndex = 54;
             this.btnCancel.Text = "Cancel";
             this.btnCancel.UseVisualStyleBackColor = true;
             this.btnCancel.Click += new System.EventHandler(this.btnCancel_Click);
@@ -375,16 +320,16 @@
             // 
             this.cbbPrograms.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cbbPrograms.FormattingEnabled = true;
-            this.cbbPrograms.Location = new System.Drawing.Point(84, 1097);
+            this.cbbPrograms.Location = new System.Drawing.Point(84, 1034);
             this.cbbPrograms.Name = "cbbPrograms";
             this.cbbPrograms.Size = new System.Drawing.Size(121, 21);
-            this.cbbPrograms.TabIndex = 19;
+            this.cbbPrograms.TabIndex = 49;
             this.cbbPrograms.SelectedIndexChanged += new System.EventHandler(this.cbbPrograms_SelectedIndexChanged);
             // 
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(32, 1100);
+            this.label4.Location = new System.Drawing.Point(32, 1037);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(46, 13);
             this.label4.TabIndex = 20;
@@ -393,7 +338,7 @@
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(222, 1100);
+            this.label5.Location = new System.Drawing.Point(222, 1037);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(36, 13);
             this.label5.TabIndex = 22;
@@ -403,17 +348,17 @@
             // 
             this.cbbProgramGroups.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cbbProgramGroups.FormattingEnabled = true;
-            this.cbbProgramGroups.Location = new System.Drawing.Point(264, 1097);
+            this.cbbProgramGroups.Location = new System.Drawing.Point(264, 1034);
             this.cbbProgramGroups.Name = "cbbProgramGroups";
             this.cbbProgramGroups.Size = new System.Drawing.Size(121, 21);
-            this.cbbProgramGroups.TabIndex = 21;
+            this.cbbProgramGroups.TabIndex = 50;
             // 
             // btnAddGroup
             // 
-            this.btnAddGroup.Location = new System.Drawing.Point(401, 1095);
+            this.btnAddGroup.Location = new System.Drawing.Point(401, 1032);
             this.btnAddGroup.Name = "btnAddGroup";
             this.btnAddGroup.Size = new System.Drawing.Size(36, 23);
-            this.btnAddGroup.TabIndex = 23;
+            this.btnAddGroup.TabIndex = 51;
             this.btnAddGroup.Text = "Add";
             this.btnAddGroup.UseVisualStyleBackColor = true;
             this.btnAddGroup.Click += new System.EventHandler(this.btnAddGroup_Click);
@@ -423,7 +368,7 @@
             this.gbGroupInfo.Controls.Add(this.lblGroupDatesLegend);
             this.gbGroupInfo.Controls.Add(this.lblGroupIDLegend);
             this.gbGroupInfo.Controls.Add(this.lblGroupNameLegend);
-            this.gbGroupInfo.Location = new System.Drawing.Point(35, 1124);
+            this.gbGroupInfo.Location = new System.Drawing.Point(35, 1061);
             this.gbGroupInfo.Name = "gbGroupInfo";
             this.gbGroupInfo.Size = new System.Drawing.Size(675, 108);
             this.gbGroupInfo.TabIndex = 24;
@@ -465,7 +410,7 @@
             // 
             // btnPrintAttendanceSheet
             // 
-            this.btnPrintAttendanceSheet.Location = new System.Drawing.Point(42, 1347);
+            this.btnPrintAttendanceSheet.Location = new System.Drawing.Point(42, 1284);
             this.btnPrintAttendanceSheet.Name = "btnPrintAttendanceSheet";
             this.btnPrintAttendanceSheet.Size = new System.Drawing.Size(135, 29);
             this.btnPrintAttendanceSheet.TabIndex = 25;
@@ -495,7 +440,7 @@
             this.groupBox1.Controls.Add(this.label8);
             this.groupBox1.Controls.Add(this.txtPersonType);
             this.groupBox1.Controls.Add(this.label6);
-            this.groupBox1.Location = new System.Drawing.Point(32, 59);
+            this.groupBox1.Location = new System.Drawing.Point(32, 3);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(869, 94);
             this.groupBox1.TabIndex = 26;
@@ -506,7 +451,7 @@
             this.txtDocument.Location = new System.Drawing.Point(449, 43);
             this.txtDocument.Name = "txtDocument";
             this.txtDocument.Size = new System.Drawing.Size(100, 20);
-            this.txtDocument.TabIndex = 37;
+            this.txtDocument.TabIndex = 7;
             // 
             // label66
             // 
@@ -522,7 +467,7 @@
             this.txtNameDay.Location = new System.Drawing.Point(664, 43);
             this.txtNameDay.Name = "txtNameDay";
             this.txtNameDay.Size = new System.Drawing.Size(80, 20);
-            this.txtNameDay.TabIndex = 35;
+            this.txtNameDay.TabIndex = 8;
             // 
             // cbDataRights
             // 
@@ -531,7 +476,7 @@
             this.cbDataRights.Name = "cbDataRights";
             this.cbDataRights.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
             this.cbDataRights.Size = new System.Drawing.Size(131, 17);
-            this.cbDataRights.TabIndex = 34;
+            this.cbDataRights.TabIndex = 10;
             this.cbDataRights.Text = "Data processing rights";
             this.cbDataRights.UseVisualStyleBackColor = true;
             // 
@@ -542,7 +487,7 @@
             this.cbImageRights.Name = "cbImageRights";
             this.cbImageRights.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
             this.cbImageRights.Size = new System.Drawing.Size(83, 17);
-            this.cbImageRights.TabIndex = 33;
+            this.cbImageRights.TabIndex = 9;
             this.cbImageRights.Text = "Image rights";
             this.cbImageRights.UseVisualStyleBackColor = true;
             // 
@@ -557,7 +502,7 @@
             this.cbbGender.Location = new System.Drawing.Point(76, 42);
             this.cbbGender.Name = "cbbGender";
             this.cbbGender.Size = new System.Drawing.Size(100, 21);
-            this.cbbGender.TabIndex = 31;
+            this.cbbGender.TabIndex = 5;
             // 
             // label14
             // 
@@ -592,14 +537,14 @@
             this.dtpBirthday.Location = new System.Drawing.Point(642, 14);
             this.dtpBirthday.Name = "dtpBirthday";
             this.dtpBirthday.Size = new System.Drawing.Size(99, 20);
-            this.dtpBirthday.TabIndex = 27;
+            this.dtpBirthday.TabIndex = 4;
             // 
             // txtLastName
             // 
             this.txtLastName.Location = new System.Drawing.Point(449, 17);
             this.txtLastName.Name = "txtLastName";
             this.txtLastName.Size = new System.Drawing.Size(100, 20);
-            this.txtLastName.TabIndex = 10;
+            this.txtLastName.TabIndex = 3;
             // 
             // label11
             // 
@@ -616,7 +561,7 @@
             this.txtFirstName.Location = new System.Drawing.Point(261, 17);
             this.txtFirstName.Name = "txtFirstName";
             this.txtFirstName.Size = new System.Drawing.Size(100, 20);
-            this.txtFirstName.TabIndex = 8;
+            this.txtFirstName.TabIndex = 2;
             // 
             // label10
             // 
@@ -641,7 +586,7 @@
             this.txtDocumentType.Location = new System.Drawing.Point(280, 43);
             this.txtDocumentType.Name = "txtDocumentType";
             this.txtDocumentType.Size = new System.Drawing.Size(81, 20);
-            this.txtDocumentType.TabIndex = 5;
+            this.txtDocumentType.TabIndex = 6;
             // 
             // label8
             // 
@@ -673,7 +618,7 @@
             this.txtSchoolYear.Location = new System.Drawing.Point(611, 19);
             this.txtSchoolYear.Name = "txtSchoolYear";
             this.txtSchoolYear.Size = new System.Drawing.Size(100, 20);
-            this.txtSchoolYear.TabIndex = 3;
+            this.txtSchoolYear.TabIndex = 15;
             // 
             // label7
             // 
@@ -694,7 +639,7 @@
             this.groupBox2.Controls.Add(this.label15);
             this.groupBox2.Controls.Add(this.label7);
             this.groupBox2.Controls.Add(this.txtSchoolYear);
-            this.groupBox2.Location = new System.Drawing.Point(32, 159);
+            this.groupBox2.Location = new System.Drawing.Point(32, 103);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Size = new System.Drawing.Size(869, 48);
             this.groupBox2.TabIndex = 27;
@@ -705,7 +650,7 @@
             this.txtSchoolName.Location = new System.Drawing.Point(425, 19);
             this.txtSchoolName.Name = "txtSchoolName";
             this.txtSchoolName.Size = new System.Drawing.Size(100, 20);
-            this.txtSchoolName.TabIndex = 40;
+            this.txtSchoolName.TabIndex = 14;
             // 
             // label17
             // 
@@ -721,7 +666,7 @@
             this.txtYearsInCountry.Location = new System.Drawing.Point(338, 19);
             this.txtYearsInCountry.Name = "txtYearsInCountry";
             this.txtYearsInCountry.Size = new System.Drawing.Size(21, 20);
-            this.txtYearsInCountry.TabIndex = 38;
+            this.txtYearsInCountry.TabIndex = 13;
             // 
             // label16
             // 
@@ -737,7 +682,7 @@
             this.txtNationality.Location = new System.Drawing.Point(73, 19);
             this.txtNationality.Name = "txtNationality";
             this.txtNationality.Size = new System.Drawing.Size(100, 20);
-            this.txtNationality.TabIndex = 36;
+            this.txtNationality.TabIndex = 12;
             // 
             // label15
             // 
@@ -772,7 +717,7 @@
             this.groupBox3.Controls.Add(this.label19);
             this.groupBox3.Controls.Add(this.txtStreetType);
             this.groupBox3.Controls.Add(this.label18);
-            this.groupBox3.Location = new System.Drawing.Point(32, 214);
+            this.groupBox3.Location = new System.Drawing.Point(32, 158);
             this.groupBox3.Name = "groupBox3";
             this.groupBox3.Size = new System.Drawing.Size(869, 70);
             this.groupBox3.TabIndex = 28;
@@ -783,7 +728,7 @@
             this.txtCountry.Location = new System.Drawing.Point(755, 41);
             this.txtCountry.Name = "txtCountry";
             this.txtCountry.Size = new System.Drawing.Size(100, 20);
-            this.txtCountry.TabIndex = 56;
+            this.txtCountry.TabIndex = 26;
             // 
             // label28
             // 
@@ -799,7 +744,7 @@
             this.txtProvince.Location = new System.Drawing.Point(597, 41);
             this.txtProvince.Name = "txtProvince";
             this.txtProvince.Size = new System.Drawing.Size(100, 20);
-            this.txtProvince.TabIndex = 54;
+            this.txtProvince.TabIndex = 25;
             // 
             // label27
             // 
@@ -815,7 +760,7 @@
             this.txtRegion.Location = new System.Drawing.Point(426, 41);
             this.txtRegion.Name = "txtRegion";
             this.txtRegion.Size = new System.Drawing.Size(100, 20);
-            this.txtRegion.TabIndex = 52;
+            this.txtRegion.TabIndex = 24;
             // 
             // label26
             // 
@@ -831,7 +776,7 @@
             this.txtPopulation.Location = new System.Drawing.Point(259, 41);
             this.txtPopulation.Name = "txtPopulation";
             this.txtPopulation.Size = new System.Drawing.Size(100, 20);
-            this.txtPopulation.TabIndex = 50;
+            this.txtPopulation.TabIndex = 23;
             // 
             // label25
             // 
@@ -847,7 +792,7 @@
             this.txtZIPCode.Location = new System.Drawing.Point(73, 41);
             this.txtZIPCode.Name = "txtZIPCode";
             this.txtZIPCode.Size = new System.Drawing.Size(100, 20);
-            this.txtZIPCode.TabIndex = 48;
+            this.txtZIPCode.TabIndex = 22;
             // 
             // label24
             // 
@@ -863,7 +808,7 @@
             this.txtHomeDoor.Location = new System.Drawing.Point(761, 13);
             this.txtHomeDoor.Name = "txtHomeDoor";
             this.txtHomeDoor.Size = new System.Drawing.Size(29, 20);
-            this.txtHomeDoor.TabIndex = 46;
+            this.txtHomeDoor.TabIndex = 21;
             // 
             // label23
             // 
@@ -879,7 +824,7 @@
             this.txtHomeStorey.Location = new System.Drawing.Point(685, 13);
             this.txtHomeStorey.Name = "txtHomeStorey";
             this.txtHomeStorey.Size = new System.Drawing.Size(29, 20);
-            this.txtHomeStorey.TabIndex = 44;
+            this.txtHomeStorey.TabIndex = 20;
             // 
             // label22
             // 
@@ -895,7 +840,7 @@
             this.txtHomeStairs.Location = new System.Drawing.Point(597, 13);
             this.txtHomeStairs.Name = "txtHomeStairs";
             this.txtHomeStairs.Size = new System.Drawing.Size(29, 20);
-            this.txtHomeStairs.TabIndex = 42;
+            this.txtHomeStairs.TabIndex = 19;
             // 
             // label21
             // 
@@ -911,7 +856,7 @@
             this.txtHomeNumber.Location = new System.Drawing.Point(511, 13);
             this.txtHomeNumber.Name = "txtHomeNumber";
             this.txtHomeNumber.Size = new System.Drawing.Size(29, 20);
-            this.txtHomeNumber.TabIndex = 40;
+            this.txtHomeNumber.TabIndex = 18;
             // 
             // label20
             // 
@@ -927,7 +872,7 @@
             this.txtAddress.Location = new System.Drawing.Point(259, 13);
             this.txtAddress.Name = "txtAddress";
             this.txtAddress.Size = new System.Drawing.Size(179, 20);
-            this.txtAddress.TabIndex = 38;
+            this.txtAddress.TabIndex = 17;
             // 
             // label19
             // 
@@ -943,7 +888,7 @@
             this.txtStreetType.Location = new System.Drawing.Point(73, 13);
             this.txtStreetType.Name = "txtStreetType";
             this.txtStreetType.Size = new System.Drawing.Size(100, 20);
-            this.txtStreetType.TabIndex = 36;
+            this.txtStreetType.TabIndex = 16;
             // 
             // label18
             // 
@@ -964,7 +909,7 @@
             this.groupBox4.Controls.Add(this.label30);
             this.groupBox4.Controls.Add(this.txtLandlineNumber);
             this.groupBox4.Controls.Add(this.label29);
-            this.groupBox4.Location = new System.Drawing.Point(32, 291);
+            this.groupBox4.Location = new System.Drawing.Point(32, 235);
             this.groupBox4.Name = "groupBox4";
             this.groupBox4.Size = new System.Drawing.Size(869, 39);
             this.groupBox4.TabIndex = 29;
@@ -975,7 +920,7 @@
             this.txtProfession.Location = new System.Drawing.Point(675, 13);
             this.txtProfession.Name = "txtProfession";
             this.txtProfession.Size = new System.Drawing.Size(115, 20);
-            this.txtProfession.TabIndex = 64;
+            this.txtProfession.TabIndex = 30;
             // 
             // label69
             // 
@@ -991,7 +936,7 @@
             this.txtEmail.Location = new System.Drawing.Point(425, 13);
             this.txtEmail.Name = "txtEmail";
             this.txtEmail.Size = new System.Drawing.Size(162, 20);
-            this.txtEmail.TabIndex = 62;
+            this.txtEmail.TabIndex = 29;
             // 
             // label31
             // 
@@ -1007,7 +952,7 @@
             this.txtCellphoneNumber.Location = new System.Drawing.Point(259, 13);
             this.txtCellphoneNumber.Name = "txtCellphoneNumber";
             this.txtCellphoneNumber.Size = new System.Drawing.Size(100, 20);
-            this.txtCellphoneNumber.TabIndex = 60;
+            this.txtCellphoneNumber.TabIndex = 28;
             // 
             // label30
             // 
@@ -1023,7 +968,7 @@
             this.txtLandlineNumber.Location = new System.Drawing.Point(73, 13);
             this.txtLandlineNumber.Name = "txtLandlineNumber";
             this.txtLandlineNumber.Size = new System.Drawing.Size(100, 20);
-            this.txtLandlineNumber.TabIndex = 58;
+            this.txtLandlineNumber.TabIndex = 27;
             // 
             // label29
             // 
@@ -1070,7 +1015,7 @@
             this.groupBox5.Controls.Add(this.label33);
             this.groupBox5.Controls.Add(this.txtFatherName);
             this.groupBox5.Controls.Add(this.label32);
-            this.groupBox5.Location = new System.Drawing.Point(32, 338);
+            this.groupBox5.Location = new System.Drawing.Point(32, 282);
             this.groupBox5.Name = "groupBox5";
             this.groupBox5.Size = new System.Drawing.Size(869, 300);
             this.groupBox5.TabIndex = 30;
@@ -1081,7 +1026,7 @@
             this.btnSearchMother.Location = new System.Drawing.Point(416, 28);
             this.btnSearchMother.Name = "btnSearchMother";
             this.btnSearchMother.Size = new System.Drawing.Size(102, 23);
-            this.btnSearchMother.TabIndex = 100;
+            this.btnSearchMother.TabIndex = 32;
             this.btnSearchMother.Text = "Search Mother";
             this.btnSearchMother.UseVisualStyleBackColor = true;
             this.btnSearchMother.Click += new System.EventHandler(this.btnSearchMother_Click);
@@ -1091,7 +1036,7 @@
             this.btnSearchFather.Location = new System.Drawing.Point(129, 28);
             this.btnSearchFather.Name = "btnSearchFather";
             this.btnSearchFather.Size = new System.Drawing.Size(102, 23);
-            this.btnSearchFather.TabIndex = 99;
+            this.btnSearchFather.TabIndex = 31;
             this.btnSearchFather.Text = "Search Father";
             this.btnSearchFather.UseVisualStyleBackColor = true;
             this.btnSearchFather.Click += new System.EventHandler(this.btnSearchFather_Click);
@@ -1141,7 +1086,8 @@
             this.txtMotherEmail.Name = "txtMotherEmail";
             this.txtMotherEmail.ReadOnly = true;
             this.txtMotherEmail.Size = new System.Drawing.Size(146, 20);
-            this.txtMotherEmail.TabIndex = 94;
+            this.txtMotherEmail.TabIndex = 36;
+            this.txtMotherEmail.TabStop = false;
             // 
             // txtMotherPhone
             // 
@@ -1150,7 +1096,8 @@
             this.txtMotherPhone.Name = "txtMotherPhone";
             this.txtMotherPhone.ReadOnly = true;
             this.txtMotherPhone.Size = new System.Drawing.Size(146, 20);
-            this.txtMotherPhone.TabIndex = 93;
+            this.txtMotherPhone.TabIndex = 35;
+            this.txtMotherPhone.TabStop = false;
             // 
             // txtMotherName
             // 
@@ -1159,14 +1106,15 @@
             this.txtMotherName.Name = "txtMotherName";
             this.txtMotherName.ReadOnly = true;
             this.txtMotherName.Size = new System.Drawing.Size(146, 20);
-            this.txtMotherName.TabIndex = 92;
+            this.txtMotherName.TabIndex = 34;
+            this.txtMotherName.TabStop = false;
             // 
             // rtxtPeopleAllowedToPickOff
             // 
             this.rtxtPeopleAllowedToPickOff.Location = new System.Drawing.Point(294, 242);
             this.rtxtPeopleAllowedToPickOff.Name = "rtxtPeopleAllowedToPickOff";
             this.rtxtPeopleAllowedToPickOff.Size = new System.Drawing.Size(470, 37);
-            this.rtxtPeopleAllowedToPickOff.TabIndex = 91;
+            this.rtxtPeopleAllowedToPickOff.TabIndex = 40;
             this.rtxtPeopleAllowedToPickOff.Text = "";
             // 
             // label45
@@ -1184,7 +1132,7 @@
             this.txtSiblingRank.Location = new System.Drawing.Point(382, 212);
             this.txtSiblingRank.Name = "txtSiblingRank";
             this.txtSiblingRank.Size = new System.Drawing.Size(23, 20);
-            this.txtSiblingRank.TabIndex = 89;
+            this.txtSiblingRank.TabIndex = 39;
             // 
             // label44
             // 
@@ -1200,7 +1148,7 @@
             this.txtNumberOfSisters.Location = new System.Drawing.Point(256, 212);
             this.txtNumberOfSisters.Name = "txtNumberOfSisters";
             this.txtNumberOfSisters.Size = new System.Drawing.Size(23, 20);
-            this.txtNumberOfSisters.TabIndex = 87;
+            this.txtNumberOfSisters.TabIndex = 38;
             // 
             // label43
             // 
@@ -1216,7 +1164,7 @@
             this.txtNumberOfBrothers.Location = new System.Drawing.Point(112, 212);
             this.txtNumberOfBrothers.Name = "txtNumberOfBrothers";
             this.txtNumberOfBrothers.Size = new System.Drawing.Size(23, 20);
-            this.txtNumberOfBrothers.TabIndex = 84;
+            this.txtNumberOfBrothers.TabIndex = 37;
             // 
             // label42
             // 
@@ -1232,7 +1180,7 @@
             this.txtOtherContactPhone.Location = new System.Drawing.Point(666, 185);
             this.txtOtherContactPhone.Name = "txtOtherContactPhone";
             this.txtOtherContactPhone.Size = new System.Drawing.Size(100, 20);
-            this.txtOtherContactPhone.TabIndex = 82;
+            this.txtOtherContactPhone.TabIndex = 36;
             // 
             // label41
             // 
@@ -1248,7 +1196,7 @@
             this.txtOtherContactName.Location = new System.Drawing.Point(377, 185);
             this.txtOtherContactName.Name = "txtOtherContactName";
             this.txtOtherContactName.Size = new System.Drawing.Size(151, 20);
-            this.txtOtherContactName.TabIndex = 80;
+            this.txtOtherContactName.TabIndex = 35;
             // 
             // label40
             // 
@@ -1264,7 +1212,7 @@
             this.txtOtherContactRelation.Location = new System.Drawing.Point(142, 185);
             this.txtOtherContactRelation.Name = "txtOtherContactRelation";
             this.txtOtherContactRelation.Size = new System.Drawing.Size(100, 20);
-            this.txtOtherContactRelation.TabIndex = 78;
+            this.txtOtherContactRelation.TabIndex = 34;
             // 
             // label39
             // 
@@ -1280,7 +1228,7 @@
             this.txtFamilyEmail.Location = new System.Drawing.Point(111, 155);
             this.txtFamilyEmail.Name = "txtFamilyEmail";
             this.txtFamilyEmail.Size = new System.Drawing.Size(147, 20);
-            this.txtFamilyEmail.TabIndex = 76;
+            this.txtFamilyEmail.TabIndex = 33;
             // 
             // label38
             // 
@@ -1307,7 +1255,8 @@
             this.txtFatherEmail.Name = "txtFatherEmail";
             this.txtFatherEmail.ReadOnly = true;
             this.txtFatherEmail.Size = new System.Drawing.Size(146, 20);
-            this.txtFatherEmail.TabIndex = 72;
+            this.txtFatherEmail.TabIndex = 33;
+            this.txtFatherEmail.TabStop = false;
             // 
             // label36
             // 
@@ -1334,7 +1283,8 @@
             this.txtFatherPhone.Name = "txtFatherPhone";
             this.txtFatherPhone.ReadOnly = true;
             this.txtFatherPhone.Size = new System.Drawing.Size(146, 20);
-            this.txtFatherPhone.TabIndex = 68;
+            this.txtFatherPhone.TabIndex = 32;
+            this.txtFatherPhone.TabStop = false;
             // 
             // label34
             // 
@@ -1361,7 +1311,8 @@
             this.txtFatherName.Name = "txtFatherName";
             this.txtFatherName.ReadOnly = true;
             this.txtFatherName.Size = new System.Drawing.Size(146, 20);
-            this.txtFatherName.TabIndex = 64;
+            this.txtFatherName.TabIndex = 31;
+            this.txtFatherName.TabStop = false;
             // 
             // label32
             // 
@@ -1396,7 +1347,7 @@
             this.groupBox6.Controls.Add(this.label47);
             this.groupBox6.Controls.Add(this.txtFatherDocumentType);
             this.groupBox6.Controls.Add(this.label46);
-            this.groupBox6.Location = new System.Drawing.Point(32, 644);
+            this.groupBox6.Location = new System.Drawing.Point(32, 588);
             this.groupBox6.Name = "groupBox6";
             this.groupBox6.Size = new System.Drawing.Size(869, 169);
             this.groupBox6.TabIndex = 31;
@@ -1410,6 +1361,7 @@
             this.txtMotherBirthday.ReadOnly = true;
             this.txtMotherBirthday.Size = new System.Drawing.Size(100, 20);
             this.txtMotherBirthday.TabIndex = 115;
+            this.txtMotherBirthday.TabStop = false;
             // 
             // txtFatherBirthday
             // 
@@ -1419,6 +1371,7 @@
             this.txtFatherBirthday.ReadOnly = true;
             this.txtFatherBirthday.Size = new System.Drawing.Size(100, 20);
             this.txtFatherBirthday.TabIndex = 114;
+            this.txtFatherBirthday.TabStop = false;
             // 
             // label52
             // 
@@ -1447,6 +1400,7 @@
             this.txtMotherProfession.ReadOnly = true;
             this.txtMotherProfession.Size = new System.Drawing.Size(100, 20);
             this.txtMotherProfession.TabIndex = 110;
+            this.txtMotherProfession.TabStop = false;
             // 
             // label54
             // 
@@ -1465,6 +1419,7 @@
             this.txtMotherNationality.ReadOnly = true;
             this.txtMotherNationality.Size = new System.Drawing.Size(100, 20);
             this.txtMotherNationality.TabIndex = 108;
+            this.txtMotherNationality.TabStop = false;
             // 
             // label55
             // 
@@ -1483,6 +1438,7 @@
             this.txtMotherDocument.ReadOnly = true;
             this.txtMotherDocument.Size = new System.Drawing.Size(100, 20);
             this.txtMotherDocument.TabIndex = 106;
+            this.txtMotherDocument.TabStop = false;
             // 
             // label56
             // 
@@ -1501,6 +1457,7 @@
             this.txtMotherDocumentType.ReadOnly = true;
             this.txtMotherDocumentType.Size = new System.Drawing.Size(100, 20);
             this.txtMotherDocumentType.TabIndex = 104;
+            this.txtMotherDocumentType.TabStop = false;
             // 
             // label57
             // 
@@ -1538,6 +1495,7 @@
             this.txtFatherProfession.ReadOnly = true;
             this.txtFatherProfession.Size = new System.Drawing.Size(100, 20);
             this.txtFatherProfession.TabIndex = 99;
+            this.txtFatherProfession.TabStop = false;
             // 
             // label49
             // 
@@ -1556,6 +1514,7 @@
             this.txtFatherNationality.ReadOnly = true;
             this.txtFatherNationality.Size = new System.Drawing.Size(100, 20);
             this.txtFatherNationality.TabIndex = 97;
+            this.txtFatherNationality.TabStop = false;
             // 
             // label48
             // 
@@ -1574,6 +1533,7 @@
             this.txtFatherDocument.ReadOnly = true;
             this.txtFatherDocument.Size = new System.Drawing.Size(100, 20);
             this.txtFatherDocument.TabIndex = 95;
+            this.txtFatherDocument.TabStop = false;
             // 
             // label47
             // 
@@ -1592,6 +1552,7 @@
             this.txtFatherDocumentType.ReadOnly = true;
             this.txtFatherDocumentType.Size = new System.Drawing.Size(100, 20);
             this.txtFatherDocumentType.TabIndex = 93;
+            this.txtFatherDocumentType.TabStop = false;
             // 
             // label46
             // 
@@ -1620,7 +1581,7 @@
             this.groupBox7.Controls.Add(this.txtIBAN);
             this.groupBox7.Controls.Add(this.label59);
             this.groupBox7.Controls.Add(this.label58);
-            this.groupBox7.Location = new System.Drawing.Point(32, 820);
+            this.groupBox7.Location = new System.Drawing.Point(32, 757);
             this.groupBox7.Name = "groupBox7";
             this.groupBox7.Size = new System.Drawing.Size(869, 264);
             this.groupBox7.TabIndex = 32;
@@ -1631,7 +1592,7 @@
             this.textBox49.Location = new System.Drawing.Point(113, 234);
             this.textBox49.Name = "textBox49";
             this.textBox49.Size = new System.Drawing.Size(100, 20);
-            this.textBox49.TabIndex = 125;
+            this.textBox49.TabIndex = 48;
             this.textBox49.Text = "TBD...";
             // 
             // label65
@@ -1648,7 +1609,7 @@
             this.textBox48.Location = new System.Drawing.Point(113, 202);
             this.textBox48.Name = "textBox48";
             this.textBox48.Size = new System.Drawing.Size(100, 20);
-            this.textBox48.TabIndex = 123;
+            this.textBox48.TabIndex = 47;
             this.textBox48.Text = "TBD...";
             // 
             // label64
@@ -1665,7 +1626,7 @@
             this.txtHealthCardNumber.Location = new System.Drawing.Point(389, 167);
             this.txtHealthCardNumber.Name = "txtHealthCardNumber";
             this.txtHealthCardNumber.Size = new System.Drawing.Size(100, 20);
-            this.txtHealthCardNumber.TabIndex = 121;
+            this.txtHealthCardNumber.TabIndex = 46;
             // 
             // label63
             // 
@@ -1681,7 +1642,7 @@
             this.txtMemberNumber.Location = new System.Drawing.Point(113, 167);
             this.txtMemberNumber.Name = "txtMemberNumber";
             this.txtMemberNumber.Size = new System.Drawing.Size(100, 20);
-            this.txtMemberNumber.TabIndex = 119;
+            this.txtMemberNumber.TabIndex = 45;
             // 
             // label62
             // 
@@ -1697,7 +1658,7 @@
             this.rtxtFoodAndDisease.Location = new System.Drawing.Point(183, 107);
             this.rtxtFoodAndDisease.Name = "rtxtFoodAndDisease";
             this.rtxtFoodAndDisease.Size = new System.Drawing.Size(443, 37);
-            this.rtxtFoodAndDisease.TabIndex = 117;
+            this.rtxtFoodAndDisease.TabIndex = 44;
             this.rtxtFoodAndDisease.Text = "";
             // 
             // label61
@@ -1714,7 +1675,7 @@
             this.rtxtObservations.Location = new System.Drawing.Point(85, 46);
             this.rtxtObservations.Name = "rtxtObservations";
             this.rtxtObservations.Size = new System.Drawing.Size(541, 37);
-            this.rtxtObservations.TabIndex = 93;
+            this.rtxtObservations.TabIndex = 43;
             this.rtxtObservations.Text = "";
             // 
             // label60
@@ -1731,14 +1692,14 @@
             this.txtBankAccountOwner.Location = new System.Drawing.Point(488, 17);
             this.txtBankAccountOwner.Name = "txtBankAccountOwner";
             this.txtBankAccountOwner.Size = new System.Drawing.Size(138, 20);
-            this.txtBankAccountOwner.TabIndex = 115;
+            this.txtBankAccountOwner.TabIndex = 42;
             // 
             // txtIBAN
             // 
-            this.txtIBAN.Location = new System.Drawing.Point(48, 17);
+            this.txtIBAN.Location = new System.Drawing.Point(85, 17);
             this.txtIBAN.Name = "txtIBAN";
             this.txtIBAN.Size = new System.Drawing.Size(205, 20);
-            this.txtIBAN.TabIndex = 1;
+            this.txtIBAN.TabIndex = 41;
             // 
             // label59
             // 
@@ -1780,12 +1741,6 @@
             this.Controls.Add(this.cbbPrograms);
             this.Controls.Add(this.btnCancel);
             this.Controls.Add(this.gbWeeklyPresence);
-            this.Controls.Add(this.label3);
-            this.Controls.Add(this.dtpBirthday_1);
-            this.Controls.Add(this.txtLastname_1);
-            this.Controls.Add(this.label2);
-            this.Controls.Add(this.txtFirstname_1);
-            this.Controls.Add(this.label1);
             this.Controls.Add(this.btnValidateForm);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.MaximizeBox = false;
@@ -1819,13 +1774,6 @@
         }
 
         #endregion
-
-        private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.DateTimePicker dtpBirthday_1;
-        private System.Windows.Forms.TextBox txtLastname_1;
-        private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.TextBox txtFirstname_1;
-        private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Button btnValidateForm;
         private System.Windows.Forms.CheckBox cbWorker;
         private System.Windows.Forms.GroupBox gbWeeklyPresence;

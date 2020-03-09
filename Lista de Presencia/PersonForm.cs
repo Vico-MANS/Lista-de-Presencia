@@ -94,6 +94,8 @@ namespace Lista_de_Presencia
             //LoadPrograms();
             GetPrograms();
             m_WeeklyPresence = new List<int>();
+
+            txtPersonType.Select();
         }
         
         private void Form2_Load(object sender, EventArgs e)
