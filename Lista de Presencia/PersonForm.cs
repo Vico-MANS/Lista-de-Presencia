@@ -132,7 +132,7 @@ namespace Lista_de_Presencia
                                                         "HOME_STAIRS, HOME_STOREY, HOME_DOOR, HOME_ZIP_CODE, HOME_POPULATION, " +
                                                         "HOME_REGION, HOME_PROVINCE, HOME_COUNTRY, HOME_LANDLINE_NUMBER, CELLPHONE_NUMBER, " +
                                                         "EMAIL, ID_FATHER, ID_MOTHER, FAMILY_EMAIL, OTHER_CONTACT_RELATION," +
-                                                        "OTHER_CONTACT_NAME, OTHER_CONTACT_EMAIL, NUMBER_OF_BROTHERS, NUMBER_OF_SISTERS, " +
+                                                        "OTHER_CONTACT_NAME, OTHER_CONTACT_PHONE, NUMBER_OF_BROTHERS, NUMBER_OF_SISTERS, " +
                                                         "SIBLING_RANK, PICK_OFF_PEOPLE, PROFESSION, BANK_IBAN, BANK_ACCOUNT_OWNER, OBSERVATIONS, " +
                                                         "FOOD_ALLERGY_CHRONIC_DISEASES, MEMBER_NUMBER, HEALTH_CARD_NUMBER " +
                                                     "FROM PERSON " +
@@ -184,7 +184,7 @@ namespace Lista_de_Presencia
                     txtFatherEmail.Text = reader["FAMILY_EMAIL"].ToString();
                     txtOtherContactRelation.Text = reader["OTHER_CONTACT_RELATION"].ToString();
                     txtOtherContactName.Text = reader["OTHER_CONTACT_NAME"].ToString();
-                    txtOtherContactPhone.Text = reader["OTHER_CONTACT_EMAIL"].ToString();
+                    txtOtherContactPhone.Text = reader["OTHER_CONTACT_PHONE"].ToString();
                     txtNumberOfBrothers.Text = reader["NUMBER_OF_BROTHERS"].ToString();
                     txtNumberOfSisters.Text = reader["NUMBER_OF_SISTERS"].ToString();
                     txtSiblingRank.Text = reader["SIBLING_RANK"].ToString();
@@ -473,8 +473,8 @@ namespace Lista_de_Presencia
                         m_WeeklyPresenceChanges.Add(e.ColumnIndex + 1);
                     else
                         m_WeeklyPresenceChanges.Remove(e.ColumnIndex + 1);
+                    CheckForChanges();
                 }
-                CheckForChanges();
             }
         }
 
@@ -638,7 +638,7 @@ namespace Lista_de_Presencia
                                                                         "HOME_STAIRS, HOME_STOREY, HOME_DOOR, HOME_ZIP_CODE, HOME_POPULATION, " +
                                                                         "HOME_REGION, HOME_PROVINCE, HOME_COUNTRY, HOME_LANDLINE_NUMBER, CELLPHONE_NUMBER, " +
                                                                         "EMAIL, ID_FATHER, ID_MOTHER, FAMILY_EMAIL, OTHER_CONTACT_RELATION," +
-                                                                        "OTHER_CONTACT_NAME, OTHER_CONTACT_EMAIL, NUMBER_OF_BROTHERS, NUMBER_OF_SISTERS, " +
+                                                                        "OTHER_CONTACT_NAME, OTHER_CONTACT_PHONE, NUMBER_OF_BROTHERS, NUMBER_OF_SISTERS, " +
                                                                         "SIBLING_RANK, PICK_OFF_PEOPLE, PROFESSION, BANK_IBAN, BANK_ACCOUNT_OWNER, OBSERVATIONS, " +
                                                                         "FOOD_ALLERGY_CHRONIC_DISEASES, MEMBER_NUMBER, HEALTH_CARD_NUMBER) " +
                                                                     "VALUES (@personType, @firstName, @lastName, @documentType, @document, " +
