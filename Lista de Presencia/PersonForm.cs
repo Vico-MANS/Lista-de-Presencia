@@ -46,10 +46,10 @@ namespace Lista_de_Presencia
         private FormType m_FormType;
         private int m_PersonID;
         private bool m_IsWorker;
-        // The programs that the person is assigned to in the database
-        //private List<int> m_InitPersonPrograms;
         // The groups that the person is assigned to in the database
         private List<int> m_InitPersonGroups;
+        // Keeps track of the group's that the person was added to
+        private List<int> m_GroupIDs;
 
         // (ADDITION) Contains the cells that are checked for a person's addition, these cell's information need to be registered into the database
         private List<int> m_WeeklyPresence;
@@ -57,16 +57,10 @@ namespace Lista_de_Presencia
         private List<int> m_WeeklyPresenceCheckedCells = new List<int>();
         // (MODIFICATION) Contains the cells that got changed in comparision to the WeeklyPresenceCheckedCells, therefore it holds the information that has to be updated in the database
         private List<int> m_WeeklyPresenceChanges = new List<int>();
-
-        // Keeps track of the group's that the person was added to
-        private List<int> m_GroupIDs;
-
+        
         /**
          * TO KNOW IF THE USER MADE ANY MODIFICATION (ON FORM CLOSING)
          * */
-        private string m_InitFirstname;
-        private string m_InitLastname;
-        private string m_InitBirthday;
         // Do a dictionary with the control id as key and it's value as value. On control changed check if the current value is different from the dictionary one!
         private Dictionary<string, object> m_InitialValuesDictionary;
         // Holds the updated values
@@ -203,10 +197,6 @@ namespace Lista_de_Presencia
                     txtMemberNumber.Text = reader["MEMBER_NUMBER"].ToString();
                     txtHealthCardNumber.Text = reader["HEALTH_CARD_NUMBER"].ToString();
 
-                    m_InitFirstname = txtFirstName.Text;
-                    m_InitLastname = txtLastName.Text;
-                    m_InitBirthday = dtpBirthday.Value.ToString();
-
                     List<Control> controlList = new List<Control>();
                     GetAllControlsOfType(this, controlList, typeof(TextBox));
                     foreach(TextBox tb in controlList)
@@ -291,6 +281,9 @@ namespace Lista_de_Presencia
                         Console.WriteLine(((RichTextBox)sender).Name + " has the init value");
                     break;
                 case ComboBox cbb:
+                    // We don't want to keep track of these two ComboBoxes because they don't hold the actual information
+                    if (cbb.Equals(cbbPrograms) || cbb.Equals(cbbProgramGroups))
+                        break;
                     Console.WriteLine(((ComboBox)sender).Name);
                     m_UpdatedValuesDictionary[((ComboBox)sender).Name] = (cbb.SelectedItem == null ? "" : cbb.SelectedItem.ToString());
                     if (m_InitialValuesDictionary[((ComboBox)sender).Name].ToString() != (((ComboBox)sender).SelectedItem == null ? "" : ((ComboBox)sender).SelectedItem.ToString()))
@@ -315,8 +308,7 @@ namespace Lista_de_Presencia
                         Console.WriteLine(((DateTimePicker)sender).Name + " has the init value");
                     break;
             }
-            // If the dictionaries are the same it means that the user didn't change any value concerning the person, therefore we disable the update button
-            btnValidateForm.Enabled = !m_UpdatedValuesDictionary.Keys.All(k => m_InitialValuesDictionary[k].Equals(m_UpdatedValuesDictionary[k]));
+            CheckForChanges();
         }
 
         private void RetrievePersonGroupInformation()
@@ -457,14 +449,6 @@ namespace Lista_de_Presencia
             // The person has to have a first and last name
             if (txtFirstName.Text == "" || txtLastName.Text == "")
                 return false;
-
-            // TODO: What about parents? (there aren't part of any program)
-            // If the person isn't working here, it has to be part of a program
-            //if(!cbWorker.Checked)
-            //{
-            //    // If this is true it means that the person is part of at least one group
-            //    return gbGroupInfo.Controls.Count > 3;
-            //}
             return true;
         }
 
@@ -490,6 +474,7 @@ namespace Lista_de_Presencia
                     else
                         m_WeeklyPresenceChanges.Remove(e.ColumnIndex + 1);
                 }
+                CheckForChanges();
             }
         }
 
@@ -508,7 +493,7 @@ namespace Lista_de_Presencia
                 if (m_FormType.Equals(FormType.ADDITION))
                     AddPerson();
                 else if (m_FormType.Equals(FormType.MODIFICATION))
-                    UpdatePerson();
+                    UpdatePerson();                
             }
             else
             {
@@ -558,11 +543,7 @@ namespace Lista_de_Presencia
                     commandUpdatePerson.Parameters.AddWithValue("birthday", dtpBirthday.Value);
                     commandUpdatePerson.Parameters.AddWithValue("id", m_PersonID);
                     commandUpdatePerson.ExecuteNonQuery();
-
-                    m_InitFirstname = txtFirstName.Text;
-                    m_InitLastname = txtLastName.Text;
-                    m_InitBirthday = dtpBirthday.Value.ToString();
-
+                    
                     Console.WriteLine("Person table UPDATED");                    
 
                     /*
@@ -621,6 +602,10 @@ namespace Lista_de_Presencia
                     }
 
                     transaction.Commit();
+
+                    //m_GroupIDs.Clear();
+                    m_GroupIDs = m_InitPersonGroups;
+                    m_WeeklyPresenceChanges.Clear();
 
                     MessageBox.Show("The person's information has been successfully updated!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
@@ -790,6 +775,17 @@ namespace Lista_de_Presencia
                     MessageBox.Show("An error has occured!\nThe person couldn't be added to the database...", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
+        }
+
+        // Checks for changes on the values of the form, if changes were made the validation button gets activated
+        private void CheckForChanges()
+        {
+            // If the dictionaries are the same it means that the user didn't change any value concerning the person, therefore we disable the update button
+            btnValidateForm.Enabled = !m_UpdatedValuesDictionary.Keys.All(k => m_InitialValuesDictionary[k].Equals(m_UpdatedValuesDictionary[k])) ||
+                // This holds the changes on the weekdays attendance
+                m_WeeklyPresenceChanges.Count > 0 ||
+                // This checks if there were changes on the groups the person is part of (TODO, doesn't work correctly)
+                !m_GroupIDs.All(m_InitPersonGroups.Contains) || !m_InitPersonGroups.All(m_GroupIDs.Contains);
         }
 
         private void cbWorker_CheckedChanged(object sender, EventArgs e)
